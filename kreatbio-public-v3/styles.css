@@ -5650,6 +5650,13 @@ main > section + .section-compact {
   object-position: center top;
 }
 
+.page-kodapure #kodamag .kodamag-media-card img {
+  aspect-ratio: auto;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+}
+
 .hero-note-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
