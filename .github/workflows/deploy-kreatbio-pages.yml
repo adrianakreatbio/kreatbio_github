@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, master]
     paths:
-      - 'kreatbio-public-v3/**'
+      - 'kreatbio-public-v4/**'
       - '.github/workflows/deploy-kreatbio-pages.yml'
   workflow_dispatch:
 
@@ -33,7 +33,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./kreatbio-public-v3
+          path: ./kreatbio-public-v4
 
       - name: Deploy to GitHub Pages
         id: deployment
