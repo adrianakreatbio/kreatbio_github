@@ -1,0 +1,153 @@
+all pages
+- label e.g. DNA EXTRACTION & SEQUENCING, KODAPURE, DNA EXTRACTION SERVICE changed to KodaXtract (Swap with the title below it), DNA SEQUENCING SERVICE changed to KodaSeq (Swap with the title below it) - all to increase font size by 2
+- Change DNA extraction to TNA
+
+-------
+Mainpage
+- First top section background color #88AEDo extend from image to the left-end. remove the vector on the right-side of image
+- first image - the vertices should not be rounded, extend to the right-end.
+- Clean DNA, from sample to sequence. - make sure "sample to sequence." are in 1 line
+
+-------
+Page KodaPure
+1. Image - not accurate. how do i revise the image? the 2 tubes on left side to be removed entirely.
+2. Section: THE RANGE changed to TNA EXTRACTION KITS
+- design: change to 2 different kits side-by-side per line, so total up to 3 lines. Include the INCLUDED section under each kit name directly as bulletpoints.
+
+-- Microbe:
+--- KBTNA-M-26 
+--- Pure culture and other samples targeting bacteria and fungi.
+--- Included:
+---- All required KodaPure buffer and magnetic beads for 50 reactions
+---- For homogenization: 0.1 mm and 0.5 mm zirconia beads
+
+-- Microbe - Dirty samples: 
+--- KBTNA-MD-26
+--- Faeces and other inhibitor-rich samples.
+--- Included:
+---- All required KodaPure buffer and magnetic beads for 50 reactions
+---- For homogenization: 0.1 mm and 0.5 mm zirconia beads
+
+-- Animal
+--- KBTNA-A-26
+--- Animal tissue, internal organs, and cultured cells.
+--- Included:
+---- All required KodaPure buffer and magnetic beads for 50 reactions
+---- Optional 15 homogenizing sticks
+---- Not provided but required: Proteinase K
+
+-- Soil
+--- KBTNA-S-26
+--- Soil and fertilizer.
+--- Included:
+---- All required KodaPure buffer and magnetic beads for 50 reactions
+---- For homogenization: 0.1 mm and 0.5 mm zirconia beads
+
+-- Plant
+--- KBTNA-P-26
+--- Leaves, seed, and fibrous tissue.
+--- Included:
+---- All required KodaPure buffer and magnetic beads for 50 reactions
+---- Optional 15 homogenizing sticks
+
+3. PROCESS
+- Use visuals. Image is in file kreatbio-public-v5/supplements/process.png
+
+4. SPECIFICATIONS
+- remove "DNA integrity High-molecular-weight genomic DNA"
+- remove "Format Manual; multi-sample, scalable across batches"
+- "Magnetic separation stand, vortex mixer, microcentrifuge, heat block" -> "Magnetic rack, vortexer/homogenizer, centrifuger, heat block/water bath"
+- "PCR, qPCR, NGS library preparation, Sanger sequencing, restriction digestion" -> "PCR, qPCR, Sequencing library preparation"
+- "TBD per run" -> "1 to 2 hours per run"
+- "Room-temperature stable reagents" -> "Room temperature"
+- "For research use only. Lysis and binding buffers contain guanidine salts; SDS available on request" -> "For research use only. SDS available on request."
+
+5. Swap "BY SAMPLE TYPE" and "Input and yield"
+- Fix sample types
+- Fix Cat no.
+- Add Microbe - Dirty samples
+- "MAX. INPUT" -> "INPUT, mg"
+- TYPICAL YIELD -> TYPICAL YIELD, ng/uL
+- ELUTION VOLUME -> ELUTION VOLUME, uL- all TBD -> 50 uL
+- remove "Maximum input, typical yield, and elution volume are finalised with KreatBio’s validated data. Preps per kit and pack sizes available on request."
+- All animal and plant samples use homogenizing stick. Expecting higher DNA concentration for samples processed using liquid nitrogen.
+
+6. Add another section after DOCUMENTATION: OTHERS (use the original template as THE RANGE)
+- Magnetic Rack, KBMR-15-8-26 (Magnetic stand for eight 1.5 mL tubes, used in magnetic-bead based extractions.) - RM 400
+- Magnetic Rack, KBMR-02-80-26 (Magnetic stand for 8 x 10 0.2 mL PCR tubes) - RM 500
+- Magnetic Rack, KBMR-H1550-1-26 (Hybrid magnetic stand for one 15 mL and one 50 mL tube) - RM 200
+- Homogenizing sticks, KBP-ST-26 (Used to grind solid samples e.g. meat and plant), 10 units - RM 25
+- Homogenizing tube, KBP-HT15-26 (2 mL screw-cap tube with 0.1 mm and 0.5 mm zirconia beads), 10 tubes - RM 50
+- Homogenizing tube, KBP-HT54-26 (2 mL screw-cap tube with 0.5 mm zirconia beads and 3.5-4 mm steel beads), 10 tubes - RM 70
+- 0.5 uM Silica magnetic beads, 10 mg/mL (Binds DNA/RNA in magnetic beads-based TNA extraction), 1.5 mL - RM 400
+
+7. Remove button "Quick-start guide"
+8. Remove button "How to cite"
+
+
+------
+Page KodaXtract
+1. Replace first image with supplements/main_kodaxtract.png
+2. WHAT WE DO
+- "We extract DNA from a wide range of sample types, including blood, tissue, plant material, and microbial cultures, using the same magnetic-bead chemistry as our KodaPure kits." -> We extract DNA from a wide range of sample types, including microbes, soil, plant material and tissue, usingg the same magnetic-bead chemistry as our KodaPure kits.
+- remove "Blood
+Tissue
+Plant
+Microbial
+Purified DNA"
+3. replace the 2nd image with supplements/2_kodaxtract.png 
+4. remove SAMPLES section
+5. remove QUALITY CONTROL section
+6. DELIVERABLES section 
+- "Purified DNA in elution buffer or nuclease-free water" -> DNA/RNA in elution buffer
+- remove "Typical output", "Leftover sample"
+- Turnaround - "TBD working days after sample QC" -> "2-3 working days"
+- "We can measure DNA concentration and assess purity and integrity, giving a clear quality profile for each sample before downstream work" -> "Separately, we provide DNA quantification service through DENOVIX. Suitable for urgent needs, at a realistic cost. Receive results within few hours to 2 days."
+- remove "Concentration
+Purity (A260/280)
+Integrity"
+
+
+------
+Page KodaSeq
+1. WHAT WE DO
+"We sequence DNA across targeted regions or entire genomes, working from your purified DNA or from samples we extract for you. You receive the sequencing reads and alignments in standard formats, together with a quality-control report for each run." to below,
+- Whole Genome Sequencing
+- Amplicon Sequencing
+-- Bacterial 16S V4 region (typically up to genus)
+-- Bacterial 16S V4-V5 region
+-- Fungal ITS1 region
+-- Plant ITS2 region
+-- Animal barcoding COXI
+- remove "Targeted
+Whole-genome
+FASTQ / BAM
+QC report"
+
+2. PROCESS
+- "Send purified DNA or samples, and specify targeted or whole-genome sequencing." -> "Laboratory receives sample."
+- "Library preparation, sequencing, and quality control are carried out in our laboratory." -> "Library preparation, sequencing, and bioinformatics analysis are carried out."
+- "Reads and alignments are delivered in standard formats with a QC report." -> "Formal report is released to you. Optional report consultation."
+
+3. remove SPECIFICATIONS section
+4. remove SAMPLES section
+5. remove QUALITY CONTROL
+6. remove DELIVERABLES
+7. ALSO AVAILABLE
+- remove "Data analysis — KodaAly"
+- remove "Send us your sequencing data and we run the analysis: read QC and trimming, alignment to a reference genome, variant calling (SNPs, indels, and structural variants where applicable), functional annotation, and a documented report you can act on."
+- remove "QC & trimming
+Alignment (BAM)
+Variant calling (VCF)
+Annotation
+Report"
+- Customized Bioinformatics Analysis
+- Bioinformatics Data Walkthrough
+8. remove "Whole-genome — KodaGeno" section
+9. FAQ
+- "Purified DNA, or samples for us to extract via KodaXtract. We confirm the exact amount, concentration, and purity for your application before you ship." -> "Raw samples or DNA. We confirm sample concentration for your application before you ship."
+- "Raw reads in FASTQ and, with analysis, alignments in BAM and variants in VCF, plus a QC report and MD5 checksums." -> "FASTQ raw reads, FASTA reads, and the respective bioinformatics analysis report, with QC results and charts."
+- "Turnaround depends on the application and scale; we confirm a timeline with your quote." -> "On average, 4 to 8 weeks."
+- remove "Who owns the samples and data?"
+- I'd like to understand my analysis report. Can I request for a data walkthrough?
+-- Yes.

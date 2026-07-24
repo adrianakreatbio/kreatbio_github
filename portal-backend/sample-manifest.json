@@ -1,0 +1,66 @@
+{
+  "code": "ABCDEFGHIJ",
+  "client_name": "Example Client",
+  "title": "Amplicon microbiome report",
+  "description": "Released sequencing analysis for client review.",
+  "analysis_type": "amplicon",
+  "created_at": "2026-07-23",
+  "report_pdf": {
+    "fileId": "report",
+    "name": "KreatBio Amplicon Report.pdf",
+    "path": "report/KreatBio_Amplicon_Report.pdf"
+  },
+  "files": [
+    {
+      "id": "taxonomy-table",
+      "name": "Taxonomy abundance table",
+      "path": "tables/taxonomy_abundance.tsv",
+      "role": "taxonomy",
+      "type": "tsv"
+    },
+    {
+      "id": "alpha-diversity",
+      "name": "Alpha diversity table",
+      "path": "tables/alpha_diversity.tsv",
+      "role": "alpha_diversity",
+      "type": "tsv"
+    },
+    {
+      "id": "ordination",
+      "name": "PCoA coordinates",
+      "path": "tables/pcoa.tsv",
+      "role": "ordination",
+      "type": "tsv"
+    }
+  ],
+  "modules": [
+    {
+      "id": "amplicon-abundance",
+      "label": "Taxonomy abundance",
+      "kind": "abundance",
+      "requires": ["taxonomy"],
+      "description": "Stacked relative abundance"
+    },
+    {
+      "id": "amplicon-heatmap",
+      "label": "Taxonomy heatmap",
+      "kind": "heatmap",
+      "requires": ["taxonomy"],
+      "description": "Taxa by sample matrix"
+    },
+    {
+      "id": "amplicon-alpha",
+      "label": "Alpha diversity",
+      "kind": "alpha",
+      "requires": ["alpha_diversity"],
+      "description": "Within-sample diversity"
+    },
+    {
+      "id": "amplicon-beta",
+      "label": "Beta diversity",
+      "kind": "beta",
+      "requires": ["ordination"],
+      "description": "PCoA or ordination plot"
+    }
+  ]
+}
