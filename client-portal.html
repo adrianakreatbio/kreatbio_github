@@ -10,6 +10,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script id="portal-config">
+window.KREATBIO_PORTAL_API = "";
+window.KREATBIO_PORTAL_DEFAULT_API = "http://localhost:8080";
+</script>
 <style>
 :root{
   --navy:#071B3A;
@@ -937,11 +941,22 @@ tr:last-child td{border-bottom:0}
 
   var params = new URLSearchParams(location.search);
   if(params.get("api")){
-    localStorage.setItem("kreatbio_portal_api", params.get("api").replace(/\/+$/,""));
+    localStorage.setItem("kreatbio_portal_api", cleanApiBase(params.get("api")));
+  }
+
+  function cleanApiBase(value){
+    return String(value || "").trim().replace(/\/+$/,"");
+  }
+
+  function defaultApiBase(){
+    if(location.protocol === "file:"){
+      return cleanApiBase(window.KREATBIO_PORTAL_DEFAULT_API || "http://localhost:8080");
+    }
+    return "";
   }
 
   var state = {
-    apiBase: window.KREATBIO_PORTAL_API || localStorage.getItem("kreatbio_portal_api") || "",
+    apiBase: cleanApiBase(window.KREATBIO_PORTAL_API) || cleanApiBase(localStorage.getItem("kreatbio_portal_api")) || defaultApiBase(),
     token: localStorage.getItem("kreatbio_portal_token") || "",
     report: null,
     activeModule: null,
@@ -958,6 +973,9 @@ tr:last-child td{border-bottom:0}
   function portalNetworkError(path, err){
     if(!state.apiBase && location.protocol === "file:"){
       return new Error("Portal API is not configured. Open this page from the portal backend, or add ?api=https://YOUR-PORTAL-API to the URL.");
+    }
+    if(state.apiBase && location.protocol === "file:"){
+      return new Error("Could not reach the portal API at " + state.apiBase + ". Start the portal backend, or add ?api=https://YOUR-PORTAL-API to the URL.");
     }
     if(!state.apiBase && location.protocol.indexOf("http") === 0){
       return new Error("Portal API endpoint was not found on this site. Open the backend-hosted portal, or add ?api=https://YOUR-PORTAL-API to the URL.");

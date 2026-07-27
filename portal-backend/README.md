@@ -11,6 +11,17 @@ Cloud Run API for `client-portal.html`.
 - `GEMINI_API_KEY`: optional; enables the bottom-right report chat.
 - `GEMINI_MODEL`: optional, defaults to `gemini-2.5-flash`.
 - `PORTAL_ORIGIN`: static website origin for CORS, comma-separated if you serve both apex and `www`, or `*` during early testing.
+- `PORTAL_API_BASE`: optional explicit public API origin. Leave unset when clients open the portal from this backend, because the server injects its own request origin into `client-portal.html`.
+
+## Avoiding API Configuration Errors
+
+Use the backend URL as the client-facing portal URL, for example:
+
+```text
+https://YOUR-PORTAL-BACKEND/client-portal.html
+```
+
+The backend injects the correct API origin into `client-portal.html` at request time. Local `file://` opens default to `http://localhost:8080` for development. Do not publish the standalone repository HTML file unless you also set `window.KREATBIO_PORTAL_API` in the `portal-config` script block or append `?api=https://YOUR-PORTAL-BACKEND` once.
 
 ## GCS Layout
 

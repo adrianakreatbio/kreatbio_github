@@ -19,6 +19,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 const PORTAL_ORIGIN = process.env.PORTAL_ORIGIN || "*";
 const PORTAL_ORIGINS = PORTAL_ORIGIN.split(",").map((origin) => origin.trim()).filter(Boolean);
+const PORTAL_API_BASE = cleanUrl(process.env.PORTAL_API_BASE || "");
 const STATIC_DIR = process.env.PORTAL_STATIC_DIR || path.join(__dirname, "public");
 const ALLOW_CLIENT_DOWNLOADS = /^(1|true|yes)$/i.test(process.env.ALLOW_CLIENT_DOWNLOADS || "");
 
@@ -36,8 +37,11 @@ const storage = new Storage();
 const app = express();
 
 app.disable("x-powered-by");
+app.set("trust proxy", true);
 app.use(express.json({ limit: "1mb" }));
 app.use(corsMiddleware);
+
+app.get(["/", "/client-portal.html"], servePortal);
 
 if (fs.existsSync(STATIC_DIR)) {
   app.use(express.static(STATIC_DIR, { extensions: ["html"] }));
@@ -245,17 +249,6 @@ app.post("/api/chat", requireSession, async (req, res, next) => {
   }
 });
 
-app.get(["/", "/client-portal.html"], (req, res, next) => {
-  const staticPortal = path.join(STATIC_DIR, "client-portal.html");
-  const repoPortal = path.resolve(__dirname, "..", "client-portal.html");
-  const target = fs.existsSync(staticPortal) ? staticPortal : repoPortal;
-  if (fs.existsSync(target)) {
-    res.sendFile(target);
-    return;
-  }
-  next();
-});
-
 app.use((req, res, next) => {
   next(httpError(404, "Route not found."));
 });
@@ -300,6 +293,44 @@ function corsOrigin(requestOrigin) {
   }
   const normalizedRequestOrigin = requestOrigin.replace(/\/+$/, "");
   return PORTAL_ORIGINS.find((origin) => origin.replace(/\/+$/, "") === normalizedRequestOrigin) || "";
+}
+
+async function servePortal(req, res, next) {
+  try {
+    const target = portalHtmlPath();
+    if (!target) {
+      next();
+      return;
+    }
+    const apiBase = PORTAL_API_BASE || requestOrigin(req);
+    const html = (await fs.promises.readFile(target, "utf8")).replace(
+      'window.KREATBIO_PORTAL_API = "";',
+      `window.KREATBIO_PORTAL_API = ${JSON.stringify(apiBase)};`
+    );
+    res.type("html").send(html);
+  } catch (err) {
+    next(err);
+  }
+}
+
+function portalHtmlPath() {
+  const staticPortal = path.join(STATIC_DIR, "client-portal.html");
+  const repoPortal = path.resolve(__dirname, "..", "client-portal.html");
+  if (fs.existsSync(staticPortal)) {
+    return staticPortal;
+  }
+  if (fs.existsSync(repoPortal)) {
+    return repoPortal;
+  }
+  return "";
+}
+
+function requestOrigin(req) {
+  return cleanUrl(`${req.protocol}://${req.get("host")}`);
+}
+
+function cleanUrl(value) {
+  return String(value || "").trim().replace(/\/+$/, "");
 }
 
 function normalizeCode(input) {
