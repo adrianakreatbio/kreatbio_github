@@ -1001,15 +1001,19 @@ async function gcsObjectExists(objectName) {
       return false;
     }
     if (res.status === 401 || res.status === 403) {
-      throw httpError(401, "GCS access token expired or is not authorized. Restart the local backend with a fresh GCS_ACCESS_TOKEN.");
+      throw await gcsAccessTokenError(res, "check GCS object access");
     }
     if (!res.ok) {
-      throw httpError(502, `Unable to check GCS object access (${res.status}).`);
+      throw await gcsAccessTokenError(res, "check GCS object access");
     }
     return true;
   }
-  const [exists] = await storage.bucket(GCS_BUCKET).file(objectName).exists();
-  return exists;
+  try {
+    const [exists] = await storage.bucket(GCS_BUCKET).file(objectName).exists();
+    return exists;
+  } catch (err) {
+    throw gcsClientError(err);
+  }
 }
 
 async function gcsGetMetadata(objectName) {
@@ -1019,15 +1023,19 @@ async function gcsGetMetadata(objectName) {
       throw httpError(404, "Requested file is not available in this report folder.");
     }
     if (res.status === 401 || res.status === 403) {
-      throw httpError(401, "GCS access token expired or is not authorized. Restart the local backend with a fresh GCS_ACCESS_TOKEN.");
+      throw await gcsAccessTokenError(res, "read GCS object metadata");
     }
     if (!res.ok) {
-      throw httpError(502, `Unable to read GCS object metadata (${res.status}).`);
+      throw await gcsAccessTokenError(res, "read GCS object metadata");
     }
     return res.json();
   }
-  const [metadata] = await storage.bucket(GCS_BUCKET).file(objectName).getMetadata();
-  return metadata;
+  try {
+    const [metadata] = await storage.bucket(GCS_BUCKET).file(objectName).getMetadata();
+    return metadata;
+  } catch (err) {
+    throw gcsClientError(err);
+  }
 }
 
 async function gcsDownloadBuffer(objectName, range) {
@@ -1041,18 +1049,22 @@ async function gcsDownloadBuffer(objectName, range) {
       throw httpError(404, "Requested file is not available in this report folder.");
     }
     if (res.status === 401 || res.status === 403) {
-      throw httpError(401, "GCS access token expired or is not authorized. Restart the local backend with a fresh GCS_ACCESS_TOKEN.");
+      throw await gcsAccessTokenError(res, "download GCS object");
     }
     if (!res.ok && res.status !== 206) {
-      throw httpError(502, `Unable to download GCS object (${res.status}).`);
+      throw await gcsAccessTokenError(res, "download GCS object");
     }
     return Buffer.from(await res.arrayBuffer());
   }
   const args = range && Number.isFinite(range.start) && Number.isFinite(range.end)
     ? { start: range.start, end: range.end }
     : undefined;
-  const [buffer] = await storage.bucket(GCS_BUCKET).file(objectName).download(args);
-  return buffer;
+  try {
+    const [buffer] = await storage.bucket(GCS_BUCKET).file(objectName).download(args);
+    return buffer;
+  } catch (err) {
+    throw gcsClientError(err);
+  }
 }
 
 async function gcsListObjectNames(prefix) {
@@ -1067,10 +1079,10 @@ async function gcsListObjectNames(prefix) {
       }
       const res = await fetch(url, { headers: gcsAuthHeaders() });
       if (res.status === 401 || res.status === 403) {
-        throw httpError(401, "GCS access token expired or is not authorized. Restart the local backend with a fresh GCS_ACCESS_TOKEN.");
+        throw await gcsAccessTokenError(res, "list GCS objects");
       }
       if (!res.ok) {
-        throw httpError(502, `Unable to list GCS objects (${res.status}).`);
+        throw await gcsAccessTokenError(res, "list GCS objects");
       }
       const data = await res.json();
       names.push(...(data.items || []).map((item) => item.name).filter(Boolean));
@@ -1078,8 +1090,48 @@ async function gcsListObjectNames(prefix) {
     } while (pageToken);
     return names;
   }
-  const [objects] = await storage.bucket(GCS_BUCKET).getFiles({ prefix });
-  return objects.map((file) => file.name);
+  try {
+    const [objects] = await storage.bucket(GCS_BUCKET).getFiles({ prefix });
+    return objects.map((file) => file.name);
+  } catch (err) {
+    throw gcsClientError(err);
+  }
+}
+
+function gcsClientError(err) {
+  const message = String(err?.message || "");
+  if (
+    message.includes("Could not load the default credentials") ||
+    message.includes("Reauthentication failed") ||
+    message.includes("invalid_grant")
+  ) {
+    return httpError(401, "Google Cloud credentials are not available for local portal access. Run gcloud auth login, then restart the backend with GCS_ACCESS_TOKEN from gcloud auth print-access-token.");
+  }
+  if (err?.code === 401 || err?.code === 403) {
+    return httpError(401, "Google Cloud credentials are not authorized for this report bucket. Refresh your login or restart the backend with a valid GCS_ACCESS_TOKEN.");
+  }
+  return err;
+}
+
+async function gcsAccessTokenError(res, action) {
+  let detail = "";
+  try {
+    const text = await res.text();
+    if (text) {
+      try {
+        detail = JSON.parse(text)?.error?.message || "";
+      } catch {
+        detail = text;
+      }
+    }
+  } catch {}
+  if (res.status === 401) {
+    return httpError(401, "GCS access token expired or is not authorized. Restart the local backend with a fresh GCS_ACCESS_TOKEN.");
+  }
+  if (res.status === 403) {
+    return httpError(403, detail || `Google Cloud credentials are not authorized to ${action}.`);
+  }
+  return httpError(502, detail || `Unable to ${action} (${res.status}).`);
 }
 
 function gcsAuthHeaders() {
