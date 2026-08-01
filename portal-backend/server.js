@@ -22,6 +22,20 @@ const PORTAL_ORIGINS = PORTAL_ORIGIN.split(",").map((origin) => origin.trim()).f
 const PORTAL_API_BASE = cleanUrl(process.env.PORTAL_API_BASE || "");
 const STATIC_DIR = process.env.PORTAL_STATIC_DIR || path.join(__dirname, "public");
 const ALLOW_CLIENT_DOWNLOADS = /^(1|true|yes)$/i.test(process.env.ALLOW_CLIENT_DOWNLOADS || "");
+const FIGURE_PREFIXES = [
+  "results/master_group/o_figures/",
+  "results/master_group/figures/",
+  "results/master_group/o_plots/",
+  "results/master_group/o_taxonomy/",
+  "results/master_group/o_diversity/",
+  "results/master_group/o_functional/",
+  "results/master_group/o_stats/",
+  "results/master_group/",
+  "results/figures/",
+  "results/o_figures/",
+  "results/",
+  "figures/"
+];
 
 if (!GCS_BUCKET) {
   console.warn("GCS_BUCKET is not set. API routes that read reports will fail until configured.");
@@ -50,6 +64,10 @@ if (fs.existsSync(STATIC_DIR)) {
 const repoSupplementsDir = path.resolve(__dirname, "..", "supplements");
 if (fs.existsSync(repoSupplementsDir)) {
   app.use("/supplements", express.static(repoSupplementsDir));
+}
+const repoClientSupplementsDir = path.resolve(__dirname, "..", "client_supplements");
+if (fs.existsSync(repoClientSupplementsDir)) {
+  app.use("/client_supplements", express.static(repoClientSupplementsDir));
 }
 
 app.get("/healthz", (req, res) => {
@@ -80,11 +98,11 @@ app.get("/api/report", requireSession, async (req, res, next) => {
 
 app.get("/api/files/:fileId", requireSession, async (req, res, next) => {
   try {
-    if (!ALLOW_CLIENT_DOWNLOADS) {
-      throw httpError(403, "Client file downloads are disabled for this portal. Reports are delivered separately.");
-    }
     const manifest = await readManifest(req.session.code);
     const file = findFile(manifest, req.params.fileId);
+    if (!ALLOW_CLIENT_DOWNLOADS && !isReportPdf(file)) {
+      throw httpError(403, "Client file downloads are disabled for this portal. Only the report PDF is downloadable.");
+    }
     const objectName = objectPath(req.session.code, file.path);
     if (!(await gcsObjectExists(objectName))) {
       throw httpError(404, "Requested file is not available in this report folder.");
@@ -348,7 +366,7 @@ async function readManifest(code) {
   }
   const buffer = await gcsDownloadBuffer(objectName);
   try {
-    return JSON.parse(buffer.toString("utf8"));
+    return addInferredFigureFiles(code, JSON.parse(buffer.toString("utf8")));
   } catch {
     throw httpError(500, "Report manifest is not valid JSON.");
   }
@@ -366,6 +384,14 @@ async function inferAmpliconManifest(code) {
       role: "pipeline_log",
       roles: ["pipeline_log", "log", "qc"],
       type: "txt"
+    },
+    {
+      id: "emu-species-relative-abundance",
+      name: "EMU species relative abundance",
+      path: "results/master_group/o_emu/emu_species_relative_abundance.tsv",
+      role: "taxonomy",
+      roles: ["taxonomy", "emu", "species", "relative_abundance"],
+      type: "tsv"
     },
     {
       id: "species-relative-abundance",
@@ -618,8 +644,17 @@ async function objectExists(code, relativePath) {
 }
 
 async function listFigureFiles(code) {
-  const prefix = objectPath(code, "results/master_group/o_figures/");
-  const objectNames = await gcsListObjectNames(prefix);
+  const seen = new Set();
+  const objectNames = [];
+  for (const relativePrefix of FIGURE_PREFIXES) {
+    const names = await gcsListObjectNames(objectPath(code, relativePrefix));
+    for (const name of names) {
+      if (!seen.has(name)) {
+        seen.add(name);
+        objectNames.push(name);
+      }
+    }
+  }
   return objectNames
     .filter((name) => /\.(png|jpg|jpeg|webp)$/i.test(name))
     .sort()
@@ -627,6 +662,7 @@ async function listFigureFiles(code) {
     .map((name) => {
       const relativePath = cleanRelativePath(name);
       const base = path.basename(relativePath);
+      const sourceTableId = figureSourceTableId(base, relativePath);
       return {
         id: safeId(`figure-${base.replace(/\.[^.]+$/, "")}`),
         name: humanizeFileName(base),
@@ -635,9 +671,42 @@ async function listFigureFiles(code) {
         roles: ["figure", "chart", "png"],
         type: path.extname(base).slice(1).toLowerCase() || "png",
         format: path.extname(base).slice(1).toLowerCase() || "png",
-        description: "Released pipeline chart"
+        description: "Released pipeline chart",
+        ...(sourceTableId ? { source_table_id: sourceTableId } : {})
       };
     });
+}
+
+function figureSourceTableId(base, relativePath) {
+  const text = `${base || ""} ${relativePath || ""}`.toLowerCase();
+  if (/emu[_ -]?species/.test(text)) {
+    return "emu-species-relative-abundance";
+  }
+  if (/taxa.*species|species.*taxa/.test(text)) {
+    return "species-relative-abundance";
+  }
+  if (/genus|genera/.test(text)) {
+    return "genus-relative-abundance";
+  }
+  if (/family|families/.test(text)) {
+    return "family-relative-abundance";
+  }
+  return "";
+}
+
+async function addInferredFigureFiles(code, manifest) {
+  const files = normalizeFiles(manifest);
+  if (files.some(isImageFile)) {
+    return manifest;
+  }
+  const figures = await listFigureFiles(code);
+  if (!figures.length) {
+    return manifest;
+  }
+  return {
+    ...manifest,
+    files: [...files, ...figures]
+  };
 }
 
 function validateManifestCode(code, manifest) {
@@ -931,6 +1000,11 @@ function isImageFile(file) {
   return /\.(png|jpg|jpeg|webp)$/.test(value) || /\b(png|jpg|jpeg|webp|image)\b/.test(value);
 }
 
+function isReportPdf(file) {
+  const value = `${file.role || ""} ${file.type || ""} ${file.format || ""} ${file.name || ""} ${file.path || ""}`.toLowerCase();
+  return /\breport\b/.test(value) && (/\.pdf$/.test(value) || /\bpdf\b/.test(value));
+}
+
 function publicModule(module) {
   return {
     id: module.id,
@@ -942,15 +1016,48 @@ function publicModule(module) {
 }
 
 function publicFile(file) {
-  return {
+  const inferredSourceTableId = isImageFile(file) ? figureSourceTableId(file.name, file.path) : "";
+  const out = {
     id: file.id,
     name: file.name,
+    path: file.path,
     role: file.role,
     roles: file.roles,
     type: file.type,
     format: file.format,
     description: file.description
   };
+  [
+    "source_table_id",
+    "sourceTableId",
+    "source_table",
+    "sourceTable",
+    "source_file_id",
+    "sourceFileId",
+    "source_file",
+    "sourceFile",
+    "data_file_id",
+    "dataFileId",
+    "table_id",
+    "tableId",
+    "derived_from",
+    "derivedFrom",
+    "related_file",
+    "relatedFile",
+    "related_files",
+    "relatedFiles",
+    "inputs",
+    "input_files",
+    "inputFiles"
+  ].forEach((key) => {
+    if (file[key] !== undefined) {
+      out[key] = file[key];
+    }
+  });
+  if (!out.source_table_id && inferredSourceTableId) {
+    out.source_table_id = inferredSourceTableId;
+  }
+  return out;
 }
 
 function publicReportPdf(pdf) {

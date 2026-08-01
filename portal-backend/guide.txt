@@ -1,0 +1,30 @@
+• Use this from portal-backend each time:
+
+  cd ~/Documents/bioinformatics/todel_2/kreatbio_github/kreatbio-public-v5/portal-backend
+
+  PORT=8080 \
+  GCS_BUCKET=koda123 \
+  GCS_CLIENT_PREFIX=clients26 \
+  GCS_ACCESS_TOKEN="$(gcloud auth print-access-token --account=team@kreatbio.com)" \
+  SESSION_SECRET=local-dev-secret-with-more-than-32-chars \
+  npm start
+
+  Then open:
+
+  http://localhost:8080/client-portal.html
+
+  If port 8080 is already in use by an old/stale backend:
+
+  systemctl --user stop kreatbio-portal
+
+  Then run the start command again.
+
+  Quick checks:
+
+  curl http://localhost:8080/healthz
+  curl -X POST http://localhost:8080/api/session \
+    -H 'Content-Type: application/json' \
+    --data '{"code":"1234567890"}'
+
+  Important: the GCS_ACCESS_TOKEN is short-lived. If the portal later says the token expired, stop and restart the backend with the same command above.
+
