@@ -23,18 +23,8 @@ const PORTAL_API_BASE = cleanUrl(process.env.PORTAL_API_BASE || "");
 const STATIC_DIR = process.env.PORTAL_STATIC_DIR || path.join(__dirname, "public");
 const ALLOW_CLIENT_DOWNLOADS = /^(1|true|yes)$/i.test(process.env.ALLOW_CLIENT_DOWNLOADS || "");
 const FIGURE_PREFIXES = [
-  "results/master_group/o_figures/",
-  "results/master_group/figures/",
-  "results/master_group/o_plots/",
-  "results/master_group/o_taxonomy/",
-  "results/master_group/o_diversity/",
-  "results/master_group/o_functional/",
-  "results/master_group/o_stats/",
-  "results/master_group/",
-  "results/figures/",
-  "results/o_figures/",
-  "results/",
-  "figures/"
+  "output/o6_figures/",
+  "output/o4_diversity/"
 ];
 
 if (!GCS_BUCKET) {
@@ -100,8 +90,11 @@ app.get("/api/files/:fileId", requireSession, async (req, res, next) => {
   try {
     const manifest = await readManifest(req.session.code);
     const file = findFile(manifest, req.params.fileId);
-    if (!ALLOW_CLIENT_DOWNLOADS && !isReportPdf(file)) {
-      throw httpError(403, "Client file downloads are disabled for this portal. Only the report PDF is downloadable.");
+    if (isForbiddenClientDownload(file)) {
+      throw httpError(403, "This file type is not downloadable from the client portal.");
+    }
+    if (!ALLOW_CLIENT_DOWNLOADS) {
+      throw httpError(403, "Client file downloads are disabled for this portal.");
     }
     const objectName = objectPath(req.session.code, file.path);
     if (!(await gcsObjectExists(objectName))) {
@@ -353,8 +346,8 @@ function cleanUrl(value) {
 
 function normalizeCode(input) {
   const code = String(input || "").trim().toUpperCase();
-  if (!/^[A-Z0-9]{10}$/.test(code)) {
-    throw httpError(400, "Enter a valid 10-character report code.");
+  if (!/^[A-Z0-9]{9}$/.test(code)) {
+    throw httpError(400, "Enter a valid 9-character report code.");
   }
   return code;
 }
@@ -373,30 +366,19 @@ async function readManifest(code) {
 }
 
 async function inferAmpliconManifest(code) {
-  const reportExists = await objectExists(code, "results/report.pdf");
+  const reportPath = await firstExistingPath(code, ["output/report.pdf"]);
   const files = [];
 
   const knownTables = [
-    {
-      id: "pipeline-log",
-      name: "Pipeline output log",
-      path: "output.log",
-      role: "pipeline_log",
-      roles: ["pipeline_log", "log", "qc"],
-      type: "txt"
-    },
-    {
-      id: "emu-species-relative-abundance",
-      name: "EMU species relative abundance",
-      path: "results/master_group/o_emu/emu_species_relative_abundance.tsv",
-      role: "taxonomy",
-      roles: ["taxonomy", "emu", "species", "relative_abundance"],
-      type: "tsv"
-    },
+    { id: "metadata", name: "Sample metadata", path: "input_data/metadata.tsv", role: "metadata", roles: ["metadata", "sample", "table"], type: "tsv" },
+    { id: "read-depth-summary", name: "Read depth summary", path: "output/o1_qc/read_depth_summary.tsv", role: "qc", roles: ["qc", "read_depth", "summary", "table"], type: "tsv" },
+    { id: "filtering-summary", name: "Filtering summary", path: "output/o1_qc/filtering_summary.tsv", role: "qc", roles: ["qc", "filtering", "summary", "table"], type: "tsv" },
+    { id: "rarefaction-adequacy", name: "Rarefaction adequacy", path: "output/o1_qc/rarefaction_adequacy.tsv", role: "qc", roles: ["qc", "rarefaction", "summary", "table"], type: "tsv" },
+    { id: "selected-sampling-depth", name: "Selected sampling depth", path: "output/o1_qc/selected_sampling_depth.tsv", role: "qc", roles: ["qc", "sampling_depth", "table"], type: "tsv" },
     {
       id: "species-relative-abundance",
       name: "Species relative abundance",
-      path: "results/master_group/o_taxonomy/species_relative_abundance.tsv",
+      path: "output/o2_taxonomy_qiime2_silva/species_relative_abundance.tsv",
       role: "taxonomy",
       roles: ["taxonomy", "species", "relative_abundance"],
       type: "tsv"
@@ -404,7 +386,7 @@ async function inferAmpliconManifest(code) {
     {
       id: "genus-relative-abundance",
       name: "Genus relative abundance",
-      path: "results/master_group/o_taxonomy/genus_relative_abundance.tsv",
+      path: "output/o2_taxonomy_qiime2_silva/genus_relative_abundance.tsv",
       role: "taxonomy",
       roles: ["taxonomy", "genus", "relative_abundance"],
       type: "tsv"
@@ -412,30 +394,46 @@ async function inferAmpliconManifest(code) {
     {
       id: "family-relative-abundance",
       name: "Family relative abundance",
-      path: "results/master_group/o_taxonomy/family_relative_abundance.tsv",
+      path: "output/o2_taxonomy_qiime2_silva/family_relative_abundance.tsv",
       role: "taxonomy",
       roles: ["taxonomy", "family", "relative_abundance"],
       type: "tsv"
     },
+    { id: "phylum-relative-abundance", name: "Phylum relative abundance", path: "output/o2_taxonomy_qiime2_silva/phylum_relative_abundance.tsv", role: "taxonomy", roles: ["taxonomy", "phylum", "relative_abundance"], type: "tsv" },
+    { id: "species-counts", name: "Species counts", path: "output/o2_taxonomy_qiime2_silva/species_counts.tsv", role: "taxonomy_counts", roles: ["taxonomy", "species", "counts", "table"], type: "tsv" },
+    { id: "genus-counts", name: "Genus counts", path: "output/o2_taxonomy_qiime2_silva/genus_counts.tsv", role: "taxonomy_counts", roles: ["taxonomy", "genus", "counts", "table"], type: "tsv" },
+    { id: "family-counts", name: "Family counts", path: "output/o2_taxonomy_qiime2_silva/family_counts.tsv", role: "taxonomy_counts", roles: ["taxonomy", "family", "counts", "table"], type: "tsv" },
+    { id: "phylum-counts", name: "Phylum counts", path: "output/o2_taxonomy_qiime2_silva/phylum_counts.tsv", role: "taxonomy_counts", roles: ["taxonomy", "phylum", "counts", "table"], type: "tsv" },
+    { id: "taxonomy-table", name: "Taxonomy assignments", path: "output/o2_taxonomy_qiime2_silva/taxonomy.tsv", role: "taxonomy_assignments", roles: ["taxonomy", "assignments", "table"], type: "tsv" },
     {
       id: "taxon-filter-summary",
       name: "Taxon filter summary",
-      path: "results/master_group/o_taxonomy/taxon_filter_summary.tsv",
+      path: "output/o2_taxonomy_qiime2_silva/taxon_filter_summary.tsv",
       role: "taxonomy_summary",
       roles: ["taxonomy_summary", "filter_summary", "taxonomy", "table"],
       type: "tsv"
     },
+    { id: "bacterial-filter-summary", name: "Bacterial filter summary", path: "output/o2_taxonomy_qiime2_silva/bacterial_filter_summary.tsv", role: "taxonomy_summary", roles: ["taxonomy_summary", "filter_summary", "taxonomy", "table"], type: "tsv" },
+    { id: "emu-family-relative-abundance", name: "EMU family relative abundance", path: "output/o3_taxonomy_emu_species/emu_family_relative_abundance.tsv", role: "taxonomy", roles: ["taxonomy", "emu", "family", "relative_abundance"], type: "tsv" },
+    { id: "emu-genus-relative-abundance", name: "EMU genus relative abundance", path: "output/o3_taxonomy_emu_species/emu_genus_relative_abundance.tsv", role: "taxonomy", roles: ["taxonomy", "emu", "genus", "relative_abundance"], type: "tsv" },
+    { id: "emu-species-relative-abundance", name: "EMU species relative abundance", path: "output/o3_taxonomy_emu_species/emu_species_relative_abundance.tsv", role: "taxonomy", roles: ["taxonomy", "emu", "species", "relative_abundance"], type: "tsv" },
+    { id: "emu-species-abundance", name: "EMU species abundance", path: "output/o3_taxonomy_emu_species/emu_species_abundance.tsv", role: "taxonomy_counts", roles: ["taxonomy", "emu", "species", "abundance", "counts", "table"], type: "tsv" },
+    { id: "emu-species-reportable", name: "EMU reportable species", path: "output/o3_taxonomy_emu_species/emu_species_reportable.tsv", role: "taxonomy_summary", roles: ["taxonomy_summary", "emu", "species", "reportable", "table"], type: "tsv" },
+    { id: "emu-aldex2-family", name: "EMU ALDEx2 family statistics", path: "output/o3_taxonomy_emu_species/emu_aldex2_family.tsv", role: "differential_abundance", roles: ["differential_abundance", "taxonomy", "emu", "aldex2", "family", "stats", "table"], type: "tsv" },
+    { id: "emu-aldex2-genus", name: "EMU ALDEx2 genus statistics", path: "output/o3_taxonomy_emu_species/emu_aldex2_genus.tsv", role: "differential_abundance", roles: ["differential_abundance", "taxonomy", "emu", "aldex2", "genus", "stats", "table"], type: "tsv" },
+    { id: "emu-aldex2-species", name: "EMU ALDEx2 species statistics", path: "output/o3_taxonomy_emu_species/emu_aldex2_species.tsv", role: "differential_abundance", roles: ["differential_abundance", "taxonomy", "emu", "aldex2", "species", "stats", "table"], type: "tsv" },
+    { id: "emu-aldex2-status", name: "EMU ALDEx2 status", path: "output/o3_taxonomy_emu_species/emu_aldex2_status.tsv", role: "differential_summary", roles: ["differential", "taxonomy", "emu", "aldex2", "status", "summary", "table"], type: "tsv" },
     {
       id: "alpha-diversity",
       name: "Alpha diversity",
-      path: "results/master_group/o_diversity/alpha_diversity.tsv",
+      path: "output/o4_diversity/alpha_diversity.tsv",
       role: "alpha_diversity",
       type: "tsv"
     },
     {
       id: "alpha-group-test",
       name: "Alpha diversity group test",
-      path: "results/master_group/o_stats/alpha_group_test.tsv",
+      path: "output/o4_diversity/alpha_group_test.tsv",
       role: "stats",
       roles: ["stats", "alpha_stats", "diversity_stats"],
       type: "tsv"
@@ -443,23 +441,28 @@ async function inferAmpliconManifest(code) {
     {
       id: "pcoa-coordinates",
       name: "PCoA coordinates",
-      path: "results/master_group/o_diversity/pcoa_coordinates.tsv",
+      path: "output/o4_diversity/pcoa_coordinates.tsv",
       role: "ordination",
       roles: ["ordination", "beta_diversity", "pcoa"],
       type: "tsv"
     },
+    { id: "unweighted-unifrac-pcoa-coordinates", name: "Unweighted UniFrac PCoA coordinates", path: "output/o4_diversity/unweighted_unifrac_pcoa_coordinates.tsv", role: "ordination", roles: ["ordination", "beta_diversity", "pcoa", "unweighted_unifrac"], type: "tsv" },
+    { id: "weighted-unifrac-pcoa-coordinates", name: "Weighted UniFrac PCoA coordinates", path: "output/o4_diversity/weighted_unifrac_pcoa_coordinates.tsv", role: "ordination", roles: ["ordination", "beta_diversity", "pcoa", "weighted_unifrac"], type: "tsv" },
     {
       id: "beta-braycurtis-distance",
       name: "Bray-Curtis distance matrix",
-      path: "results/master_group/o_diversity/beta_braycurtis_distance.tsv",
+      path: "output/o4_diversity/beta_braycurtis_distance.tsv",
       role: "distance_matrix",
       roles: ["distance_matrix", "beta_diversity", "braycurtis"],
       type: "tsv"
     },
+    { id: "unweighted-unifrac-distance", name: "Unweighted UniFrac distance matrix", path: "output/o4_diversity/unweighted_unifrac_distance.tsv", role: "distance_matrix", roles: ["distance_matrix", "beta_diversity", "unweighted_unifrac"], type: "tsv" },
+    { id: "weighted-unifrac-distance", name: "Weighted UniFrac distance matrix", path: "output/o4_diversity/weighted_unifrac_distance.tsv", role: "distance_matrix", roles: ["distance_matrix", "beta_diversity", "weighted_unifrac"], type: "tsv" },
+    { id: "beta-braycurtis-diagnostics", name: "Bray-Curtis diagnostics", path: "output/o4_diversity/beta_braycurtis_diagnostics.tsv", role: "stats", roles: ["stats", "beta_stats", "diagnostics", "braycurtis"], type: "tsv" },
     {
       id: "permanova",
       name: "PERMANOVA results",
-      path: "results/master_group/o_stats/permanova.tsv",
+      path: "output/o4_diversity/permanova.tsv",
       role: "stats",
       roles: ["stats", "permanova", "beta_stats"],
       type: "tsv"
@@ -467,15 +470,19 @@ async function inferAmpliconManifest(code) {
     {
       id: "permdisp",
       name: "PERMDISP results",
-      path: "results/master_group/o_stats/permdisp.tsv",
+      path: "output/o4_diversity/permdisp.tsv",
       role: "stats",
       roles: ["stats", "permdisp", "beta_stats"],
       type: "tsv"
     },
+    { id: "faith-pd", name: "Faith phylogenetic diversity", path: "output/o4_diversity/faith_pd.tsv", role: "alpha_diversity", roles: ["alpha_diversity", "faith_pd"], type: "tsv" },
+    { id: "observed-features", name: "Observed features", path: "output/o4_diversity/observed_features.tsv", role: "alpha_diversity", roles: ["alpha_diversity", "observed_features"], type: "tsv" },
+    { id: "pielou-evenness", name: "Pielou evenness", path: "output/o4_diversity/pielou_evenness.tsv", role: "alpha_diversity", roles: ["alpha_diversity", "pielou_evenness"], type: "tsv" },
+    { id: "phylogenetic-diversity-summary", name: "Phylogenetic diversity summary", path: "output/o4_diversity/phylogenetic_diversity_summary.tsv", role: "alpha_diversity", roles: ["alpha_diversity", "phylogenetic"], type: "tsv" },
     {
       id: "functional-summary",
       name: "Functional prediction summary",
-      path: "results/master_group/o_functional/functional_summary.tsv",
+      path: "output/o5_functional_prediction_picrust2/functional_summary.tsv",
       role: "functional_summary",
       roles: ["functional_summary", "functional", "picrust2", "table"],
       type: "tsv"
@@ -483,7 +490,7 @@ async function inferAmpliconManifest(code) {
     {
       id: "marker-nsti",
       name: "Marker NSTI",
-      path: "results/master_group/o_functional/marker_nsti.tsv",
+      path: "output/o5_functional_prediction_picrust2/marker_nsti.tsv",
       role: "nsti",
       roles: ["nsti", "functional_quality", "picrust2"],
       type: "tsv"
@@ -491,7 +498,7 @@ async function inferAmpliconManifest(code) {
     {
       id: "nsti-per-sample",
       name: "NSTI per sample",
-      path: "results/master_group/o_functional/nsti_per_sample.tsv",
+      path: "output/o5_functional_prediction_picrust2/nsti_per_sample.tsv",
       role: "nsti",
       roles: ["nsti", "functional_quality", "picrust2"],
       type: "tsv"
@@ -499,7 +506,7 @@ async function inferAmpliconManifest(code) {
     {
       id: "ko-abundance",
       name: "KO abundance",
-      path: "results/master_group/o_functional/ko_abundance.tsv",
+      path: "output/o5_functional_prediction_picrust2/ko_abundance.tsv",
       role: "functional",
       roles: ["functional", "kegg", "ko"],
       type: "tsv"
@@ -507,7 +514,7 @@ async function inferAmpliconManifest(code) {
     {
       id: "pathway-abundance",
       name: "Pathway abundance",
-      path: "results/master_group/o_functional/pathway_abundance.tsv",
+      path: "output/o5_functional_prediction_picrust2/pathway_abundance.tsv",
       role: "functional",
       roles: ["functional", "pathway", "kegg"],
       type: "tsv"
@@ -515,98 +522,20 @@ async function inferAmpliconManifest(code) {
     {
       id: "ec-abundance",
       name: "EC abundance",
-      path: "results/master_group/o_functional/ec_abundance.tsv",
+      path: "output/o5_functional_prediction_picrust2/ec_abundance.tsv",
       role: "functional",
       roles: ["functional", "enzyme", "ec"],
       type: "tsv"
     },
-    {
-      id: "ko-contribution",
-      name: "KO contribution",
-      path: "results/master_group/o_functional/ko_contribution.tsv",
-      role: "contribution",
-      roles: ["contribution", "functional", "ko", "picrust2"],
-      type: "tsv"
-    },
-    {
-      id: "pathway-contribution",
-      name: "Pathway contribution",
-      path: "results/master_group/o_functional/pathway_contribution.tsv",
-      role: "contribution",
-      roles: ["contribution", "functional", "pathway", "picrust2"],
-      type: "tsv"
-    },
-    {
-      id: "ec-contribution",
-      name: "EC contribution",
-      path: "results/master_group/o_functional/ec_contribution.tsv",
-      role: "contribution",
-      roles: ["contribution", "functional", "ec", "enzyme", "picrust2"],
-      type: "tsv"
-    },
-    {
-      id: "pathway-coverage",
-      name: "Pathway coverage",
-      path: "results/master_group/o_functional/pathway_coverage.tsv",
-      role: "coverage",
-      roles: ["coverage", "pathway", "functional", "picrust2"],
-      type: "tsv"
-    },
-    {
-      id: "pathway-coverage-stratified",
-      name: "Pathway coverage stratified",
-      path: "results/master_group/o_functional/pathway_coverage_stratified.tsv",
-      role: "coverage",
-      roles: ["coverage", "pathway", "functional", "stratified", "picrust2"],
-      type: "tsv"
-    },
-    {
-      id: "functional-aldex2-ko",
-      name: "Functional ALDEx2 KO statistics",
-      path: "results/master_group/o_stats/functional_aldex2_ko.tsv",
-      role: "differential",
-      roles: ["differential", "functional", "ko", "aldex2", "stats"],
-      type: "tsv"
-    },
-    {
-      id: "functional-aldex2-pathway",
-      name: "Functional ALDEx2 pathway statistics",
-      path: "results/master_group/o_stats/functional_aldex2_pathway.tsv",
-      role: "differential",
-      roles: ["differential", "functional", "pathway", "aldex2", "stats"],
-      type: "tsv"
-    },
-    {
-      id: "functional-aldex2-ec",
-      name: "Functional ALDEx2 EC statistics",
-      path: "results/master_group/o_stats/functional_aldex2_ec.tsv",
-      role: "differential",
-      roles: ["differential", "functional", "ec", "aldex2", "stats"],
-      type: "tsv"
-    },
-    {
-      id: "feature-table",
-      name: "Feature table",
-      path: "results/master_group/o_feature_table/feature_table.tsv",
-      role: "feature_table",
-      roles: ["table", "feature"],
-      type: "tsv"
-    },
-    {
-      id: "representative-sequences",
-      name: "Representative sequences",
-      path: "results/master_group/o_feature_table/rep_seqs.fasta",
-      role: "representative_sequences",
-      roles: ["sequence", "fasta"],
-      type: "fasta"
-    },
-    {
-      id: "metadata",
-      name: "Sample metadata",
-      path: "input_data/metadata.tsv",
-      role: "metadata",
-      type: "tsv"
-    }
+    { id: "enzyme-ec-abundance", name: "Enzyme EC abundance", path: "output/o5_functional_prediction_picrust2/enzyme_ec_abundance.tsv", role: "functional", roles: ["functional", "enzyme", "ec"], type: "tsv" },
+    { id: "functional-aldex2-ec", name: "Functional ALDEx2 EC statistics", path: "output/o5_functional_prediction_picrust2/functional_aldex2_ec.tsv", role: "differential", roles: ["differential", "functional", "aldex2", "ec", "enzyme", "stats", "table"], type: "tsv" },
+    { id: "functional-aldex2-ko", name: "Functional ALDEx2 KO statistics", path: "output/o5_functional_prediction_picrust2/functional_aldex2_ko.tsv", role: "differential", roles: ["differential", "functional", "aldex2", "ko", "kegg", "stats", "table"], type: "tsv" },
+    { id: "functional-aldex2-pathway", name: "Functional ALDEx2 pathway statistics", path: "output/o5_functional_prediction_picrust2/functional_aldex2_pathway.tsv", role: "differential", roles: ["differential", "functional", "aldex2", "pathway", "stats", "table"], type: "tsv" },
+    { id: "functional-aldex2-status", name: "Functional ALDEx2 status", path: "output/o5_functional_prediction_picrust2/functional_aldex2_status.tsv", role: "differential_summary", roles: ["differential", "functional", "aldex2", "status", "summary", "table"], type: "tsv" },
+    { id: "methods-auto", name: "Methods auto-draft", path: "output/o7_run_metadata/methods_auto.md", role: "methods", roles: ["methods", "metadata", "markdown"], type: "md" },
+    { id: "software-versions", name: "Software versions", path: "output/o7_run_metadata/software_versions.tsv", role: "software_versions", roles: ["software", "versions", "metadata"], type: "tsv" },
+    { id: "params-snapshot", name: "Parameters snapshot", path: "output/o7_run_metadata/params_snapshot.yaml", role: "params", roles: ["params", "metadata", "yaml"], type: "yaml" },
+    { id: "citations", name: "Citations", path: "output/o7_run_metadata/citations.tsv", role: "citations", roles: ["citations", "metadata"], type: "tsv" }
   ];
 
   for (const table of knownTables) {
@@ -618,7 +547,7 @@ async function inferAmpliconManifest(code) {
   const figures = await listFigureFiles(code);
   files.push(...figures);
 
-  if (!reportExists && files.length === 0) {
+  if (!reportPath && files.length === 0) {
     throw httpError(404, "No released report folder was found for this code.");
   }
 
@@ -630,13 +559,22 @@ async function inferAmpliconManifest(code) {
     analysis_type: "amplicon",
     created_at: "",
     inferred: true,
-    report_pdf: reportExists ? {
+    report_pdf: reportPath ? {
       fileId: "report",
       name: "KreatBio amplicon report.pdf",
-      path: "results/report.pdf"
+      path: reportPath
     } : null,
     files
   };
+}
+
+async function firstExistingPath(code, relativePaths) {
+  for (const relativePath of relativePaths) {
+    if (await objectExists(code, relativePath)) {
+      return relativePath;
+    }
+  }
+  return "";
 }
 
 async function objectExists(code, relativePath) {
@@ -664,7 +602,7 @@ async function listFigureFiles(code) {
       const base = path.basename(relativePath);
       const sourceTableId = figureSourceTableId(base, relativePath);
       return {
-        id: safeId(`figure-${base.replace(/\.[^.]+$/, "")}`),
+        id: safeId(`figure-${relativePath.replace(/\.[^.]+$/, "")}`),
         name: humanizeFileName(base),
         path: relativePath,
         role: "figure",
@@ -679,8 +617,35 @@ async function listFigureFiles(code) {
 
 function figureSourceTableId(base, relativePath) {
   const text = `${base || ""} ${relativePath || ""}`.toLowerCase();
-  if (/emu[_ -]?species/.test(text)) {
-    return "emu-species-relative-abundance";
+  if (/phylogenetic[_ -]?tree|tree/.test(text)) {
+    return "";
+  }
+  if (/\bemu\b|emu[_ -]/.test(text)) {
+    if (/aldex2|volcano/.test(text)) {
+      if (/species/.test(text)) {
+        return "emu-aldex2-species";
+      }
+      if (/genus|genera/.test(text)) {
+        return "emu-aldex2-genus";
+      }
+      if (/family|families/.test(text)) {
+        return "emu-aldex2-family";
+      }
+      return "";
+    }
+    if (/pcoa|strength/.test(text)) {
+      return "";
+    }
+    if (/species/.test(text)) {
+      return "emu-species-relative-abundance";
+    }
+    if (/genus|genera/.test(text)) {
+      return "emu-genus-relative-abundance";
+    }
+    if (/family|families/.test(text)) {
+      return "emu-family-relative-abundance";
+    }
+    return "";
   }
   if (/taxa.*species|species.*taxa/.test(text)) {
     return "species-relative-abundance";
@@ -690,6 +655,9 @@ function figureSourceTableId(base, relativePath) {
   }
   if (/family|families/.test(text)) {
     return "family-relative-abundance";
+  }
+  if (/phylum|phyla/.test(text)) {
+    return "phylum-relative-abundance";
   }
   return "";
 }
@@ -987,7 +955,7 @@ async function readTextFile(code, file) {
 
 function canPreviewAsText(file) {
   const value = `${file.type || ""} ${file.format || ""} ${file.name || ""} ${file.path || ""}`.toLowerCase();
-  return /\.(csv|tsv|txt|fasta|fa|newick|nwk|tree)$/.test(value) || /\b(csv|tsv|txt|fasta|fa|newick|tree)\b/.test(value);
+  return /\.(csv|tsv|txt|md|yaml|yml|fasta|fa|newick|nwk|tree)$/.test(value) || /\b(csv|tsv|txt|md|markdown|yaml|yml|fasta|fa|newick|tree)\b/.test(value);
 }
 
 function canInlineView(file) {
@@ -1000,9 +968,11 @@ function isImageFile(file) {
   return /\.(png|jpg|jpeg|webp)$/.test(value) || /\b(png|jpg|jpeg|webp|image)\b/.test(value);
 }
 
-function isReportPdf(file) {
+function isForbiddenClientDownload(file) {
   const value = `${file.role || ""} ${file.type || ""} ${file.format || ""} ${file.name || ""} ${file.path || ""}`.toLowerCase();
-  return /\breport\b/.test(value) && (/\.pdf$/.test(value) || /\bpdf\b/.test(value));
+  return /(^|\/)raw\//.test(value)
+    || /\.(pdf|png|jpg|jpeg|webp|gif|fastq|fq|fasta|fa)(\.gz)?$/.test(value)
+    || /\b(raw|report|pdf|image|figure|fastq|fq|fasta|representative_sequences)\b/.test(value);
 }
 
 function publicModule(module) {
@@ -1264,7 +1234,7 @@ function cleanRelativePath(value) {
   if (GCS_CLIENT_PREFIX && parts[0] === GCS_CLIENT_PREFIX) {
     parts.shift();
   }
-  if (/^[A-Z0-9]{10}$/i.test(parts[0])) {
+  if (/^[A-Z0-9]{9}$/i.test(parts[0])) {
     parts.shift();
   }
   return parts.join("/");

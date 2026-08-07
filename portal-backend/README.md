@@ -25,19 +25,22 @@ The backend injects the correct API origin into `client-portal.html` at request 
 
 ## GCS Layout
 
-Each client gets one 10-character alphanumeric folder. With `GCS_CLIENT_PREFIX=clients26`:
+Each client gets one 9-character alphanumeric folder. With `GCS_CLIENT_PREFIX=clients26`:
 
 ```text
-gs://koda123/clients26/1234567890/
-  manifest.json
-  results/report.pdf
-  results/master_group/o_figures/
-  results/master_group/o_taxonomy/
-  results/master_group/o_diversity/
-  results/master_group/o_functional/
+gs://koda123/clients26/000000001/
+  manifest.json (optional)
+  output/report.pdf
+  output/o1_qc/
+  output/o2_taxonomy_qiime2_silva/
+  output/o3_taxonomy_emu_species/
+  output/o4_diversity/
+  output/o5_functional_prediction_picrust2/
+  output/o6_figures/
+  output/o7_run_metadata/
 ```
 
-The backend only serves files listed in that folder's `manifest.json`. If no manifest exists, it can infer an amplicon portal from known `results/master_group/` outputs and still hides raw FASTQ files by default.
+The backend only serves files listed in that folder's `manifest.json`. If no manifest exists, it can infer an amplicon portal from known public `output/` files plus `input_data/metadata.tsv` and still hides raw FASTQ, logs, and intermediate files by default.
 
 ## Local Check
 
@@ -67,7 +70,7 @@ http://localhost:8080/client-portal.html
 Then enter:
 
 ```text
-1234567890
+000000001
 ```
 
 ## Cloud Run Build

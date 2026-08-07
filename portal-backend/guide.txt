@@ -24,7 +24,6 @@
   curl http://localhost:8080/healthz
   curl -X POST http://localhost:8080/api/session \
     -H 'Content-Type: application/json' \
-    --data '{"code":"1234567890"}'
+    --data '{"code":"000000001"}'
 
   Important: the GCS_ACCESS_TOKEN is short-lived. If the portal later says the token expired, stop and restart the backend with the same command above.
-
