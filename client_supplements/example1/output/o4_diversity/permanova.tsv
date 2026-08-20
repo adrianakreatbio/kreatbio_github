@@ -1,0 +1,2 @@
+group_column	groups	samples	pseudo_f	p_value	permutations	method	status	note
+group	3	9	1	1	999	vegan::adonis2	ok	

@@ -1,0 +1,14 @@
+tool	version
+NanoPlot	NanoPlot 1.46.2
+cutadapt	5.1
+chopper	chopper 0.11.0
+vsearch	vsearch v2.22.1_linux_x86_64, 31.4GB RAM, 8 cores
+qiime	q2cli version 2026.1.0
+mafft	v7.526 (2024/Apr/26)
+FastTree	FastTree 2.2.0 Double precision:
+multiqc	multiqc, version 1.33
+python	Python 3.10.14
+Rscript	Rscript (R) version 4.5.3 (2026-03-11)
+picrust2_pipeline.py	PICRUSt2 2.6.3
+ALDEx2	1.42.0
+emu	emu v3.6.2

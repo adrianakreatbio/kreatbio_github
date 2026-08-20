@@ -1,0 +1,36 @@
+limit_req_zone $binary_remote_addr zone=kreatbio_portal_general:10m rate=10r/s;
+limit_req_zone $binary_remote_addr zone=kreatbio_portal_chat:10m rate=10r/m;
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name portal-api.kreatbio.com;
+
+    client_max_body_size 1m;
+
+    location = /api/chat {
+        limit_req zone=kreatbio_portal_chat burst=5 nodelay;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 75s;
+    }
+
+    location = /healthz {
+        limit_req zone=kreatbio_portal_general burst=30 nodelay;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 75s;
+    }
+
+    location / {
+        return 404;
+    }
+}

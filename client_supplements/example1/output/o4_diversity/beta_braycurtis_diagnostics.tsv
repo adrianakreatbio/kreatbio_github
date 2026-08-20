@@ -1,0 +1,34 @@
+metric	value
+sample_order	SRR26464278,SRR26464279,SRR26464280,SRR26464291,SRR26464292,SRR26464293,SRR26464294,SRR26464295,SRR26464296
+metadata_aligned_sample_order	SRR26464278,SRR26464279,SRR26464280,SRR26464291,SRR26464292,SRR26464293,SRR26464294,SRR26464295,SRR26464296
+metadata_missing_samples	none
+sample_order_matches_metadata	yes
+group_order	Active,Active,Active,Latent,Latent,Latent,Control,Control,Control
+offdiag_count	36
+offdiag_nonzero_count	36
+offdiag_min	1.0
+offdiag_median	1.0
+offdiag_max	1.0
+offdiag_unique_rounded_6	1
+pcoa_positive_eigenvalue_count	8
+pcoa_eigenvalues	0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5
+pcoa_pc1_fraction	0.12500000000000014
+pcoa_pc2_fraction	0.12500000000000006
+permanova_group_column	group
+permanova_groups	3
+permanova_samples	9
+permanova_pseudo_f	1
+permanova_p_value	1
+permanova_permutations	999
+permanova_method	vegan::adonis2
+permanova_status	ok
+permanova_note	
+permdisp_group_column	group
+permdisp_groups	3
+permdisp_samples	9
+permdisp_f_value	2.14446526486863e-12
+permdisp_p_value	1
+permdisp_permutations	999
+permdisp_method	vegan::betadisper
+permdisp_status	ok
+permdisp_note	

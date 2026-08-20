@@ -1,0 +1,13 @@
+metric	value
+status	not_run_no_controls
+control_samples	none
+analysis_samples	SRR26464278,SRR26464279,SRR26464280,SRR26464291,SRR26464292,SRR26464293,SRR26464294,SRR26464295,SRR26464296
+raw_features	198
+removed_offtarget_features	0
+removed_blank_enriched_features	0
+removed_low_abundance_prevalence_features	6
+kept_features	192
+min_prevalence_rel_abundance	0.001
+min_prevalence_samples	2
+min_single_sample_rel_abundance	0.005
+blank_enrichment_ratio	5.0

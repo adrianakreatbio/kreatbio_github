@@ -1,0 +1,10 @@
+metric	value
+raw_features	361
+kept_features	198
+removed_features	163
+raw_feature_assigned_reads	35561
+final_feature_table_reads	20237
+offtarget_removed_reads	15324
+final_retained_pct_of_feature_assigned	56.9078
+offtarget_patterns	mitochondria,mitochondrion,chloroplast,eukaryota,metazoa,viridiplantae,bivalvulida,cnidaria,myxozoa
+retained_bacteria_features	198

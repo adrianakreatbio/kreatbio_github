@@ -1,0 +1,12 @@
+metric	value
+input_samples	9
+total_species_unfiltered	142
+total_species_after_report_filter	99
+total_genera_unfiltered	65
+total_genera_after_report_filter	46
+total_families_unfiltered	39
+total_families_after_report_filter	28
+min_relative_abundance_filter	0.005
+min_estimated_reads_filter	10.0
+median_reported_species_per_sample	60.0
+median_assigned_relative_abundance	0.9999999999999973

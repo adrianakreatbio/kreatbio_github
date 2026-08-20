@@ -1,0 +1,10 @@
+table	contrast	status	detail
+EC	Active_vs_Control	ok_pairwise	rows= 1889
+EC	Latent_vs_Control	ok_pairwise	rows= 2023
+EC	Active_vs_Latent	ok_pairwise	rows= 1978
+KO	Active_vs_Control	ok_pairwise	rows= 5388
+KO	Latent_vs_Control	ok_pairwise	rows= 5800
+KO	Active_vs_Latent	ok_pairwise	rows= 5675
+PATHWAY	Active_vs_Control	ok_pairwise	rows= 365
+PATHWAY	Latent_vs_Control	ok_pairwise	rows= 385
+PATHWAY	Active_vs_Latent	ok_pairwise	rows= 371

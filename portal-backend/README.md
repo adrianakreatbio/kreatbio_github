@@ -9,7 +9,8 @@ Cloud Run API for `client-portal.html`.
 - `GCS_ACCESS_TOKEN`: optional short-lived local test token from `gcloud auth print-access-token`; do not use in production.
 - `SESSION_SECRET`: random secret with at least 32 characters.
 - `GEMINI_API_KEY`: optional; enables the bottom-right report chat.
-- `GEMINI_MODEL`: optional, defaults to `gemini-2.5-flash`.
+- `GEMINI_MODEL`: optional, defaults to `gemini-3.5-flash-lite`.
+- `CHAT_CONTEXT_LIMIT`: optional maximum validated browser-generated report context in bytes, defaults to 81920.
 - `PORTAL_ORIGIN`: static website origin for CORS, comma-separated if you serve both apex and `www`, or `*` during early testing.
 - `PORTAL_API_BASE`: optional explicit public API origin. Leave unset when clients open the portal from this backend, because the server injects its own request origin into `client-portal.html`.
 
@@ -22,6 +23,12 @@ https://YOUR-PORTAL-BACKEND/client-portal.html
 ```
 
 The backend injects the correct API origin into `client-portal.html` at request time. Local `file://` opens default to `http://localhost:8080` for development. Do not publish the standalone repository HTML file unless you also set `window.KREATBIO_PORTAL_API` in the `portal-config` script block or append `?api=https://YOUR-PORTAL-BACKEND` once.
+
+## Report Q&A Context
+
+After the authorized report tables finish loading, the portal constructs a temporary structured context from the parsed report dataset. The context covers every hydrated result section and is sent only with the current chat request; it is not written back to GCS.
+
+The backend validates the report code, context schema, allowed sections, history length, and payload size before calling Gemini. Report questions use only the supplied report evidence plus stable explanatory knowledge. Related biology and genomics questions can enable Gemini Google Search grounding and return web citations. Unrelated general web questions are declined. Search grounding has separate Gemini API allowances and may incur tool charges after the applicable quota.
 
 ## GCS Layout
 
@@ -78,7 +85,7 @@ Then enter:
 Run from the repository root:
 
 ```bash
-gcloud builds submit --tag gcr.io/PROJECT_ID/kreatbio-client-portal -f portal-backend/Dockerfile .
+gcloud builds submit --config portal-backend/cloudbuild.yaml .
 ```
 
 Deploy:

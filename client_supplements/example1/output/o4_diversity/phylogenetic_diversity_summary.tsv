@@ -1,0 +1,16 @@
+metric	value
+samples	9.0
+faith_pd_median	2.898045556386933
+faith_pd_kruskal_p_value	0.5611439686474898
+unweighted_unifrac_samples	9.0
+unweighted_unifrac_permanova_pseudo_f	1.0251024856768158
+unweighted_unifrac_permanova_p_value	0.434
+unweighted_unifrac_permanova_permutations	999.0
+unweighted_unifrac_permdisp_f_value	1.8582621232591674
+unweighted_unifrac_permdisp_p_value	0.244
+weighted_unifrac_samples	9.0
+weighted_unifrac_permanova_pseudo_f	1.5212266502660576
+weighted_unifrac_permanova_p_value	0.096
+weighted_unifrac_permanova_permutations	999.0
+weighted_unifrac_permdisp_f_value	5.791739278180973
+weighted_unifrac_permdisp_p_value	0.03

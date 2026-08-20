@@ -1,0 +1,17 @@
+tool	citation
+NanoPlot	De Coster et al. 2018. NanoPack: visualizing and processing long-read sequencing data. Bioinformatics 34(15):2666-2669.
+cutadapt	Martin 2011. Cutadapt removes adapter sequences from high-throughput sequencing reads. EMBnet.journal 17(1):10-12.
+chopper	De Coster W. chopper: a Rust command-line tool for filtering and trimming long reads. Version recorded in this workflow; source code and documentation: https://github.com/wdecoster/chopper.
+vsearch	Rognes et al. 2016. VSEARCH: a versatile open source tool for metagenomics. PeerJ 4:e2584. doi:10.7717/peerj.2584.
+NanoPulse	FOI Bioinformatics 2026. NanoPulse: de novo Nanopore amplicon clustering and consensus generation.
+QIIME 2	Bolyen et al. 2019. Reproducible, interactive, scalable and extensible microbiome data science using QIIME 2. Nature Biotechnology 37:852-857. doi:10.1038/s41587-019-0209-9.
+SILVA	Quast et al. 2013. The SILVA ribosomal RNA gene database project. Nucleic Acids Research 41(D1):D590-D596. doi:10.1093/nar/gks1219; Yilmaz et al. 2014. The SILVA and All-species Living Tree Project releases. Nucleic Acids Research 42(D1):D643-D648. doi:10.1093/nar/gkt1209.
+EMU	Curry et al. 2022. Emu: species-level microbial community profiling of full-length 16S rRNA Oxford Nanopore sequencing data. Nature Methods 19:845-853. doi:10.1038/s41592-022-01520-4.
+MAFFT	Katoh and Standley 2013. MAFFT multiple sequence alignment software version 7. Molecular Biology and Evolution 30(4):772-780. doi:10.1093/molbev/mst010.
+FastTree	Price et al. 2010. FastTree 2: approximately maximum-likelihood trees for large alignments. PLoS ONE 5(3):e9490. doi:10.1371/journal.pone.0009490.
+UniFrac	Lozupone and Knight 2005. UniFrac: a new phylogenetic method for comparing microbial communities. Applied and Environmental Microbiology 71(12):8228-8235. doi:10.1128/AEM.71.12.8228-8235.2005.
+PICRUSt2	Douglas et al. 2020. PICRUSt2 for prediction of metagenome functions. Nature Biotechnology 38:685-688. doi:10.1038/s41587-020-0548-6.
+ALDEx2	Fernandes et al. 2014. Unifying the analysis of high-throughput sequencing datasets: characterizing RNA-seq, 16S rRNA gene sequencing and selective growth experiments by compositional data analysis. Microbiome 2:15. doi:10.1186/2049-2618-2-15.
+vegan	Oksanen et al. vegan: Community Ecology Package. R package documentation for the installed workflow version.
+R	R Core Team. R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria.
+MultiQC	Ewels et al. 2016. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics 32(19):3047-3048. doi:10.1093/bioinformatics/btw354.

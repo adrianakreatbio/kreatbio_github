@@ -1,0 +1,29 @@
+# Submit only the files used by portal-backend/Dockerfile.
+**
+
+!client-portal.html
+
+!portal-backend/
+!portal-backend/Dockerfile
+!portal-backend/cloudbuild.yaml
+!portal-backend/package.json
+!portal-backend/package-lock.json
+!portal-backend/server.js
+
+!supplements/
+!supplements/0_kreatbio_logo.png
+
+!client_supplements/
+!client_supplements/**
+
+# Unused design-source images are not referenced by client-portal.html.
+client_supplements/1_starthere_1.jpg
+client_supplements/2_girl_1.png
+client_supplements/2_girl_2.png
+client_supplements/2_girl_3.png
+client_supplements/2_girl_4.png
+client_supplements/2_girl_5.png
+client_supplements/11_1_transcriptome_GSEA.png
+client_supplements/11_2_transcriptome_ORA.png
+client_supplements/old_1_starthere_1.png
+client_supplements/ref1.png

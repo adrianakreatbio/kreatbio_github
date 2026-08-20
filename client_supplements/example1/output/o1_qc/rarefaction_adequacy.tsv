@@ -1,0 +1,10 @@
+sample_id	sample_name	group	post_filter_reads	feature_assigned_reads	final_feature_table_reads	sampling_depth	reads_above_depth	included_at_sampling_depth	adequacy
+SRR26464278	APW61	Active	3219	3212	837	800	37	yes	adequate
+SRR26464279	APW60	Active	1987	1979	1150	800	350	yes	adequate
+SRR26464280	APW59	Active	3818	3813	2326	800	1526	yes	adequate
+SRR26464291	LPW48	Latent	3810	3805	2619	800	1819	yes	adequate
+SRR26464292	LPW47	Latent	6023	4997	3858	800	3058	yes	adequate
+SRR26464293	LPW46	Latent	5855	4992	2596	800	1796	yes	adequate
+SRR26464294	CPW44	Control	10837	4999	2905	800	2105	yes	adequate
+SRR26464295	CPW43	Control	7878	4995	2809	800	2009	yes	adequate
+SRR26464296	CPW42	Control	2781	2769	1137	800	337	yes	adequate

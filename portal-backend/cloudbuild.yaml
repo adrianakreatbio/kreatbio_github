@@ -1,0 +1,11 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - portal-backend/Dockerfile
+      - -t
+      - gcr.io/$PROJECT_ID/kreatbio-client-portal
+      - .
+images:
+  - gcr.io/$PROJECT_ID/kreatbio-client-portal

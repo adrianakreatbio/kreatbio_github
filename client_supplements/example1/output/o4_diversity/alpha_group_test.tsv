@@ -1,0 +1,4 @@
+metric	group_column	groups	samples	test	statistic	p_value	note
+observed_features	group	3	9	kruskal	0.6101694915254215	0.737060908955931	
+shannon	group	3	9	kruskal	0.08888888888888857	0.9565287391030294	
+simpson	group	3	9	kruskal	0.08888888888888502	0.956528739103031	

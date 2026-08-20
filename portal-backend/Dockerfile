@@ -10,7 +10,8 @@ RUN npm install --omit=dev
 
 COPY portal-backend/server.js ./
 COPY client-portal.html ./public/client-portal.html
-COPY supplements ./public/supplements
+COPY supplements/0_kreatbio_logo.png ./public/supplements/0_kreatbio_logo.png
+COPY client_supplements ./public/client_supplements
 
 EXPOSE 8080
 CMD ["node", "server.js"]

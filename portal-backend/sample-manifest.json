@@ -1,9 +1,21 @@
 {
-  "code": "ABCDEFGHIJ",
+  "code": "110000000",
   "client_name": "Example Client",
   "title": "Amplicon microbiome report",
   "description": "Released sequencing analysis for client review.",
   "analysis_type": "amplicon",
+  "assay_id": "ont16sfl",
+  "assay": {
+    "id": "ont16sfl",
+    "label": "ONT 16S full-length",
+    "kingdom": "Bacteria",
+    "marker": "16S rRNA gene",
+    "region": "Full-length",
+    "platform": "Oxford Nanopore",
+    "taxonomy_methods": ["silva", "emu"],
+    "has_emu": true,
+    "functional_prediction": true
+  },
   "created_at": "2026-07-23",
   "report_pdf": {
     "fileId": "report",

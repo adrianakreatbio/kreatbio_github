@@ -1,0 +1,10 @@
+table	contrast	status	detail
+FAMILY	Active_vs_Control	ok_pairwise	rows= 37
+FAMILY	Latent_vs_Control	ok_pairwise	rows= 38
+FAMILY	Active_vs_Latent	ok_pairwise	rows= 35
+GENUS	Active_vs_Control	ok_pairwise	rows= 61
+GENUS	Latent_vs_Control	ok_pairwise	rows= 63
+GENUS	Active_vs_Latent	ok_pairwise	rows= 55
+SPECIES	Active_vs_Control	ok_pairwise	rows= 126
+SPECIES	Latent_vs_Control	ok_pairwise	rows= 130
+SPECIES	Active_vs_Latent	ok_pairwise	rows= 120

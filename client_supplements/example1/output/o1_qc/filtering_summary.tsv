@@ -1,0 +1,10 @@
+sample_id	sample_name	group	raw_reads	post_trim_reads	cutadapt_dropped_reads	post_filter_reads	feature_assigned_reads	final_feature_table_reads	filter_retained_pct	overall_retained_pct	feature_assignment_pct_of_post_filter	target_domain_retained_pct_of_feature_assigned	final_retained_pct_of_raw	sampling_depth	adequacy
+SRR26464278	APW61	Active	6928	6928	0	3219	3212	837	46.4636	46.4636	99.7825	26.0585	12.0814	800	adequate
+SRR26464279	APW60	Active	4509	4509	0	1987	1979	1150	44.0674	44.0674	99.5974	58.1102	25.5045	800	adequate
+SRR26464280	APW59	Active	8248	8248	0	3818	3813	2326	46.2900	46.2900	99.8690	61.0018	28.2008	800	adequate
+SRR26464291	LPW48	Latent	8118	8118	0	3810	3805	2619	46.9327	46.9327	99.8688	68.8305	32.2616	800	adequate
+SRR26464292	LPW47	Latent	8852	8852	0	6023	4997	3858	68.0411	68.0411	82.9653	77.2063	43.5834	800	adequate
+SRR26464293	LPW46	Latent	8430	8429	1	5855	4992	2596	69.4626	69.4543	85.2605	52.0032	30.7948	800	adequate
+SRR26464294	CPW44	Control	19916	19916	0	10837	4999	2905	54.4135	54.4135	46.1290	58.1116	14.5863	800	adequate
+SRR26464295	CPW43	Control	14193	14193	0	7878	4995	2809	55.5062	55.5062	63.4044	56.2362	19.7914	800	adequate
+SRR26464296	CPW42	Control	6323	6323	0	2781	2769	1137	43.9823	43.9823	99.5685	41.0618	17.9820	800	adequate
