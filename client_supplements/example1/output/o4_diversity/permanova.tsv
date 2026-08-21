@@ -1,2 +1,4 @@
-group_column	groups	samples	pseudo_f	p_value	permutations	method	status	note
-group	3	9	1	1	999	vegan::adonis2	ok	
+metric	group_column	groups	samples	pseudo_f	r2	p_value	permutations	method	status	note
+bray	group	3	9	1	0.25	1	999	local recomputation	ok	Locally recomputed from released distance matrix; seed=20260820
+weighted_unifrac	group	3	9	1.52122665026606	0.33646325830105	0.096	999	local recomputation	ok	Locally recomputed from released distance matrix; seed=20260820
+unweighted_unifrac	group	3	9	1.02510248567682	0.254677362706815	0.456	999	local recomputation	ok	Locally recomputed from released distance matrix; seed=20260820

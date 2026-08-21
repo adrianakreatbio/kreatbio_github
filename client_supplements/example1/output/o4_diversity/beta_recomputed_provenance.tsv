@@ -1,0 +1,4 @@
+metric	statistic	source	permutations	seed
+bray	PERMANOVA/PERMDISP	released beta_braycurtis_distance.tsv	999	20260820
+weighted_unifrac	PERMANOVA/PERMDISP	released weighted_unifrac_distance.tsv	999	20260820
+unweighted_unifrac	PERMANOVA/PERMDISP	released unweighted_unifrac_distance.tsv	999	20260820

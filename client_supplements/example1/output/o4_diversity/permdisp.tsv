@@ -1,2 +1,4 @@
-group_column	groups	samples	f_value	p_value	permutations	method	status	note
-group	3	9	2.14446526486863e-12	1	999	vegan::betadisper	ok	
+metric	group_column	groups	samples	f_value	p_value	permutations	method	status	note
+bray	group	3	9	2.25	0.449	999	local recomputation	ok	Locally recomputed from released distance matrix; seed=20260820
+weighted_unifrac	group	3	9	5.79173927816827	0.206	999	local recomputation	ok	Locally recomputed from released distance matrix; seed=20260820
+unweighted_unifrac	group	3	9	1.85826212325487	0.475	999	local recomputation	ok	Locally recomputed from released distance matrix; seed=20260820

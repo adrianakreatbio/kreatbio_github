@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
 import { Storage } from "@google-cloud/storage";
+import { ChatQuotaStore } from "./quota-store.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,12 +17,16 @@ const SESSION_SECRET = environmentSecret("SESSION_SECRET");
 const SESSION_TTL_SECONDS = Number(process.env.SESSION_TTL_SECONDS || 60 * 60 * 8);
 const DATA_TEXT_LIMIT = Number(process.env.DATA_TEXT_LIMIT || 5 * 1024 * 1024);
 const CHAT_CONTEXT_LIMIT = Number(process.env.CHAT_CONTEXT_LIMIT || 80 * 1024);
+const CHAT_TOKEN_LIMIT = Number(process.env.CHAT_TOKEN_LIMIT || 100_000);
+const CHAT_MAX_OUTPUT_TOKENS = Number(process.env.CHAT_MAX_OUTPUT_TOKENS || 1_000);
+const CHAT_RESERVATION_TTL_SECONDS = Number(process.env.CHAT_RESERVATION_TTL_SECONDS || 15 * 60);
 const GEMINI_API_KEY = environmentSecret("GEMINI_API_KEY");
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 const PORTAL_ORIGIN = process.env.PORTAL_ORIGIN || "*";
 const PORTAL_ORIGINS = PORTAL_ORIGIN.split(",").map((origin) => origin.trim()).filter(Boolean);
 const PORTAL_API_BASE = cleanUrl(process.env.PORTAL_API_BASE || "");
 const STATIC_DIR = process.env.PORTAL_STATIC_DIR || path.join(__dirname, "public");
+const CHAT_QUOTA_DB = process.env.CHAT_QUOTA_DB || path.join(__dirname, ".data", "chat-quota.sqlite");
 const ALLOW_CLIENT_DOWNLOADS = /^(1|true|yes)$/i.test(process.env.ALLOW_CLIENT_DOWNLOADS || "");
 const FIGURE_PREFIXES = [
   "output/o6_figures/",
@@ -59,6 +64,12 @@ if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
 }
 
 const storage = new Storage();
+const chatQuotaStore = new ChatQuotaStore({
+  databasePath: CHAT_QUOTA_DB,
+  secret: SESSION_SECRET || "development-only-secret-change-me",
+  defaultLimit: CHAT_TOKEN_LIMIT,
+  reservationTtlSeconds: CHAT_RESERVATION_TTL_SECONDS
+});
 const app = express();
 
 app.disable("x-powered-by");
@@ -91,7 +102,7 @@ app.post("/api/session", async (req, res, next) => {
     const manifest = await readManifest(code);
     validateManifestCode(code, manifest);
     validateManifestAssay(code, manifest);
-    const token = signToken({ code });
+    const token = signToken({ code, scope: "report" });
     res.json({ token, report: sanitizeManifest(code, manifest) });
   } catch (err) {
     next(err);
@@ -259,7 +270,19 @@ app.post("/api/external/string/network", requireSession, async (req, res, next) 
   }
 });
 
-app.post("/api/chat", requirePortalChatOrigin, async (req, res, next) => {
+app.post("/api/chat/session", requirePortalChatOrigin, (req, res, next) => {
+  try {
+    const code = normalizeCode(req.body?.code);
+    const quota = chatQuotaStore.authenticate(code);
+    const token = signToken({ code, scope: "chat" });
+    res.json({ token, ...publicChatQuota(quota) });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post("/api/chat", requirePortalChatOrigin, requireChatSession, async (req, res, next) => {
+  let reservation = null;
   try {
     if (!GEMINI_API_KEY) {
       throw httpError(503, "Gemini chat is not configured on the portal backend.");
@@ -269,7 +292,7 @@ app.post("/api/chat", requirePortalChatOrigin, async (req, res, next) => {
       throw httpError(400, "Missing chat message.");
     }
 
-    const reportCode = normalizeCode(req.body?.report_context?.report_id);
+    const reportCode = req.chatSession.code;
     const reportContext = normalizeChatContext(req.body?.report_context, reportCode);
     const currentView = normalizeChatCurrentView(req.body?.current_view);
     const history = normalizeChatHistory(req.body?.history);
@@ -279,12 +302,24 @@ app.post("/api/chat", requirePortalChatOrigin, async (req, res, next) => {
         reply: "I’m limited to this report and related microbiology, genomics, organisms, laboratory methods, and follow-up research.",
         mode,
         report_sources: [],
-        web_sources: []
+        web_sources: [],
+        ...publicChatQuota(chatQuotaStore.authenticate(reportCode))
       });
       return;
     }
     const prompt = buildChatPrompt({ reportContext, message, currentView, history, mode });
-    const generated = await callGemini(prompt, { useGoogleSearch: mode === "web" || mode === "mixed" });
+    const useGoogleSearch = mode === "web" || mode === "mixed";
+    const promptTokens = await countGeminiTokens(prompt, { useGoogleSearch });
+    reservation = chatQuotaStore.reserve(req.chatSession.reportKey, promptTokens, CHAT_MAX_OUTPUT_TOKENS);
+    const generated = await callGemini(prompt, {
+      useGoogleSearch,
+      maxOutputTokens: reservation.maximumOutputTokens
+    });
+    const quota = chatQuotaStore.settle(
+      reservation.reservationId,
+      Number.isSafeInteger(generated.totalTokenCount) ? generated.totalTokenCount : reservation.reservedTokens
+    );
+    reservation = null;
     const reportSources = mode === "web"
       ? []
       : reportSourcesForResponse(reportContext, generated.reportSourceIds, mode === "mixed");
@@ -292,9 +327,17 @@ app.post("/api/chat", requirePortalChatOrigin, async (req, res, next) => {
       reply: generated.answer,
       mode,
       report_sources: reportSources,
-      web_sources: generated.webSources
+      web_sources: generated.webSources,
+      ...publicChatQuota(quota)
     });
   } catch (err) {
+    if (reservation?.reservationId) {
+      try {
+        chatQuotaStore.release(reservation.reservationId);
+      } catch (releaseError) {
+        console.error("Could not release chat quota reservation.", releaseError);
+      }
+    }
     next(err);
   }
 });
@@ -981,9 +1024,9 @@ function signToken(payload) {
   return `${encoded}.${sig}`;
 }
 
-function verifyToken(token) {
+function verifyToken(token, expectedScope = "report") {
   const [encoded, sig] = String(token || "").split(".");
-  if (!encoded || !sig || hmac(encoded) !== sig) {
+  if (!encoded || !sig || !timingSafeEqual(hmac(encoded), sig)) {
     throw httpError(401, "Invalid or expired session.");
   }
   let body;
@@ -995,24 +1038,54 @@ function verifyToken(token) {
   if (!body.exp || body.exp < Math.floor(Date.now() / 1000)) {
     throw httpError(401, "Session expired.");
   }
-  return { code: normalizeCode(body.code) };
+  if (body.scope !== expectedScope) {
+    throw httpError(401, "Invalid session scope.");
+  }
+  return { code: normalizeCode(body.code), scope: body.scope };
 }
 
 function requireSession(req, res, next) {
   try {
     const header = req.get("authorization") || "";
     const token = header.toLowerCase().startsWith("bearer ") ? header.slice(7) : req.query.token;
-    req.session = verifyToken(token);
+    req.session = verifyToken(token, "report");
     next();
   } catch (err) {
     next(err);
   }
 }
 
+function requireChatSession(req, res, next) {
+  try {
+    const header = req.get("authorization") || "";
+    const token = header.toLowerCase().startsWith("bearer ") ? header.slice(7) : "";
+    const session = verifyToken(token, "chat");
+    const quota = chatQuotaStore.authenticate(session.code);
+    req.chatSession = { ...session, reportKey: quota.reportKey };
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+function publicChatQuota(quota) {
+  return {
+    token_limit: quota.tokenLimit,
+    tokens_used: quota.tokensUsed,
+    tokens_remaining: quota.tokensRemaining
+  };
+}
+
 function hmac(value) {
   return crypto.createHmac("sha256", SESSION_SECRET || "development-only-secret-change-me")
     .update(value)
     .digest("base64url");
+}
+
+function timingSafeEqual(left, right) {
+  const a = Buffer.from(String(left));
+  const b = Buffer.from(String(right));
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
 function base64url(value) {
@@ -1786,12 +1859,56 @@ function reportSourcesForResponse(context, requestedIds, useFallback = false) {
 async function callGemini(chatPrompt, options = {}) {
   const url = new URL(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:generateContent`);
   url.searchParams.set("key", GEMINI_API_KEY);
+  const body = geminiRequestBody(chatPrompt, options);
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    throw httpError(502, "Gemini request failed.");
+  }
+  const data = await res.json();
+  const text = data?.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("").trim() || "";
+  const parsed = options.useGoogleSearch
+    ? { answer: text || "No response was returned.", reportSourceIds: [] }
+    : parseGeminiChatPayload(text);
+  const totalTokenCount = Number(data?.usageMetadata?.totalTokenCount);
+  return {
+    ...parsed,
+    webSources: extractGroundedWebSources(data),
+    totalTokenCount: Number.isSafeInteger(totalTokenCount) && totalTokenCount >= 0 ? totalTokenCount : null
+  };
+}
+
+async function countGeminiTokens(chatPrompt, options = {}) {
+  const url = new URL(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:countTokens`);
+  url.searchParams.set("key", GEMINI_API_KEY);
+  const request = geminiRequestBody(chatPrompt, options);
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      generateContentRequest: {
+        model: `models/${GEMINI_MODEL}`,
+        ...request
+      }
+    })
+  });
+  if (!res.ok) throw httpError(502, "Gemini token count failed.");
+  const data = await res.json();
+  const count = Number(data?.totalTokens ?? data?.total_tokens);
+  if (!Number.isSafeInteger(count) || count < 0) throw httpError(502, "Gemini token count was unavailable.");
+  return count;
+}
+
+function geminiRequestBody(chatPrompt, options = {}) {
   const body = {
     system_instruction: { parts: [{ text: chatPrompt.systemInstruction }] },
     contents: [{ role: "user", parts: [{ text: chatPrompt.prompt }] }],
     generationConfig: {
       temperature: 0.15,
-      maxOutputTokens: 1000
+      maxOutputTokens: Math.max(1, Number(options.maxOutputTokens) || 1_000)
     }
   };
   if (options.useGoogleSearch) {
@@ -1807,20 +1924,7 @@ async function callGemini(chatPrompt, options = {}) {
       required: ["answer", "report_source_ids"]
     };
   }
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) {
-    throw httpError(502, "Gemini request failed.");
-  }
-  const data = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("").trim() || "";
-  const parsed = options.useGoogleSearch
-    ? { answer: text || "No response was returned.", reportSourceIds: [] }
-    : parseGeminiChatPayload(text);
-  return { ...parsed, webSources: extractGroundedWebSources(data) };
+  return body;
 }
 
 function httpError(statusCode, message) {
