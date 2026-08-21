@@ -468,21 +468,49 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .clinical-details[open] summary::after{content:"-"}
 .clinical-details-body{padding:0 18px 18px}
 .clinical-details-body > .pattern-panel,.clinical-details-body > .limitbox{box-shadow:none;border-color:var(--line);margin-top:18px}
-.self-experiment-intro{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}
+.clinical-details[data-beta-self-details],.clinical-details[data-alpha-self-details]{border:2px solid #8B6BC4!important;background:#FBF8FF!important;box-shadow:0 8px 22px rgba(91,58,142,.18)!important}
+.clinical-details[data-beta-self-details] summary,.clinical-details[data-alpha-self-details] summary{color:#fff!important;background:linear-gradient(110deg,#51327E,#8056B8)!important}
+.clinical-details[data-beta-self-details] summary::after,.clinical-details[data-alpha-self-details] summary::after{background:#fff;color:#51327E;border-color:#fff}
+.clinical-details[data-beta-self-details][open] summary,.clinical-details[data-alpha-self-details][open] summary{border-bottom-color:#C8B6EA!important;background:linear-gradient(110deg,#462B70,#7048A8)!important}
+.clinical-details[data-beta-self-details] .clinical-details-body,.clinical-details[data-alpha-self-details] .clinical-details-body{background:#FCFAFF!important}
+.self-experiment-shell{padding:14px;border:1px solid #D2C1EF;border-radius:14px;background:linear-gradient(135deg,#F8F2FF,#F1EAFF)}
+.self-experiment-intro{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
 .self-experiment-intro label{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--navy)}
-.self-experiment-intro select{min-width:190px}
-.self-experiment-plot{margin:18px 0;border:1px solid var(--line);border-radius:12px;background:#FBFDFF;overflow:hidden}
-.self-experiment-plot svg{display:block;width:100%;height:auto;min-height:260px}
+.self-experiment-intro select{min-width:190px;background:#EEE5FF;color:#51327E;border-color:#8B6BC4}
+.self-experiment-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.self-experiment-plot{width:25%;min-width:270px;margin:18px 0;border:1px solid var(--line);border-radius:12px;background:#FBFDFF;overflow:hidden}
+.self-experiment-main .self-experiment-plot{width:100%;min-width:0;margin:0}
+.self-experiment-plot svg{display:block;width:100%;height:auto;min-height:0}
 .self-experiment-legend{display:flex;flex-wrap:wrap;gap:8px 16px;padding:9px 14px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
 .self-experiment-legend span{display:inline-flex;align-items:center;gap:5px}
 .self-experiment-legend i{display:inline-block;width:10px;height:10px;border-radius:50%}
-.self-experiment-stats{display:grid;gap:5px;padding:13px 15px;border:1px solid #DCE7F1;border-radius:10px;background:#F8FBFE;color:var(--navy)}
-.self-experiment-stats span{font-size:.91rem;color:var(--muted)}
-.self-experiment-samples{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:16px}
-.self-experiment-samples>b{grid-column:1/-1;color:var(--navy)}
-.self-experiment-sample{display:grid;grid-template-columns:auto 1fr;column-gap:7px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
-.self-experiment-sample small{grid-column:2;color:var(--muted);font-size:.78rem}
+.self-experiment-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px;border:1px solid #CDB9EA;border-radius:12px;background:#FFF9F1;color:#51327E}
+.self-experiment-stats b{grid-column:1/-1;font-size:.86rem;letter-spacing:.02em}
+.self-experiment-stats span{display:flex;flex-direction:column;gap:3px;padding:10px;border:1px solid #16365B;border-radius:9px;background:#071B3A;color:#CDE8F2;font-size:.78rem}
+.self-experiment-stats span strong{font-size:1.05rem;color:#fff}
+.self-experiment-stats span:nth-last-child(1){grid-column:1/-1}
+.self-experiment-stats .self-experiment-note{grid-column:1/-1;padding:9px 10px;border-left:3px solid #E08A3E;color:#70552F;font-size:.8rem;line-height:1.45}
+.self-experiment-samples{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin:0 0 16px}
+.self-experiment-samples>b{grid-column:1/-1;color:#51327E;font-size:1rem}
+.self-experiment-samples-head{grid-column:1/-1;display:flex;flex-direction:column;gap:3px;color:#51327E}
+.self-experiment-samples-head small{color:#705F85;font-size:.82rem}
+.self-experiment-sample{display:grid;grid-template-columns:auto auto 1fr;column-gap:7px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.self-experiment-sample small{grid-column:3;color:var(--muted);font-size:.78rem}
+.self-experiment-sample-number{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:6px;background:#EEE5FF;color:#51327E;font-size:.72rem;font-weight:800}
 .self-experiment-empty{padding:28px;text-align:center;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}
+@media(max-width:760px){.self-experiment-plot{width:100%;min-width:0}.self-experiment-main{grid-template-columns:1fr}.self-experiment-stats{grid-template-columns:1fr}}
+.alpha-self-shell{margin-top:0}
+.alpha-self-shell [data-alpha-self-reset]{grid-column:1/-1;width:max-content}
+.alpha-self-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.alpha-self-cards .self-experiment-stats-card{display:flex;flex-direction:column;gap:8px;min-height:250px;padding:10px;border:1px solid #CDB9EA;border-radius:10px;background:#071B3A;color:#CDE8F2}
+.alpha-self-card-head{display:flex;flex-direction:column;gap:3px}
+.alpha-self-cards .self-experiment-stats-card b{color:#fff;font-size:.82rem}
+.alpha-self-cards .self-experiment-stats-card strong{color:#fff;font-size:1.12rem}
+.alpha-self-cards .self-experiment-stats-card span,.alpha-self-cards .self-experiment-stats-card small{font-size:.76rem;color:#CDE8F2;line-height:1.35}
+.alpha-self-mini-plot{border-radius:8px;background:#FCFAFF;overflow:hidden}
+.alpha-self-mini-plot svg{display:block;width:100%;height:auto}
+@media(max-width:900px){.alpha-self-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.alpha-self-cards{grid-template-columns:1fr}}
 .genus-inspection-section{margin-top:22px}
 .genus-inspection-section > h3{font-size:1.16rem;color:var(--navy)}
 .genus-inspection-methods{margin-top:14px;overflow:hidden;border:1px solid var(--topic-line,#DCE7F1);border-radius:12px;background:#fff;box-shadow:var(--shadow-1)}
@@ -4385,6 +4413,46 @@ function alphaStatsPanel(d){
       '<div class="inspection-row" style="'+colStyle+'">'+cols.map(function(c){return '<b>'+esc(c.head)+'</b>';}).join("")+'</div>'+
       body+'</div>'+definitions+'</div>');
 }
+function alphaSelfLogGamma(z){
+  var cof=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,.001208650973866179,-.000005395239384953],x=z,y=x,tmp=x+5.5;tmp-=(x+.5)*Math.log(tmp);var ser=1.000000000190015;for(var j=0;j<cof.length;j++){y+=1;ser+=cof[j]/y;}return -tmp+Math.log(2.5066282746310005*ser/x);
+}
+function alphaSelfGammaQ(a,x){
+  if(x<0||a<=0)return null;if(x===0)return 1;
+  var eps=3e-12,fpmin=1e-300,b=Math.max(x+1-a,fpmin),c=1/fpmin,d=1/b,h=d,i,an,del;
+  if(x<a+1){var sum=1/a,term=sum;for(i=1;i<1000;i++){term*=x/(a+i);sum+=term;if(Math.abs(term)<Math.abs(sum)*eps)break;}return 1-sum*Math.exp(-x+a*Math.log(x)-alphaSelfLogGamma(a));}
+  for(i=1;i<1000;i++){an=-i*(i-a);b+=2;d=an*d+b;if(Math.abs(d)<fpmin)d=fpmin;c=b+an/c;if(Math.abs(c)<fpmin)c=fpmin;d=1/d;del=d*c;h*=del;if(Math.abs(del-1)<eps)break;}
+  return Math.exp(-x+a*Math.log(x)-alphaSelfLogGamma(a))*h;
+}
+function alphaSelfKruskal(d,metric,selected){
+  var values=(d.samples||[]).filter(function(s){return selected.indexOf(String(s.raw||s.id))>=0;}).map(function(s){return {value:Number(alphaVal(s,metric)),group:String(s.group||"Ungrouped")};}).filter(function(x){return isFinite(x.value);});
+  var groups={};values.forEach(function(x){(groups[x.group]||(groups[x.group]=[])).push(x.value);});var keys=Object.keys(groups),n=values.length,k=keys.length;
+  if(n<2||k<2)return null;
+  values.sort(function(a,b){return a.value-b.value;});var sums={},ties=0;
+  for(var i=0;i<n;){var end=i+1;while(end<n&&values[end].value===values[i].value)end++;var rank=((i+1)+end)/2,size=end-i;if(size>1)ties+=size*size*size-size;for(var j=i;j<end;j++)sums[values[j].group]=(sums[values[j].group]||0)+rank;i=end;}
+  var h=12/(n*(n+1))*keys.reduce(function(sum,key){return sum+Math.pow(sums[key],2)/groups[key].length;},0)-3*(n+1),corr=1-(ties/(Math.pow(n,3)-n));if(corr>0)h/=corr;
+  var p=alphaSelfGammaQ((k-1)/2,h/2),means={};keys.forEach(function(key){means[key]=mean(groups[key]);});
+  return {H:Math.max(0,h),p:p,n:n,k:k,means:means,counts:keys.reduce(function(o,key){o[key]=groups[key].length;return o;},{})};
+}
+function alphaSelfMiniPlot(d,metric,result,selected,byId,sampleNumbers){
+  var w=360,h=210,p={l:34,r:50,t:30,b:30},groups={},values=[];
+  (d.samples||[]).forEach(function(s){var id=String(s.raw||s.id),v=Number(alphaVal(s,metric));if(selected.indexOf(id)<0||!isFinite(v))return;(groups[s.group]||(groups[s.group]=[])).push({id:id,value:v});values.push(v);});
+  var keys=Object.keys(groups),min=Math.min.apply(null,values),max=Math.max.apply(null,values),range=max-min||1,minY=min-range*.12,maxY=max+range*.12;
+  var sx=function(i){return keys.length===1?(w+p.l-p.r)/2:p.l+i*(w-p.l-p.r)/(keys.length-1);},sy=function(v){return h-p.b-(v-minY)/(maxY-minY)*(h-p.t-p.b);};
+  var body='<line x1="'+p.l+'" y1="'+(h-p.b)+'" x2="'+(w-p.r)+'" y2="'+(h-p.b)+'" stroke="#AAB9C8"/>';
+  keys.forEach(function(key,gi){var vals=groups[key].map(function(x){return x.value;}).sort(function(a,b){return a-b;}),med=median(vals),q=function(prob){if(vals.length<2)return null;var pos=(vals.length-1)*prob,lo=Math.floor(pos),hi=Math.ceil(pos);return vals[lo]+(vals[hi]-vals[lo])*(pos-lo);},q1=q(.25),q3=q(.75),min=vals[0],max=vals[vals.length-1],x=sx(gi),color=groupColor((d.groups||[]).findIndex(function(g){return g.id===key;}));if(q1!=null&&q3!=null){var boxTop=sy(q3),boxBottom=sy(q1),boxHeight=Math.max(2,boxBottom-boxTop),minYPos=sy(min),maxYPos=sy(max);body+='<line x1="'+x.toFixed(1)+'" y1="'+maxYPos.toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+minYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-7)+'" y1="'+maxYPos.toFixed(1)+'" x2="'+(x+7)+'" y2="'+maxYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-7)+'" y1="'+minYPos.toFixed(1)+'" x2="'+(x+7)+'" y2="'+minYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><rect x="'+(x-15)+'" y="'+boxTop.toFixed(1)+'" width="30" height="'+boxHeight.toFixed(1)+'" fill="'+color+'" opacity=".3" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-15)+'" y1="'+sy(med).toFixed(1)+'" x2="'+(x+15)+'" y2="'+sy(med).toFixed(1)+'" stroke="'+color+'" stroke-width="1.5"/>';};groups[key].forEach(function(item,ii){var jitter=(ii-(groups[key].length-1)/2)*6,px=x+jitter,py=sy(item.value),num=sampleNumbers[item.id]||"";body+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="3" fill="'+color+'"><title>'+esc(num+'. '+(byId[item.id]?sampleLabel(byId[item.id]):item.id))+'</title></circle><text x="'+(x+22).toFixed(1)+'" y="'+(py+3).toFixed(1)+'" font-size="8" fill="#071B3A">'+esc(num)+'</text>';});var groupObj=(d.groups||[]).filter(function(g){return g.id===key;})[0];body+='<text x="'+x.toFixed(1)+'" y="'+(h-10)+'" text-anchor="middle" font-size="10" fill="#51327E">'+esc(groupObj?groupObj.label:key)+'</text>';});
+  return '<div class="alpha-self-mini-plot"><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(metricLabel(d,"alpha",metric))+' retained sample distribution">'+body+'<text x="8" y="18" font-size="11" fill="#705F85">Box = IQR · line = median · whiskers = min/max</text></svg></div>';
+}
+var alphaSelfState={selected:null,open:false};
+function alphaSelfExperimentPanel(d){
+  var metrics=(d.alphaMetrics||[]).filter(function(m){return ["shannon","simpson","faith"].indexOf(m.id)>=0;}),all=(d.samples||[]).map(function(s){return String(s.raw||s.id);}),selected=alphaSelfState.selected;
+  if(!selected)selected=all.slice();
+  var byId={};(d.samples||[]).forEach(function(s){byId[String(s.raw||s.id)]=s;});
+  var sampleNumbers={};all.forEach(function(id,i){sampleNumbers[id]=i+1;});
+  var checks=all.map(function(id){var s=byId[id];return '<label class="self-experiment-sample"><input type="checkbox" data-alpha-self-sample="'+esc(id)+'"'+(selected.indexOf(id)>=0?' checked':'')+'><span class="self-experiment-sample-number">'+sampleNumbers[id]+'</span><span>'+esc(s?sampleLabel(s):id)+'</span><small>'+esc(s&&s.group||"Unknown group")+'</small></label>';}).join("");
+  var cards=metrics.map(function(metric){var result=alphaSelfKruskal(d,metric.id,selected),label=metric.label||metric.id;if(!result)return '<div class="self-experiment-stats-card"><b>'+esc(label)+'</b><strong>Not estimable</strong><small>At least two retained groups are required.</small></div>';var interpretation=result.p<0.05?"supported group difference":result.p<0.10?"exploratory signal":"no supported group difference";return '<div class="self-experiment-stats-card"><div class="alpha-self-card-head"><b>'+esc(label)+'</b><strong>p='+result.p.toFixed(3)+'</strong><span>H='+result.H.toFixed(3)+' · '+interpretation+'</span></div>'+alphaSelfMiniPlot(d,metric.id,result,selected,byId,sampleNumbers)+'</div>';}).join("");
+  var body='<div class="self-experiment-shell alpha-self-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to recalculate Shannon, Simpson, and Faith PD. The statistic cards are calculated outputs.</small></div><button type="button" class="btn secondary" data-alpha-self-reset>Reset to all samples</button>'+checks+'</div><div class="alpha-self-cards">'+cards+'</div><p class="table-caption">Exploratory only; the released alpha-diversity results remain the report reference.</p></div>';
+  return clinicalDetails("Self-experiment",body).replace('<details class="clinical-details">','<details data-alpha-self-details'+(alphaSelfState.open?' open':'')+' class="clinical-details">');
+}
 function betaSupportTone(d,metric){
   var pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric);
   return pm&&pm.p!=null&&pm.R2!=null&&pm.p<0.05&&pm.R2>=0.10&&(!pd||Number(pd.p)>=0.05)?"good":"poor";
@@ -4759,9 +4827,9 @@ function betaSelfPcoa(matrix){
   /* Jacobi eigen-decomposition keeps this self-contained for reports with no
      external numerical dependency. */
   var v=[];for(i=0;i<n;i++){v[i]=[];for(j=0;j<n;j++)v[i][j]=i===j?1:0;}
-  for(var iter=0;iter<Math.min(80,n*n*8);iter++){
+  for(var iter=0;iter<100*n*n;iter++){
     var p=0,q=1,max=0;for(i=0;i<n;i++)for(j=i+1;j<n;j++)if(Math.abs(b[i][j])>max){max=Math.abs(b[i][j]);p=i;q=j;}
-    if(max<1e-10)break;
+    if(max<1e-12)break;
     var phi=.5*Math.atan2(2*b[p][q],b[q][q]-b[p][p]),c=Math.cos(phi),s=Math.sin(phi),app=b[p][p],aqq=b[q][q],apq=b[p][q];
     b[p][p]=c*c*app-2*s*c*apq+s*s*aqq;b[q][q]=s*s*app+2*s*c*apq+c*c*aqq;b[p][q]=b[q][p]=0;
     for(i=0;i<n;i++)if(i!==p&&i!==q){var aip=b[i][p],aiq=b[i][q];b[i][p]=b[p][i]=c*aip-s*aiq;b[i][q]=b[q][i]=s*aip+c*aiq;}
@@ -4794,36 +4862,41 @@ function betaSelfPermStats(matrix,groupsById,seed){
     Object.keys(groups).forEach(function(label){idx=groups[label];var sum=0;for(i=0;i<idx.length;i++)for(j=0;j<idx.length;j++)sum+=Math.pow(Number(matrix.values[idx[i]][idx[j]])||0,2);within+=sum/idx.length;});
     var between=total-within,kk=Object.keys(groups).length,F=within>1e-12?(between/(kk-1))/(within/(included-kk)):null;return {F:isFinite(F)?F:null,R2:total?between/total:0};
   }
-  var observed=permanova(labels),random=seededPairwiseRandom(seed||"beta-self"),ge=0,dispGe=0,perms=999;
+  var observed=permanova(labels),baseSeed=Number(seed)||20260820,permanovaRandom=pythonRandom(baseSeed),permdispRandom=pythonRandom(baseSeed),ge=0,dispGe=0,perms=999;
   function dispersion(ls){var cent={};coords.forEach(function(p,i){var c=cent[ls[i]]||(cent[ls[i]]={n:0,values:new Array(dimensions).fill(0)});c.n++;p.coordinates.forEach(function(value,axis){c.values[axis]+=value;});});Object.keys(cent).forEach(function(x){cent[x].values=cent[x].values.map(function(value){return value/cent[x].n;});});var vals=[],labs=[];coords.forEach(function(p,i){var c=cent[ls[i]],distance=Math.sqrt(p.coordinates.reduce(function(sum,value,axis){return sum+Math.pow(value-c.values[axis],2);},0));vals.push(distance);labs.push(ls[i]);});return betaSelfAnova(vals,labs);}
-  var observedDisp=dispersion(labels),permLabels=labels.slice();
-  for(var permutation=0;permutation<perms;permutation++){for(var z=n-1;z>0;z--){var sw=Math.floor(random()*(z+1)),tmp=permLabels[z];permLabels[z]=permLabels[sw];permLabels[sw]=tmp;}var perm=permanova(permLabels);if(perm&&perm.F!=null&&observed.F!=null&&perm.F>=observed.F-1e-12)ge++;if(observedDisp){var pd=dispersion(permLabels);if(pd&&pd.F!=null&&observedDisp.F!=null&&pd.F>=observedDisp.F-1e-12)dispGe++;}}
+  var observedDisp=dispersion(labels),permanovaLabels=labels.slice(),permdispLabels=labels.slice();
+  for(var permutation=0;permutation<perms;permutation++){permanovaRandom.shuffle(permanovaLabels);permdispRandom.shuffle(permdispLabels);var perm=permanova(permanovaLabels);if(perm&&perm.F!=null&&observed.F!=null&&perm.F>=observed.F-1e-12)ge++;if(observedDisp){var pd=dispersion(permdispLabels);if(pd&&pd.F!=null&&observedDisp.F!=null&&pd.F>=observedDisp.F-1e-12)dispGe++;}}
   return {pcoa:pcoa,permanova:{F:observed.F,R2:observed.R2,p:observed.F==null?null:(ge+1)/(perms+1),permutations:perms},permdisp:observedDisp&&observedDisp.F!=null?{F:observedDisp.F,p:(dispGe+1)/(perms+1),permutations:perms}:null,counts:counts};
 }
-var betaSelfState={metric:null,selected:{}};
+var betaSelfState={metric:null,selected:{},open:false};
 function betaSelfExperimentPanel(d){
   var available=(d.betaMetrics||[]).filter(function(m){return d.betaDistanceMatrices&&d.betaDistanceMatrices[m.id];});
-  if(!available.length)return clinicalDetails("Self-experiment",'<p class="table-caption">This exploratory tool needs a usable beta-diversity distance matrix, which is not available for this report.</p>');
+  if(!available.length)return clinicalDetails("Self-experiment",'<p class="table-caption">This exploratory tool needs a usable beta-diversity distance matrix, which is not available for this report.</p>').replace('<details class="clinical-details">','<details data-beta-self-details class="clinical-details">');
   var metric=available.some(function(m){return m.id===betaSelfState.metric;})?betaSelfState.metric:(available.some(function(m){return m.id==="weighted_unifrac";})?"weighted_unifrac":available[0].id);betaSelfState.metric=metric;
   var matrix=d.betaDistanceMatrices[metric],all=matrix.ids.slice(),selected=betaSelfState.selected[metric];if(!selected)selected=all.slice();
   var groupsById={};(d.samples||[]).forEach(function(s){groupsById[String(s.raw||s.id)]=s.group;groupsById[String(s.id)]=s.group;});
   var subset=betaSelfMatrixSubset(d,metric,selected),byId={};(d.samples||[]).forEach(function(s){byId[String(s.raw||s.id)]=s;byId[String(s.id)]=s;});
-  var stats=subset?betaSelfPermStats(subset,groupsById,"beta-self|"+metric+"|"+selected.slice().sort().join(",")):null;
+  var stats=subset?betaSelfPermStats(subset,groupsById,betaSelfSeed(metric,selected,all)):null;
   var options=available.map(function(m){return '<option value="'+esc(m.id)+'"'+(m.id===metric?' selected':'')+'>'+esc(m.label||m.id)+'</option>';}).join("");
-  var checks=all.map(function(id){var s=byId[id],label=s?sampleLabel(s):id,group=s?(d.groups||[]).filter(function(g){return g.id===s.group;})[0]:null;return '<label class="self-experiment-sample"><input type="checkbox" data-beta-self-sample="'+esc(id)+'"'+(selected.indexOf(id)>=0?' checked':'')+'><span>'+esc(label)+'</span><small>'+esc(group?group.label:(s&&s.group||"Unknown group"))+'</small></label>';}).join("");
+  var sampleNumbers={};all.forEach(function(id,index){sampleNumbers[id]=index+1;});
+  var checks=all.map(function(id){var s=byId[id],label=s?sampleLabel(s):id,group=s?(d.groups||[]).filter(function(g){return g.id===s.group;})[0]:null;return '<label class="self-experiment-sample"><input type="checkbox" data-beta-self-sample="'+esc(id)+'"'+(selected.indexOf(id)>=0?' checked':'')+'><span class="self-experiment-sample-number">'+sampleNumbers[id]+'</span><span>'+esc(label)+'</span><small>'+esc(group?group.label:(s&&s.group||"Unknown group"))+'</small></label>';}).join("");
   var significance=stats&&stats.permanova.p!=null?(stats.permanova.p<0.05?'supported group difference':(stats.permanova.p<0.10?'exploratory signal':'no supported group difference')):'not estimable';
   var countText=stats?Object.keys(stats.counts).map(function(key){var g=(d.groups||[]).filter(function(x){return x.id===key;})[0];return (g?g.label:key)+' n='+stats.counts[key];}).join(' · '):'';
-  var statHtml=stats?'<div class="self-experiment-stats"><b>Exploratory recalculation</b><span>PERMANOVA '+(stats.permanova.p==null?'not estimable':'p='+stats.permanova.p.toFixed(3))+' · R²='+(stats.permanova.R2*100).toFixed(1)+'% · pseudo-F='+(stats.permanova.F==null?'not estimable':stats.permanova.F.toFixed(3))+' · '+significance+'</span><span>PERMDISP '+(stats.permdisp?'p='+stats.permdisp.p.toFixed(3)+' · F='+stats.permdisp.F.toFixed(3):'not estimable')+'</span><span>PCoA axes: '+(stats.pcoa.pc1*100).toFixed(1)+'% / '+(stats.pcoa.pc2*100).toFixed(1)+'% ('+stats.pcoa.axes+' positive axes used for statistics)</span><span>Retained group counts: '+esc(countText)+'</span></div>':'<p class="table-caption">Select at least two groups with enough samples to recalculate statistics.</p>';
-  var plot=stats?betaSelfPlotSvg(d,metric,stats,byId):'<div class="self-experiment-empty">No recalculable PCoA for this selection.</div>';
-  var body='<div class="self-experiment-intro"><p>Temporarily remove samples to explore how sensitive the apparent pattern is. This does not change the released report.</p><label>Distance metric <select data-beta-self-metric>'+options+'</select></label><button type="button" class="btn secondary" data-beta-self-reset>Reset to all samples</button></div>'+plot+statHtml+'<div class="self-experiment-samples"><b>Samples</b>'+checks+'</div><p class="table-caption">Exploratory only: sample removal should be justified by independent quality or biological evidence.</p>';
-  return clinicalDetails("Self-experiment",body);
+  var minGroupN=stats?Math.min.apply(null,Object.keys(stats.counts).map(function(key){return stats.counts[key];})):0;
+  var dispersionNote=stats&&!stats.permdisp?(minGroupN<2?'PERMDISP is unavailable because each retained group needs at least two samples.':'PERMDISP is unavailable for this selection because each group has only two samples. Their distances to the group centroid are identical, leaving zero within-group variance for the F-statistic.'):'';
+  var statHtml=stats?'<div class="self-experiment-stats"><b>Exploratory recalculation</b><span>PERMANOVA p<strong>'+(stats.permanova.p==null?'Not estimable':stats.permanova.p.toFixed(3))+'</strong></span><span>PERMANOVA R²<strong>'+(stats.permanova.R2*100).toFixed(1)+'%</strong></span><span>Pseudo-F<strong>'+(stats.permanova.F==null?'Not estimable':stats.permanova.F.toFixed(3))+'</strong></span><span>PERMDISP p / F<strong>'+(stats.permdisp?stats.permdisp.p.toFixed(3)+' / '+stats.permdisp.F.toFixed(3):'Not estimable')+'</strong></span><span>PCoA 1 / PCoA 2<strong>'+(stats.pcoa.pc1*100).toFixed(1)+'% / '+(stats.pcoa.pc2*100).toFixed(1)+'%</strong></span><span>Interpretation<strong>'+esc(significance)+'</strong></span><span>Retained groups<strong>'+esc(countText)+'</strong></span>'+(dispersionNote?'<small class="self-experiment-note">'+esc(dispersionNote)+'</small>':'')+'</div>':'<p class="table-caption">Select at least two groups with enough samples to recalculate statistics.</p>';
+  var plot=stats?betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers):'<div class="self-experiment-empty">No recalculable PCoA for this selection.</div>';
+  var body='<div class="self-experiment-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to test how the result changes. The statistic cards are calculated outputs and cannot be edited directly.</small></div>'+checks+'</div><div class="self-experiment-intro"><label>Distance metric <select data-beta-self-metric>'+options+'</select></label><button type="button" class="btn secondary" data-beta-self-reset>Reset to all samples</button></div><div class="self-experiment-main">'+plot+statHtml+'</div><p class="table-caption">Exploratory only: sample removal should be justified by independent quality or biological evidence.</p></div>';
+  return clinicalDetails("Self-experiment",body).replace('<details class="clinical-details">','<details data-beta-self-details'+(betaSelfState.open?' open':'')+' class="clinical-details">');
 }
-function betaSelfPlotSvg(d,metric,stats,byId){
+function betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers){
   var w=680,h=320,p=42,pts=stats.pcoa.points,xy=pts.map(function(pt){return {x:pt.x,y:pt.y};}),xmin=Math.min.apply(null,xy.map(function(x){return x.x;})),xmax=Math.max.apply(null,xy.map(function(x){return x.x;})),ymin=Math.min.apply(null,xy.map(function(x){return x.y;})),ymax=Math.max.apply(null,xy.map(function(x){return x.y;}));
   var sx=function(x){return p+(x-xmin)/(xmax-xmin||1)*(w-2*p);},sy=function(y){return h-p-(y-ymin)/(ymax-ymin||1)*(h-2*p);};
-  var body=pts.map(function(pt){var s=byId[pt.id],gi=(d.groups||[]).findIndex(function(g){return s&&g.id===s.group;});return '<circle cx="'+sx(pt.x).toFixed(1)+'" cy="'+sy(pt.y).toFixed(1)+'" r="5" fill="'+groupColor(Math.max(0,gi))+'"><title>'+esc(s?sampleLabel(s):pt.id)+'</title></circle>';}).join("");
+  var axisX=Math.max(p,Math.min(w-p,sx(0))),axisY=Math.max(p,Math.min(h-p,sy(0)));
+  var axes='<line x1="'+p+'" y1="'+axisY.toFixed(1)+'" x2="'+(w-p)+'" y2="'+axisY.toFixed(1)+'" stroke="#9AAFC2" stroke-width="1"/><line x1="'+axisX.toFixed(1)+'" y1="'+p+'" x2="'+axisX.toFixed(1)+'" y2="'+(h-p)+'" stroke="#9AAFC2" stroke-width="1"/>';
+  var body=pts.map(function(pt,index){var s=byId[pt.id],gi=(d.groups||[]).findIndex(function(g){return s&&g.id===s.group;}),number=sampleNumbers&&sampleNumbers[pt.id]!=null?sampleNumbers[pt.id]:index+1,x=sx(pt.x),y=sy(pt.y);return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="7" fill="'+groupColor(Math.max(0,gi))+'"><title>'+esc(number+'. '+(s?sampleLabel(s):pt.id))+'</title></circle><text x="'+(x+9).toFixed(1)+'" y="'+(y+4).toFixed(1)+'" font-size="11" font-weight="800" fill="#071B3A">'+number+'</text>';}).join("");
   var legend=(d.groups||[]).filter(function(g){return pts.some(function(pt){var s=byId[pt.id];return s&&s.group===g.id;});}).map(function(g,i){return '<span><i style="background:'+groupColor((d.groups||[]).indexOf(g))+'"></i>'+esc(g.label)+'</span>';}).join("");
-  return '<div class="self-experiment-plot"><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Exploratory '+esc(metricLabel(d,"beta",metric))+' PCoA">'+body+'<text x="'+(w/2)+'" y="'+(h-8)+'" text-anchor="middle">PCoA 1</text><text x="14" y="'+(h/2)+'" transform="rotate(-90 14 '+(h/2)+')" text-anchor="middle">PCoA 2</text></svg><div class="self-experiment-legend">'+legend+'</div></div>';
+  return '<div class="self-experiment-plot"><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Exploratory '+esc(metricLabel(d,"beta",metric))+' PCoA">'+axes+body+'<text x="'+(w/2)+'" y="'+(h-8)+'" text-anchor="middle">PCoA 1</text><text x="14" y="'+(h/2)+'" transform="rotate(-90 14 '+(h/2)+')" text-anchor="middle">PCoA 2</text></svg><div class="self-experiment-legend">'+legend+'</div></div>';
 }
 function betaGroupPattern(d,metric){
   var cents=pcoCentroids(d,metric||defaultBetaMetric(d)),pairs=betaDistancePairs(d,metric).slice().sort(function(a,b){return a.distance-b.distance;});
@@ -4865,6 +4938,26 @@ function seededPairwiseRandom(seedText){
     value^=value+Math.imul(value^(value>>>7),value|61);
     return ((value^(value>>>14))>>>0)/4294967296;
   };
+}
+function pythonRandom(seed){
+  var mt=new Array(624),index=624,key=[(Number(seed)>>>0)];mt[0]=19650218;
+  for(var i=1;i<624;i++)mt[i]=(Math.imul(1812433253,mt[i-1]^(mt[i-1]>>>30))+i)>>>0;
+  i=1;var j=0,k=Math.max(624,key.length);
+  for(var n=0;n<k;n++){mt[i]=(Math.imul(mt[i]^Math.imul(mt[i-1]^(mt[i-1]>>>30),1664525),1)+key[j]+j)>>>0;i++;j++;if(i>=624){mt[0]=mt[623];i=1;}if(j>=key.length)j=0;}
+  for(n=0;n<623;n++){mt[i]=(Math.imul(mt[i]^Math.imul(mt[i-1]^(mt[i-1]>>>30),1566083941),1)-i)>>>0;i++;if(i>=624){mt[0]=mt[623];i=1;}}
+  mt[0]=0x80000000;
+  function twist(){for(var q=0;q<624;q++){var y=(mt[q]&0x80000000)|(mt[(q+1)%624]&0x7fffffff);mt[q]=(mt[(q+397)%624]^(y>>>1)^((y&1)?0x9908b0df:0))>>>0;}index=0;}
+  function word(){if(index>=624)twist();var y=mt[index++];y^=y>>>11;y^=y<<7&0x9d2c5680;y^=y<<15&0xefc60000;y^=y>>>18;return y>>>0;}
+  function bits(k){return word()>>>(32-k);}
+  function rand(){return ((bits(27)*67108864)+bits(26))/9007199254740992;}
+  function below(n){var k=Math.ceil(Math.log(n+1)/Math.LN2),r;do{r=bits(k);}while(r>=n);return r;}
+  return {shuffle:function(array){for(var q=array.length-1;q>0;q--){var swap=below(q+1),tmp=array[q];array[q]=array[swap];array[swap]=tmp;}},random:rand};
+}
+function betaSelfSeed(metric,selected,all){
+  var same=selected.length===all.length&&selected.every(function(id,i){return id===all[i];});
+  if(same)return 20260820;
+  var hash=2166136261;String(metric+"|"+selected.slice().sort().join(",")).split("").forEach(function(ch){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);});
+  return hash>>>0;
 }
 function betaPairwisePermanova(matrix,indicesA,indicesB,seedText){
   var indices=indicesA.concat(indicesB),nA=indicesA.length,nB=indicesB.length,n=indices.length,d2=[];
@@ -7891,6 +7984,7 @@ function secAlpha(){
   html+=releasedFigurePanel("alpha","Diversity chart","",alphaWhatNextPanel(d,{embedded:true}));
   if(!isWhatNext){
     html+='<div id="page-details" class="guided-anchor">'+clinicalDetails("Sample diversity details",alphaInspectionTable(d,primary))+'</div>';
+    html+='<div class="guided-anchor">'+alphaSelfExperimentPanel(d)+'</div>';
     var alphaSupplementMetric=selectedAlphaFig?figureAlphaMetric(d,figureText(selectedAlphaFig)):alphaState.metric;
     html+=supplementFigureStack([alphaSupplementFigureForMetric(alphaSupplementMetric)]);
   }
@@ -8067,9 +8161,9 @@ function secBeta(){
   html+=releasedFigurePanel("beta","Relationship map","",betaWhatNextPanel(d,{embedded:true}));
   if(!isWhatNext){
     html+='<div id="page-details" class="guided-anchor">'+clinicalDetails("Group distance details",betaInspectionTable(d,betaState.metric))+'</div>';
-    html+=betaSupplementFigurePanel(d,betaState.metric,selectedBetaFig);
   }
   html+='<div class="guided-anchor">'+betaSelfExperimentPanel(d)+'</div>';
+  if(!isWhatNext)html+=betaSupplementFigurePanel(d,betaState.metric,selectedBetaFig);
   html+=nextBar();
   return html;
 }
@@ -9236,6 +9330,23 @@ function wireSectionButtons(){
   $$("[data-beta-self-reset]",$("#content")).forEach(function(button){button.addEventListener("click",function(){
     var metric=betaSelfState.metric||defaultBetaMetric(ds()),matrix=ds().betaDistanceMatrices&&ds().betaDistanceMatrices[metric];
     if(matrix)betaSelfState.selected[metric]=matrix.ids.slice();
+    showSection(state.section,{preserveScroll:true});
+  });});
+  $$("[data-beta-self-details]",$("#content")).forEach(function(details){details.addEventListener("toggle",function(){
+    betaSelfState.open=details.open;
+  });});
+  $$("[data-alpha-self-details]",$("#content")).forEach(function(details){details.addEventListener("toggle",function(){
+    alphaSelfState.open=details.open;
+  });});
+  $$("[data-alpha-self-sample]",$("#content")).forEach(function(input){input.addEventListener("change",function(){
+    var current=alphaSelfState.selected;if(!current)current=(ds().samples||[]).map(function(s){return String(s.raw||s.id);});
+    if(input.checked){if(current.indexOf(input.dataset.alphaSelfSample)<0)current.push(input.dataset.alphaSelfSample);}
+    else current=current.filter(function(id){return id!==input.dataset.alphaSelfSample;});
+    alphaSelfState.selected=current;
+    showSection(state.section,{preserveScroll:true});
+  });});
+  $$("[data-alpha-self-reset]",$("#content")).forEach(function(button){button.addEventListener("click",function(){
+    alphaSelfState.selected=(ds().samples||[]).map(function(s){return String(s.raw||s.id);});
     showSection(state.section,{preserveScroll:true});
   });});
   $$("[data-chart-size]",$("#content")).forEach(function(input){input.addEventListener("input",function(){
