@@ -78,20 +78,26 @@ if [[ -n "$vps_commit" ]] && git cat-file -e "$vps_commit^{commit}" 2>/dev/null;
   fi
 fi
 
-cloud_run_image="$(gcloud run services describe "$cloud_run_service" \
-  --project "$gcp_project" \
-  --region "$cloud_run_region" \
-  --format='value(spec.template.spec.containers[0].image)' 2>/dev/null || true)"
-cloud_run_commit="${cloud_run_image##*:}"
 deploy_cloud_run=true
-if [[ -n "$cloud_run_commit" ]] && git cat-file -e "$cloud_run_commit^{commit}" 2>/dev/null; then
-  if git diff --quiet "$cloud_run_commit" "$release_commit" -- \
-    'portal-backend/*.js' \
-    portal-backend/package.json \
-    portal-backend/package-lock.json \
-    portal-backend/Dockerfile \
-    portal-backend/.gcloudignore \
-    portal-backend/deploy/cloud-run; then
+cloud_run_paths=(
+  'portal-backend/*.js'
+  portal-backend/package.json
+  portal-backend/package-lock.json
+  portal-backend/Dockerfile
+  portal-backend/.gcloudignore
+  portal-backend/deploy/cloud-run
+)
+if [[ -n "$vps_commit" ]] && git cat-file -e "$vps_commit^{commit}" 2>/dev/null \
+  && git diff --quiet "$vps_commit" "$release_commit" -- "${cloud_run_paths[@]}"; then
+  deploy_cloud_run=false
+else
+  cloud_run_image="$(gcloud run services describe "$cloud_run_service" \
+    --project "$gcp_project" \
+    --region "$cloud_run_region" \
+    --format='value(spec.template.spec.containers[0].image)' 2>/dev/null || true)"
+  cloud_run_commit="${cloud_run_image##*:}"
+  if [[ -n "$cloud_run_commit" ]] && git cat-file -e "$cloud_run_commit^{commit}" 2>/dev/null \
+    && git diff --quiet "$cloud_run_commit" "$release_commit" -- "${cloud_run_paths[@]}"; then
     deploy_cloud_run=false
   fi
 fi
