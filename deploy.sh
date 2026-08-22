@@ -66,15 +66,37 @@ if ! git diff --cached --quiet -- client-portal.html client_supplements portal-b
 fi
 release_commit="$(git rev-parse HEAD)"
 
-remote_commit="$(ssh "$vps_host" "test -f '$vps_app_dir/.deployed-git-commit' && cat '$vps_app_dir/.deployed-git-commit' || true")"
-deploy_backend=true
-if [[ -n "$remote_commit" ]] && git cat-file -e "$remote_commit^{commit}" 2>/dev/null; then
-  if git diff --quiet "$remote_commit" "$release_commit" -- portal-backend; then
-    deploy_backend=false
+vps_commit="$(ssh "$vps_host" "test -f '$vps_app_dir/.deployed-git-commit' && cat '$vps_app_dir/.deployed-git-commit' || true")"
+deploy_vps=true
+if [[ -n "$vps_commit" ]] && git cat-file -e "$vps_commit^{commit}" 2>/dev/null; then
+  if git diff --quiet "$vps_commit" "$release_commit" -- \
+    'portal-backend/*.js' \
+    portal-backend/package.json \
+    portal-backend/package-lock.json \
+    portal-backend/deploy/hostinger; then
+    deploy_vps=false
   fi
 fi
 
-if [[ "$deploy_backend" == true ]]; then
+cloud_run_image="$(gcloud run services describe "$cloud_run_service" \
+  --project "$gcp_project" \
+  --region "$cloud_run_region" \
+  --format='value(spec.template.spec.containers[0].image)' 2>/dev/null || true)"
+cloud_run_commit="${cloud_run_image##*:}"
+deploy_cloud_run=true
+if [[ -n "$cloud_run_commit" ]] && git cat-file -e "$cloud_run_commit^{commit}" 2>/dev/null; then
+  if git diff --quiet "$cloud_run_commit" "$release_commit" -- \
+    'portal-backend/*.js' \
+    portal-backend/package.json \
+    portal-backend/package-lock.json \
+    portal-backend/Dockerfile \
+    portal-backend/.gcloudignore \
+    portal-backend/deploy/cloud-run; then
+    deploy_cloud_run=false
+  fi
+fi
+
+if [[ "$deploy_cloud_run" == true ]]; then
   image="$artifact_image:$release_commit"
   printf '\nDeploying private-report API to Cloud Run...\n'
   gcloud builds submit "$backend_dir" \
@@ -98,7 +120,11 @@ if [[ "$deploy_backend" == true ]]; then
     --set-secrets SESSION_SECRET=kreatbio-report-session-secret:latest \
     --quiet
   curl --retry 8 --retry-all-errors -fsS "$report_api_url/api/health" >/dev/null
+else
+  printf '\nCloud Run report API is unchanged; skipping its rebuild.\n'
+fi
 
+if [[ "$deploy_vps" == true ]]; then
   printf '\nDeploying chatbot API to Hostinger...\n'
   runtime_files=("$backend_dir"/*.js "$backend_dir"/package.json "$backend_dir"/package-lock.json)
   ssh "$vps_host" "install -d -m 700 '$remote_stage'"
@@ -155,7 +181,7 @@ printf '%s\n' "$release_commit" > "$vps_app_dir/.deployed-git-commit"
 trap - ERR
 REMOTE
 else
-  printf '\nBackend is unchanged; skipping Cloud Run and VPS deployment.\n'
+  printf '\nHostinger chatbot API is unchanged; skipping its restart.\n'
 fi
 
 printf '\nPublishing GitHub Pages...\n'
