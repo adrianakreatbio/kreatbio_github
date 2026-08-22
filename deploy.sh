@@ -185,7 +185,21 @@ else
 fi
 
 printf '\nPublishing GitHub Pages...\n'
-git push origin master
+github_username="adrianakreatbio"
+read -r -s -p "GitHub personal access token for $github_username: " github_token
+printf '\n'
+[[ -n "$github_token" ]] || fail "a GitHub personal access token is required to publish the portal."
+if ! GIT_TERMINAL_PROMPT=0 \
+  KREATBIO_GITHUB_USERNAME="$github_username" \
+  KREATBIO_GITHUB_TOKEN="$github_token" \
+  git \
+    -c credential.helper= \
+    -c 'credential.helper=!f() { if [ "$1" = get ]; then printf "username=%s\npassword=%s\n" "$KREATBIO_GITHUB_USERNAME" "$KREATBIO_GITHUB_TOKEN"; fi; }; f' \
+    push origin master; then
+  unset github_token KREATBIO_GITHUB_TOKEN
+  fail "GitHub rejected the push. Check that the token can write to this repository."
+fi
+unset github_token KREATBIO_GITHUB_TOKEN
 
 printf '\nVerifying live services...\n'
 curl --retry 8 --retry-all-errors -fsS "$report_api_url/api/health" >/dev/null
