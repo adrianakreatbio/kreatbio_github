@@ -2,7 +2,7 @@
   "use strict";
 
   const GRID_SIZE = 20;
-  const START_SPEED = 400;
+  const START_SPEED = 300;
   const MIN_SPEED = 90;
   const SPEED_STEP = 5;
   const SPEED_INTERVAL = 1;

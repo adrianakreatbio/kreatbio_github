@@ -116,11 +116,14 @@ app.get("/healthz", (req, res) => {
 app.post("/api/session", async (req, res, next) => {
   try {
     const code = normalizeCode(req.body?.code);
+    const pendingAccess = reportAccessStore.authorize(code, { requireOpening: true });
     const manifest = await readManifest(code);
     validateManifestCode(code, manifest);
     validateManifestAssay(code, manifest);
+    const report = await sanitizeManifest(code, manifest, pendingAccess);
+    const access = reportAccessStore.consume(code);
     const token = signToken({ code, scope: "report" });
-    res.json({ token, report: sanitizeManifest(code, manifest) });
+    res.json({ token, report: { ...report, access: publicReportAccess(access) } });
   } catch (err) {
     next(err);
   }
@@ -128,10 +131,12 @@ app.post("/api/session", async (req, res, next) => {
 
 app.get("/api/report", requireSession, async (req, res, next) => {
   try {
+    const access = reportAccessStore.authorize(req.session.code);
     const manifest = await readManifest(req.session.code);
     validateManifestCode(req.session.code, manifest);
     validateManifestAssay(req.session.code, manifest);
-    res.json(sanitizeManifest(req.session.code, manifest));
+    const report = await sanitizeManifest(req.session.code, manifest, access);
+    res.json({ ...report, access: publicReportAccess(access) });
   } catch (err) {
     next(err);
   }
@@ -153,7 +158,7 @@ app.get("/api/files/:fileId", requireSession, async (req, res, next) => {
     }
     res.setHeader("Content-Type", contentType(file));
     res.setHeader("Content-Disposition", `attachment; filename="${safeDownloadName(file)}"`);
-    if (GCS_ACCESS_TOKEN) {
+    if (hasGcsHmac() || GCS_ACCESS_TOKEN) {
       const buffer = await gcsDownloadBuffer(objectName);
       res.end(buffer);
       return;
@@ -177,7 +182,7 @@ app.get("/api/files/:fileId/view", requireSession, async (req, res, next) => {
     }
     res.setHeader("Content-Type", contentType(file));
     res.setHeader("Content-Disposition", `inline; filename="${safeDownloadName(file)}"`);
-    if (GCS_ACCESS_TOKEN) {
+    if (hasGcsHmac() || GCS_ACCESS_TOKEN) {
       const buffer = await gcsDownloadBuffer(objectName);
       res.end(buffer);
       return;
@@ -290,6 +295,7 @@ app.post("/api/external/string/network", requireSession, async (req, res, next) 
 app.post("/api/chat/session", requirePortalChatOrigin, (req, res, next) => {
   try {
     const code = normalizeCode(req.body?.code);
+    reportAccessStore.authorize(code);
     const quota = chatQuotaStore.authenticate(code);
     const token = signToken({ code, scope: "chat" });
     res.json({ token, ...publicChatQuota(quota) });
@@ -996,11 +1002,18 @@ function validateManifestAssay(code, manifest) {
   }
 }
 
-function sanitizeManifest(code, manifest) {
+async function sanitizeManifest(code, manifest, access) {
   const assay = assayForCode(code);
   const filteredManifest = filterManifestForAssay({ ...manifest, assay });
-  const files = normalizeFiles(filteredManifest).map(publicFile);
+  const files = normalizeFiles(filteredManifest).map((file) => publicFileWithSignedUrl(code, file, access));
   const modules = supportedModules(filteredManifest).map(publicModule);
+  const reportPdf = manifest.report_pdf ? publicReportPdf(manifest.report_pdf) : defaultReportPdf(files);
+  if (reportPdf) {
+    const matchingFile = files.find((file) => file.id === reportPdf.fileId);
+    if (matchingFile?.url) reportPdf.url = matchingFile.url;
+    const pdfPath = manifest.report_pdf && (manifest.report_pdf.path || manifest.report_pdf.gcs_path);
+    if (!reportPdf.url && pdfPath) reportPdf.url = signedObjectUrl(code, cleanRelativePath(pdfPath), access);
+  }
   return {
     code,
     client_name: manifest.client_name || manifest.client || "KreatBio client",
@@ -1014,7 +1027,8 @@ function sanitizeManifest(code, manifest) {
     released_at: manifest.released_at || manifest.created_at || "",
     inferred: Boolean(manifest.inferred),
     samples: manifest.samples || null,
-    report_pdf: manifest.report_pdf ? publicReportPdf(manifest.report_pdf) : defaultReportPdf(files),
+    report_pdf: reportPdf,
+    signed_urls_expire_at: signedUrlExpiration(access).toISOString(),
     files,
     modules
   };
@@ -1066,6 +1080,7 @@ function requireSession(req, res, next) {
     const header = req.get("authorization") || "";
     const token = header.toLowerCase().startsWith("bearer ") ? header.slice(7) : req.query.token;
     req.session = verifyToken(token, "report");
+    reportAccessStore.authorize(req.session.code);
     next();
   } catch (err) {
     next(err);
@@ -1090,6 +1105,15 @@ function publicChatQuota(quota) {
     token_limit: quota.tokenLimit,
     tokens_used: quota.tokensUsed,
     tokens_remaining: quota.tokensRemaining
+  };
+}
+
+function publicReportAccess(access) {
+  return {
+    openings_limit: access.maxOpenings,
+    openings_used: access.openingsUsed,
+    openings_remaining: access.openingsRemaining,
+    expires_at: access.expiresAt
   };
 }
 
@@ -1387,6 +1411,33 @@ function publicFile(file) {
   return out;
 }
 
+function publicFileWithSignedUrl(code, file, access) {
+  const out = publicFile(file);
+  const url = signedObjectUrl(code, file.path, access);
+  if (url) out.url = url;
+  return out;
+}
+
+function signedObjectUrl(code, relativePath, access) {
+  if (!GCS_HMAC_ACCESS_ID || !GCS_HMAC_SECRET) return "";
+  return createGcsSignedUrl({
+    bucket: GCS_BUCKET,
+    objectName: objectPath(code, relativePath),
+    accessId: GCS_HMAC_ACCESS_ID,
+    secret: GCS_HMAC_SECRET,
+    expiresSeconds: signedUrlLifetime(access)
+  });
+}
+
+function signedUrlLifetime(access) {
+  const untilAccessExpiry = Math.floor((new Date(access.expiresAt).getTime() - Date.now()) / 1000);
+  return Math.max(1, Math.min(GCS_SIGNED_URL_TTL_SECONDS, SESSION_TTL_SECONDS, untilAccessExpiry));
+}
+
+function signedUrlExpiration(access) {
+  return new Date(Date.now() + signedUrlLifetime(access) * 1000);
+}
+
 function publicReportPdf(pdf) {
   return {
     fileId: safeId(pdf.fileId || pdf.id || "report"),
@@ -1396,7 +1447,7 @@ function publicReportPdf(pdf) {
 
 function defaultReportPdf(files) {
   const pdf = files.find((file) => file.role === "report" || file.type === "pdf" || file.format === "pdf");
-  return pdf ? { fileId: pdf.id, name: pdf.name } : null;
+  return pdf ? { fileId: pdf.id, name: pdf.name, ...(pdf.url ? { url: pdf.url } : {}) } : null;
 }
 
 function findFile(manifest, fileId) {
@@ -1429,6 +1480,12 @@ function objectPath(code, relativePath) {
 }
 
 async function gcsObjectExists(objectName) {
+  if (hasGcsHmac()) {
+    const res = await fetch(signedGcsRequestUrl(objectName, "HEAD"), { method: "HEAD" });
+    if (res.status === 404) return false;
+    if (!res.ok) throw await gcsSignedRequestError(res, "check GCS object access");
+    return true;
+  }
   if (GCS_ACCESS_TOKEN) {
     const res = await fetch(gcsMetadataUrl(objectName), { headers: gcsAuthHeaders() });
     if (res.status === 404) {
@@ -1451,6 +1508,12 @@ async function gcsObjectExists(objectName) {
 }
 
 async function gcsGetMetadata(objectName) {
+  if (hasGcsHmac()) {
+    const res = await fetch(signedGcsRequestUrl(objectName, "HEAD"), { method: "HEAD" });
+    if (res.status === 404) throw httpError(404, "Requested file is not available in this report folder.");
+    if (!res.ok) throw await gcsSignedRequestError(res, "read GCS object metadata");
+    return { size: Number(res.headers.get("content-length") || 0) };
+  }
   if (GCS_ACCESS_TOKEN) {
     const res = await fetch(gcsMetadataUrl(objectName), { headers: gcsAuthHeaders() });
     if (res.status === 404) {
@@ -1473,6 +1536,16 @@ async function gcsGetMetadata(objectName) {
 }
 
 async function gcsDownloadBuffer(objectName, range) {
+  if (hasGcsHmac()) {
+    const headers = {};
+    if (range && Number.isFinite(range.start) && Number.isFinite(range.end)) {
+      headers.Range = `bytes=${range.start}-${range.end}`;
+    }
+    const res = await fetch(signedGcsRequestUrl(objectName, "GET"), { headers });
+    if (res.status === 404) throw httpError(404, "Requested file is not available in this report folder.");
+    if (!res.ok && res.status !== 206) throw await gcsSignedRequestError(res, "download GCS object");
+    return Buffer.from(await res.arrayBuffer());
+  }
   if (GCS_ACCESS_TOKEN) {
     const headers = gcsAuthHeaders();
     if (range && Number.isFinite(range.start) && Number.isFinite(range.end)) {
@@ -1502,6 +1575,27 @@ async function gcsDownloadBuffer(objectName, range) {
 }
 
 async function gcsListObjectNames(prefix) {
+  if (hasGcsHmac()) {
+    const names = [];
+    let continuationToken = "";
+    do {
+      const query = { "list-type": "2", prefix };
+      if (continuationToken) query["continuation-token"] = continuationToken;
+      const url = createGcsSignedUrl({
+        bucket: GCS_BUCKET,
+        accessId: GCS_HMAC_ACCESS_ID,
+        secret: GCS_HMAC_SECRET,
+        expiresSeconds: 60,
+        query
+      });
+      const res = await fetch(url);
+      if (!res.ok) throw await gcsSignedRequestError(res, "list GCS objects");
+      const xml = await res.text();
+      names.push(...xmlElements(xml, "Key"));
+      continuationToken = xmlElements(xml, "NextContinuationToken")[0] || "";
+    } while (continuationToken);
+    return names;
+  }
   if (GCS_ACCESS_TOKEN) {
     const names = [];
     let pageToken = "";
@@ -1530,6 +1624,47 @@ async function gcsListObjectNames(prefix) {
   } catch (err) {
     throw gcsClientError(err);
   }
+}
+
+function hasGcsHmac() {
+  return Boolean(GCS_HMAC_ACCESS_ID && GCS_HMAC_SECRET);
+}
+
+function signedGcsRequestUrl(objectName, method) {
+  return createGcsSignedUrl({
+    bucket: GCS_BUCKET,
+    objectName,
+    accessId: GCS_HMAC_ACCESS_ID,
+    secret: GCS_HMAC_SECRET,
+    expiresSeconds: 60,
+    method
+  });
+}
+
+function xmlElements(xml, tag) {
+  const expression = new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`, "g");
+  return Array.from(String(xml || "").matchAll(expression), (match) => decodeXml(match[1]));
+}
+
+function decodeXml(value) {
+  return String(value)
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&");
+}
+
+async function gcsSignedRequestError(res, action) {
+  let detail = "";
+  try {
+    const text = await res.text();
+    detail = xmlElements(text, "Message")[0] || "";
+  } catch {}
+  if (res.status === 401 || res.status === 403) {
+    return httpError(503, detail || `The portal's private GCS credential cannot ${action}.`);
+  }
+  return httpError(502, detail || `Unable to ${action} (${res.status}).`);
 }
 
 function gcsClientError(err) {

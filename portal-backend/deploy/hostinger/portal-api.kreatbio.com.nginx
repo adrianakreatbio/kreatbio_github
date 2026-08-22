@@ -1,12 +1,36 @@
 limit_req_zone $binary_remote_addr zone=kreatbio_portal_general:10m rate=10r/s;
+limit_req_zone $binary_remote_addr zone=kreatbio_portal_session:10m rate=10r/m;
 limit_req_zone $binary_remote_addr zone=kreatbio_portal_chat:10m rate=10r/m;
 
 server {
     listen 80;
     listen [::]:80;
     server_name portal-api.kreatbio.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name portal-api.kreatbio.com;
+
+    ssl_certificate /etc/letsencrypt/live/portal-api.kreatbio.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/portal-api.kreatbio.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
     client_max_body_size 1m;
+
+    location = /api/session {
+        limit_req zone=kreatbio_portal_session burst=5 nodelay;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 30s;
+    }
 
     location = /api/chat {
         limit_req zone=kreatbio_portal_chat burst=5 nodelay;
@@ -30,6 +54,17 @@ server {
         proxy_read_timeout 15s;
     }
 
+    location /api/ {
+        limit_req zone=kreatbio_portal_general burst=30 nodelay;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 30s;
+    }
+
     location = /healthz {
         limit_req zone=kreatbio_portal_general burst=30 nodelay;
         proxy_pass http://127.0.0.1:8080;
@@ -38,7 +73,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_read_timeout 75s;
+        proxy_read_timeout 15s;
     }
 
     location / {

@@ -71,7 +71,10 @@ if [[ "$deploy_backend" == true ]]; then
   printf '\nDeploying chatbot backend to Hostinger...\n'
   runtime_files=("$backend_dir"/*.js "$backend_dir"/package.json "$backend_dir"/package-lock.json)
   ssh "$vps_host" "install -d -m 700 '$remote_stage'"
-  scp "${runtime_files[@]}" "$backend_dir/deploy/hostinger/kreatbio-portal.service" "$vps_host:$remote_stage/"
+  scp "${runtime_files[@]}" \
+    "$backend_dir/deploy/hostinger/kreatbio-portal.service" \
+    "$backend_dir/deploy/hostinger/portal-api.kreatbio.com.nginx" \
+    "$vps_host:$remote_stage/"
   ssh "$vps_host" bash -s -- "$remote_stage" "$vps_app_dir" "$release_id" "$release_commit" <<'REMOTE'
 set -Eeuo pipefail
 remote_stage="$1"
@@ -85,6 +88,8 @@ for file in "$vps_app_dir"/*.js "$vps_app_dir"/package.json "$vps_app_dir"/packa
   [[ -e "$file" ]] && cp -a "$file" "$backup_dir/"
 done
 [[ -e /etc/systemd/system/kreatbio-portal.service ]] && cp -a /etc/systemd/system/kreatbio-portal.service "$backup_dir/"
+[[ -e /etc/nginx/sites-available/portal-api.kreatbio.com ]] && cp -a /etc/nginx/sites-available/portal-api.kreatbio.com "$backup_dir/portal-api.available"
+[[ -e /etc/nginx/sites-enabled/portal-api.kreatbio.com ]] && cp -a /etc/nginx/sites-enabled/portal-api.kreatbio.com "$backup_dir/portal-api.enabled"
 
 rollback() {
   printf 'Backend deployment failed; restoring %s.\n' "$backup_dir" >&2
@@ -92,10 +97,14 @@ rollback() {
   if [[ -e "$backup_dir/kreatbio-portal.service" ]]; then
     install -m 0644 "$backup_dir/kreatbio-portal.service" /etc/systemd/system/kreatbio-portal.service
   fi
+  [[ -e "$backup_dir/portal-api.available" ]] && install -m 0644 "$backup_dir/portal-api.available" /etc/nginx/sites-available/portal-api.kreatbio.com
+  [[ -e "$backup_dir/portal-api.enabled" ]] && install -m 0644 "$backup_dir/portal-api.enabled" /etc/nginx/sites-enabled/portal-api.kreatbio.com
   cd "$vps_app_dir"
   npm ci --omit=dev >/dev/null
   systemctl daemon-reload
   systemctl restart kreatbio-portal
+  nginx -t >/dev/null
+  systemctl reload nginx
 }
 trap rollback ERR
 
@@ -103,10 +112,14 @@ install -m 0644 "$remote_stage"/*.js "$remote_stage"/package.json "$remote_stage
 cd "$vps_app_dir"
 npm ci --omit=dev
 install -m 0644 "$remote_stage/kreatbio-portal.service" /etc/systemd/system/kreatbio-portal.service
+install -m 0644 "$remote_stage/portal-api.kreatbio.com.nginx" /etc/nginx/sites-available/portal-api.kreatbio.com
+install -m 0644 "$remote_stage/portal-api.kreatbio.com.nginx" /etc/nginx/sites-enabled/portal-api.kreatbio.com
 systemctl daemon-reload
 systemctl restart kreatbio-portal
 systemctl is-active --quiet kreatbio-portal
 curl -fsS http://127.0.0.1:8080/healthz >/dev/null
+nginx -t
+systemctl reload nginx
 printf '%s\n' "$release_commit" > "$vps_app_dir/.deployed-git-commit"
 trap - ERR
 REMOTE

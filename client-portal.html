@@ -1951,7 +1951,7 @@ function exampleReportCode(){
 function assayLabel(id){var a=ASSAYS[id]||{};return [a.kingdom,a.marker,a.region].filter(Boolean).join(" · ")||"Report";}
 
 /* ---------------- app state ---------------- */
-var state={assay:"",mode:"plain",section:"welcome",pipeStep:0,visited:{},token:"",localExample:false,report:null,apiBase:configuredApiBase(),chatApiBase:configuredChatApiBase(),chatToken:"",chatQuota:null,chatAvailable:false,chatAuthError:"",chartIndex:{taxonomy:0,alpha:0,beta:0,functional:0},chartView:{alpha:"chart",beta:"chart",functional:"chart"},chartWidth:storedChartWidth(),chartZoom:100,metricReturnSection:"",taxonomyRankTables:{},taxonomyRankIndex:0,groupBy:"",flowFilter:"diversity",flowQuery:"",filesFilter:"all",metricFilter:"all",glossaryFilter:"all",learningTopic:"all",learningIndex:0,chatMessages:[],chatBusy:false,reportHydrating:false};
+var state={assay:"",mode:"plain",section:"welcome",pipeStep:0,visited:{},token:"",localExample:false,report:null,reportRefreshPromise:null,apiBase:configuredApiBase(),chatApiBase:configuredChatApiBase(),chatToken:"",chatQuota:null,chatAvailable:false,chatAuthError:"",chartIndex:{taxonomy:0,alpha:0,beta:0,functional:0},chartView:{alpha:"chart",beta:"chart",functional:"chart"},chartWidth:storedChartWidth(),chartZoom:100,metricReturnSection:"",taxonomyRankTables:{},taxonomyRankIndex:0,groupBy:"",flowFilter:"diversity",flowQuery:"",filesFilter:"all",metricFilter:"all",glossaryFilter:"all",learningTopic:"all",learningIndex:0,chatMessages:[],chatBusy:false,reportHydrating:false};
 function baseDataset(){
   var assay=ASSAYS[state.assay];
   return assay&&DATASETS[assay.data]?DATASETS[assay.data]:emptyReportDataset({code:exampleReportCode()});
@@ -1961,7 +1961,8 @@ function configuredApiBase(){
   var params=new URLSearchParams(window.location.search);
   var fromUrl=params.get("api");
   var fromServer=window.KREATBIO_PORTAL_API||"";
-  var base=(fromUrl||fromServer||"").replace(/\/+$/,"");
+  var hostedDefault=/^(www\.)?kreatbio\.com$/i.test(window.location.hostname)?"https://portal-api.kreatbio.com":"";
+  var base=(fromUrl||fromServer||hostedDefault||"").replace(/\/+$/,"");
   if(base)return base;
   return window.location.protocol==="file:"?"http://localhost:8080":window.location.origin;
 }
@@ -2086,12 +2087,35 @@ async function loadFileText(file){
     return await localRes.text();
   }
   if(!state.token)return "";
-  var res=await apiJson("/api/files/"+encodeURIComponent(file.id)+"/text",{timeoutMs:12000});
-  return res.text||"";
+  return await fetchReportFileText(file);
 }
 async function manifestText(file){
   if(state.localExample)return {text:await loadFileText(file)};
-  return apiJson("/api/files/"+encodeURIComponent(file.id)+"/text",{timeoutMs:12000});
+  return {text:await fetchReportFileText(file)};
+}
+async function refreshReportUrls(){
+  if(state.localExample||!state.token)return state.report;
+  if(state.reportRefreshPromise)return state.reportRefreshPromise;
+  state.reportRefreshPromise=apiJson("/api/report",{timeoutMs:12000}).then(function(report){
+    state.report=report;
+    return report;
+  }).finally(function(){state.reportRefreshPromise=null;});
+  return state.reportRefreshPromise;
+}
+async function fetchReportFileText(file){
+  var current=manifestFileById(file&&file.id)||file;
+  if(!current||!current.url){
+    var fallback=await apiJson("/api/files/"+encodeURIComponent(current&&current.id||"")+"/text",{timeoutMs:12000});
+    return fallback.text||"";
+  }
+  var res=await fetch(current.url);
+  if((res.status===401||res.status===403)&&state.token){
+    await refreshReportUrls();
+    current=manifestFileById(file.id)||current;
+    res=await fetch(current.url);
+  }
+  if(!res.ok)throw new Error("Report file unavailable: "+(current.name||current.id||"file"));
+  return await res.text();
 }
 function parseTableRows(text){
   var lines=String(text||"").split(/\r?\n/).filter(function(line){return line.trim()&&!/^#q2:types/i.test(line.trim());});
@@ -5768,6 +5792,7 @@ function currentReleasedFigure(kind){
 }
 function figureViewUrl(file){
   if(state.localExample)return String(file&&file.path||"").indexOf("client_supplements/")===0?String(file.path):"client_supplements/example1/"+String(file&&file.path||"");
+  if(file&&file.url)return file.url;
   return apiUrl("/api/files/"+encodeURIComponent(file.id)+"/view?token="+encodeURIComponent(state.token));
 }
 function chartWidthValue(){
@@ -6191,7 +6216,7 @@ function ensureTaxonomyRankData(rank,method,onDone){
   var file=taxonomyRankFile(rank,method);
   if(!file||(!state.token&&!state.localExample)){state.taxonomyRankTables[key]={status:"missing"};return;}
   state.taxonomyRankTables[key]={status:"loading",fileId:file.id,callbacks:onDone?[onDone]:[]};
-  var textPromise=state.localExample?loadFileText(file).then(function(text){return {text:text};}):apiJson("/api/files/"+encodeURIComponent(file.id)+"/text",{timeoutMs:12000});
+  var textPromise=manifestText(file);
   textPromise.then(function(res){
     var callbacks=(state.taxonomyRankTables[key]&&state.taxonomyRankTables[key].callbacks)||[];
     var parsed=parseTaxonomyAbundanceText(res.text,rank,ds());

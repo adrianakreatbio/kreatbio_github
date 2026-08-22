@@ -1,17 +1,22 @@
 # KreatBio Client Portal Backend
 
-Cloud Run API for `client-portal.html`.
+Hostinger VPS API for `client-portal.html`. It validates report access, issues short-lived private GCS links, and handles Gemini report chat.
 
 ## Required Environment
 
 - `GCS_BUCKET`: Google Cloud Storage bucket containing report folders.
 - `GCS_CLIENT_PREFIX`: optional parent folder for client code folders, for example `clients26`.
+- `GCS_HMAC_ACCESS_ID_FILE` and `GCS_HMAC_SECRET_FILE`: restricted GCS HMAC credential files used by the VPS to read the private bucket and sign temporary browser links.
+- `GCS_SIGNED_URL_TTL_SECONDS`: optional signed-link lifetime, defaults to 1800 seconds.
 - `GCS_ACCESS_TOKEN`: optional short-lived local test token from `gcloud auth print-access-token`; do not use in production.
 - `SESSION_SECRET`: random secret with at least 32 characters.
 - `GEMINI_API_KEY`: optional; enables the bottom-right report chat.
 - `GEMINI_MODEL`: optional, defaults to `gemini-3.5-flash-lite`.
 - `CHAT_CONTEXT_LIMIT`: optional maximum validated browser-generated report context in bytes, defaults to 81920.
 - `CHAT_QUOTA_DB`: SQLite quota ledger path; use `/var/lib/kreatbio-portal/chat-quota.sqlite` on the VPS.
+- `REPORT_ACCESS_DB`: SQLite report-opening ledger path; use `/var/lib/kreatbio-portal/report-access.sqlite` on the VPS.
+- `REPORT_ACCESS_MAX_OPENINGS`: default opening limit, set to `30`.
+- `REPORT_ACCESS_DAYS`: default access duration, set to `60`.
 - `CHAT_TOKEN_LIMIT`: allowance assigned to new reports, defaults to 100000 lifetime tokens.
 - `CHAT_MAX_OUTPUT_TOKENS`: maximum tokens in one assistant answer, defaults to 1000.
 - `CHAT_RESERVATION_TTL_SECONDS`: recovery time for interrupted requests, defaults to 900.
@@ -58,6 +63,19 @@ npm run quota -- reset REPORT_CODE
 ```
 
 `increase` adds tokens to the lifetime limit. `reset` deliberately clears recorded usage while retaining the current limit. There is no public administration endpoint.
+
+## Report Access Administration
+
+Activate each released report on the VPS. The default window is 30 successful openings over 60 days:
+
+```bash
+sudo -u kreatbio-portal env \
+  REPORT_ACCESS_DB=/var/lib/kreatbio-portal/report-access.sqlite \
+  SESSION_SECRET_FILE=/etc/kreatbio-portal/session-secret \
+  npm run access -- add 120000000
+```
+
+Use `status`, `disable`, `enable`, or `reset` for administration. `reset` starts a fresh 60-day window and clears the opening count. Report codes are stored as keyed hashes, not plaintext.
 
 ## GCS Layout
 
@@ -110,29 +128,12 @@ Then enter:
 000000001
 ```
 
-## Cloud Run Build
+## Deployment
 
-Run from the repository root:
-
-```bash
-gcloud builds submit --config portal-backend/cloudbuild.yaml .
-```
-
-Deploy:
+The production API runs on the existing Hostinger VPS. From the repository root:
 
 ```bash
-gcloud run deploy kreatbio-client-portal \
-  --image gcr.io/PROJECT_ID/kreatbio-client-portal \
-  --region asia-southeast1 \
-  --allow-unauthenticated \
-  --set-env-vars ^@^GCS_BUCKET=YOUR_BUCKET@GCS_CLIENT_PREFIX=clients26@PORTAL_ORIGIN=https://kreatbio.com,https://www.kreatbio.com \
-  --set-secrets SESSION_SECRET=kreatbio-session-secret:latest,GEMINI_API_KEY=kreatbio-gemini-key:latest
+bash deploy.sh
 ```
 
-Grant the Cloud Run service account read access to the report bucket:
-
-```bash
-gcloud storage buckets add-iam-policy-binding gs://YOUR_BUCKET \
-  --member serviceAccount:SERVICE_ACCOUNT_EMAIL \
-  --role roles/storage.objectViewer
-```
+The script checks the portal, deploys backend changes to the VPS, updates Nginx, pushes GitHub Pages, and verifies both public endpoints. GCS stays private; browsers receive 30-minute signed links only after the VPS approves the report code.
