@@ -245,6 +245,8 @@ h1 span { color: var(--lime); text-shadow: 0 0 24px rgba(212, 255, 112, .25); }
 .base-key .base-t { background: var(--coral); }
 .overlay-panel p { margin: 0 auto 11px; color: #bec4cf; font-family: Inter, system-ui, sans-serif; font-size: clamp(.73rem, 2.35vw, .86rem); line-height: 1.42; }
 .primary-button {
+  position: relative;
+  z-index: 1;
   min-height: 44px;
   padding: 10px 18px;
   color: #15171c;
@@ -256,6 +258,7 @@ h1 span { color: var(--lime); text-shadow: 0 0 24px rgba(212, 255, 112, .25); }
   cursor: pointer;
   box-shadow: 0 11px 25px -11px rgba(212, 255, 112, .8), inset 0 1px 0 rgba(255, 255, 255, .7);
   transition: filter 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+  touch-action: manipulation;
 }
 .primary-button span { margin-right: 5px; font-size: .7rem; }
 .primary-button:hover { filter: brightness(1.08) saturate(1.08); transform: translateY(-1px) scale(1.015); box-shadow: 0 15px 28px -11px rgba(212, 255, 112, .95); }
@@ -267,6 +270,8 @@ h1 span { color: var(--lime); text-shadow: 0 0 24px rgba(212, 255, 112, .25); }
   gap: 9px;
 }
 .secondary-button {
+  position: relative;
+  z-index: 1;
   min-height: 44px;
   padding: 9px 17px;
   color: var(--cyan);
@@ -278,6 +283,7 @@ h1 span { color: var(--lime); text-shadow: 0 0 24px rgba(212, 255, 112, .25); }
   cursor: pointer;
   box-shadow: 0 7px 18px -12px rgba(114, 234, 220, .85);
   transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+  touch-action: manipulation;
 }
 .secondary-button:hover { background: #303640; border-color: var(--cyan); transform: translateY(-1px); }
 .secondary-button[hidden] { display: none; }
@@ -381,14 +387,37 @@ footer a { color: var(--cyan); font-weight: 800; text-underline-offset: 3px; }
   .intro { margin-bottom: 17px; }
   .intro > p:last-child { margin-top: 12px; }
   .game-bar { min-height: 46px; padding-bottom: 8px; }
-  .game-overlay { padding: 21px; }
-  .overlay-panel { padding: 0 11px; }
-  .microbe-mascot { width: 94px; height: 94px; margin-bottom: -14px; }
-  .overlay-actions { gap: 7px; }
-  .primary-button, .secondary-button { padding-right: 14px; padding-left: 14px; font-size: .78rem; }
+  .game-overlay { padding: 14px; }
+  .overlay-panel { padding: 0 7px; }
+  .microbe-mascot { width: 72px; height: 72px; margin: -7px auto -10px; }
+  .overlay-panel h2 { margin: 3px 0 6px; font-size: 1.28rem; }
+  .base-key { margin-bottom: 6px; }
+  .base-key span { width: 21px; height: 21px; }
+  .overlay-panel p { margin-bottom: 8px; font-size: .72rem; line-height: 1.32; }
+  .overlay-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: min(100%, 248px);
+    margin: 0 auto;
+    gap: 9px;
+  }
+  .primary-button, .secondary-button {
+    width: 100%;
+    min-height: 46px;
+    padding: 9px 14px;
+    font-size: .8rem;
+  }
   .controls { padding: 13px 0 1px; }
   .controls > p { margin-bottom: 8px; }
   .direction-pad { grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); gap: 5px; }
+}
+
+@media (max-width: 350px) {
+  .game-overlay { padding: 10px; }
+  .microbe-mascot { display: none; }
+  .overlay-panel h2 { font-size: 1.15rem; }
+  .overlay-panel p { font-size: .68rem; }
+  .primary-button, .secondary-button { min-height: 44px; }
 }
 
 @media (min-width: 720px) {

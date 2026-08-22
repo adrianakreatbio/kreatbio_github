@@ -276,13 +276,7 @@
   }
 
   function handleOverlayAction(event) {
-    if (event.type === "pointerup") {
-      if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
-      event.stopPropagation();
-    }
-
-    // Pointer devices normally emit a click immediately after pointerup. Keep
-    // both paths for broad browser support, but treat them as one activation.
+    event.stopPropagation();
     const now = performance.now();
     if (now - lastOverlayActivation < 350) return;
     lastOverlayActivation = now;
@@ -301,10 +295,7 @@
   }
 
   function handleLibraryAction(event) {
-    if (event.type === "pointerup") {
-      if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
-      event.stopPropagation();
-    }
+    event.stopPropagation();
     const now = performance.now();
     if (now - lastLibraryActivation < 350) return;
     lastLibraryActivation = now;
@@ -783,10 +774,8 @@
   }
 
   overlayButton.addEventListener("pointerdown", event => event.stopPropagation());
-  overlayButton.addEventListener("pointerup", handleOverlayAction);
   overlayButton.addEventListener("click", handleOverlayAction);
   libraryButton.addEventListener("pointerdown", event => event.stopPropagation());
-  libraryButton.addEventListener("pointerup", handleLibraryAction);
   libraryButton.addEventListener("click", handleLibraryAction);
   pauseButton.addEventListener("click", togglePause);
   directionButtons.forEach(button => {
