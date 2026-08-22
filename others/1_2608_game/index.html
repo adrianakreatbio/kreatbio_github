@@ -18,6 +18,7 @@
   <meta property="og:image" content="https://kreatbio.com/others/1_2608_game/assets/base-muncher-bacterium.png">
   <title>Base Muncher | KreatBio</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="plate-to-reads.js" defer></script>
   <script src="game.js" defer></script>
 </head>
 <body>
@@ -36,13 +37,13 @@
     <section class="intro" aria-labelledby="page-title">
       <p class="eyebrow">KreatBio mini game</p>
       <h1 id="page-title"><span>Base</span> Muncher</h1>
-      <p>A tiny microbe with a very big appetite. Munch A, C, G and T—but don’t bump the dish or your growing colony.</p>
+      <p id="intro-copy">A tiny microbe with a very big appetite. Munch A, C, G and T—but don’t bump the dish or your growing colony.</p>
     </section>
 
     <section class="game-card" aria-label="Base Muncher game">
       <div class="game-bar">
         <div class="score-block" aria-live="polite" aria-atomic="true">
-          <span>Score</span>
+          <span id="score-label">Score</span>
           <strong id="score">0</strong>
         </div>
         <p id="game-status" class="game-status" role="status">Ready</p>
@@ -73,13 +74,17 @@
               <span class="base-t">T</span>
             </div>
             <p id="overlay-copy">Swipe, tap, or use your arrow keys. Every base makes your little colony grow faster.</p>
-            <button id="overlay-button" class="primary-button" type="button"><span aria-hidden="true">▶</span> Start munching</button>
+            <div class="overlay-actions">
+              <button id="overlay-button" class="primary-button" type="button"><span aria-hidden="true">▶</span> Start munching</button>
+              <button id="library-button" class="secondary-button" type="button">Play Plate to Reads</button>
+            </div>
           </div>
         </div>
+        <p id="mode-hint" class="mode-hint" hidden></p>
       </div>
 
       <div class="controls" aria-label="Movement controls">
-        <p><span aria-hidden="true">✦</span> Swipe the dish or tap to move <span aria-hidden="true">✦</span></p>
+        <p id="control-copy"><span aria-hidden="true">✦</span> Swipe the dish or tap to move <span aria-hidden="true">✦</span></p>
         <div class="direction-pad">
           <button class="direction-button up" type="button" data-direction="up" aria-label="Move up">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>

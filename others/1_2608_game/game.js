@@ -54,6 +54,10 @@
   const canvas = document.querySelector("#game-board");
   const context = canvas.getContext("2d");
   const boardWrap = document.querySelector("#board-wrap");
+  const gameCard = document.querySelector(".game-card");
+  const pageTitle = document.querySelector("#page-title");
+  const introCopy = document.querySelector("#intro-copy");
+  const scoreLabel = document.querySelector("#score-label");
   const scoreElement = document.querySelector("#score");
   const statusElement = document.querySelector("#game-status");
   const pauseButton = document.querySelector("#pause-button");
@@ -62,6 +66,9 @@
   const overlayTitle = document.querySelector("#overlay-title");
   const overlayCopy = document.querySelector("#overlay-copy");
   const overlayButton = document.querySelector("#overlay-button");
+  const libraryButton = document.querySelector("#library-button");
+  const controlCopy = document.querySelector("#control-copy");
+  const modeHint = document.querySelector("#mode-hint");
   const mascotElement = document.querySelector(".microbe-mascot");
   const directionButtons = [...document.querySelectorAll("[data-direction]")];
   mascotElement.addEventListener("error", () => mascotElement.classList.add("is-unavailable"));
@@ -69,7 +76,7 @@
   let microbeImageReady = false;
   microbeImage.addEventListener("load", () => {
     microbeImageReady = true;
-    draw();
+    if (activeMode === "base") draw();
   });
   microbeImage.addEventListener("error", () => {
     microbeImageReady = false;
@@ -92,6 +99,9 @@
   let effectFrame = null;
   let allowHaptics = false;
   let lastOverlayActivation = -Infinity;
+  let lastLibraryActivation = -Infinity;
+  let activeMode = "base";
+  let libraryGame = null;
 
   function resetGame() {
     stopTimer();
@@ -116,6 +126,7 @@
   }
 
   function startGame() {
+    activeMode = "base";
     resetGame();
     gameState = "playing";
     statusElement.textContent = "Munching";
@@ -188,16 +199,38 @@
       kicker: "Super colony",
       title: "You cleared the dish!",
       copy: `Final score: ${score}. Your tiny culture has a huge appetite.`,
-      button: "Grow again"
+      button: "Grow again",
+      secondary: "Play Plate to Reads"
     } : {
       kicker: "Culture crash",
       title: `You munched ${collected} ${collected === 1 ? "base" : "bases"}`,
       copy: `Final score: ${score}. Give your little colony another chance.`,
-      button: "Grow again"
+      button: "Grow again",
+      secondary: "Play Plate to Reads"
     });
   }
 
   function togglePause() {
+    if (activeMode === "library") {
+      if (!libraryGame) return;
+      if (libraryGame.getState() === "playing") {
+        libraryGame.pause();
+        hideModeHint();
+        statusElement.textContent = "Paused";
+        pauseButton.classList.add("is-paused");
+        pauseButton.setAttribute("aria-label", "Resume game");
+        showOverlay({
+          kicker: "Protocol paused",
+          title: "Your sample is safe",
+          copy: "Resume when you are ready to continue preparing the library.",
+          button: "Resume protocol",
+          secondary: "Back to Base Muncher"
+        });
+      } else if (libraryGame.getState() === "paused") {
+        resumeLibraryGame();
+      }
+      return;
+    }
     if (gameState === "playing") {
       pauseGame();
     } else if (gameState === "paused") {
@@ -216,7 +249,8 @@
       kicker: "Microbe nap time",
       title: "Your colony is snoozing",
       copy: "Wake the little muncher whenever you’re ready.",
-      button: "Wake up"
+      button: "Wake up",
+      secondary: null
     });
   }
 
@@ -230,11 +264,13 @@
     scheduleTick();
   }
 
-  function showOverlay({ kicker, title, copy, button }) {
+  function showOverlay({ kicker, title, copy, button, secondary = null }) {
     overlayKicker.textContent = kicker;
     overlayTitle.textContent = title;
     overlayCopy.textContent = copy;
     overlayButton.textContent = button;
+    libraryButton.textContent = secondary || "";
+    libraryButton.hidden = !secondary;
     overlay.hidden = false;
     overlayButton.focus({ preventScroll: true });
   }
@@ -251,15 +287,149 @@
     if (now - lastOverlayActivation < 350) return;
     lastOverlayActivation = now;
 
-    if (gameState === "paused") {
+    if (activeMode === "library") {
+      if (libraryGame && libraryGame.getState() === "paused") {
+        resumeLibraryGame();
+      } else {
+        startLibraryMode();
+      }
+    } else if (gameState === "paused") {
       resumeGame();
     } else {
       startGame();
     }
   }
 
+  function handleLibraryAction(event) {
+    if (event.type === "pointerup") {
+      if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
+      event.stopPropagation();
+    }
+    const now = performance.now();
+    if (now - lastLibraryActivation < 350) return;
+    lastLibraryActivation = now;
+    if (activeMode === "library") {
+      returnToBaseMode();
+    } else {
+      startLibraryMode();
+    }
+  }
+
+  function startLibraryMode() {
+    stopTimer();
+    if (effectFrame !== null) {
+      window.cancelAnimationFrame(effectFrame);
+      effectFrame = null;
+    }
+    if (libraryGame) libraryGame.destroy();
+
+    activeMode = "library";
+    gameState = "idle";
+    document.body.classList.add("library-mode");
+    gameCard.setAttribute("aria-label", "Plate to Reads game");
+    pageTitle.innerHTML = "<span>Plate</span> to Reads";
+    introCopy.textContent = "Take one clean colony through DNA extraction, QC, library preparation and sequencing.";
+    scoreLabel.textContent = "Station";
+    scoreElement.textContent = "1/5";
+    statusElement.textContent = "Risk ○○○";
+    controlCopy.innerHTML = "<span aria-hidden=\"true\">✦</span> Drag, tap, or use arrow keys + Space <span aria-hidden=\"true\">✦</span>";
+    canvas.setAttribute("aria-label", "Plate to Reads sequencing library preparation game board");
+    overlay.hidden = true;
+    pauseButton.disabled = false;
+    pauseButton.classList.remove("is-paused");
+    pauseButton.setAttribute("aria-label", "Pause game");
+
+    libraryGame = window.createPlateToReads({
+      canvas,
+      boardWrap,
+      image: microbeImage,
+      onHud: updateLibraryHud,
+      onEnd: endLibraryGame
+    });
+    libraryGame.start();
+    libraryGame.pause();
+    hideModeHint();
+    statusElement.textContent = "Protocol ready";
+    pauseButton.disabled = true;
+    showOverlay({
+      kicker: "Your sequencing mission",
+      title: "Culture to clean reads",
+      copy: "Complete five lab stations. Three mistakes reset only your current station—your finished work stays safe.",
+      button: "Start protocol",
+      secondary: "Back to Base Muncher"
+    });
+  }
+
+  function updateLibraryHud({ station, totalStations, risk, objective, tone = "info" }) {
+    if (activeMode !== "library") return;
+    scoreElement.textContent = `${station}/${totalStations}`;
+    statusElement.textContent = `Risk ${"●".repeat(risk)}${"○".repeat(3 - risk)}`;
+    modeHint.textContent = objective;
+    modeHint.classList.remove("is-error", "is-warning", "is-success");
+    if (tone !== "info") modeHint.classList.add(`is-${tone}`);
+    modeHint.hidden = false;
+  }
+
+  function endLibraryGame(result) {
+    if (activeMode !== "library") return;
+    hideModeHint();
+    pauseButton.disabled = true;
+    pauseButton.classList.remove("is-paused");
+    statusElement.textContent = "Reads ready";
+    showOverlay({
+      kicker: "Sequencing complete",
+      title: result.title,
+      copy: result.copy,
+      button: "Prepare another library",
+      secondary: "Back to Base Muncher"
+    });
+  }
+
+  function resumeLibraryGame() {
+    if (!libraryGame) return;
+    libraryGame.resume();
+    overlay.hidden = true;
+    pauseButton.disabled = false;
+    pauseButton.classList.remove("is-paused");
+    pauseButton.setAttribute("aria-label", "Pause game");
+  }
+
+  function returnToBaseMode() {
+    if (libraryGame) {
+      libraryGame.destroy();
+      libraryGame = null;
+    }
+    hideModeHint();
+    activeMode = "base";
+    document.body.classList.remove("library-mode");
+    gameCard.setAttribute("aria-label", "Base Muncher game");
+    pageTitle.innerHTML = "<span>Base</span> Muncher";
+    introCopy.textContent = "A tiny microbe with a very big appetite. Munch A, C, G and T—but don’t bump the dish or your growing colony.";
+    scoreLabel.textContent = "Score";
+    controlCopy.innerHTML = "<span aria-hidden=\"true\">✦</span> Swipe the dish or tap to move <span aria-hidden=\"true\">✦</span>";
+    canvas.setAttribute("aria-label", "Base Muncher circular petri-dish game board");
+    pauseButton.disabled = true;
+    pauseButton.classList.remove("is-paused");
+    pauseButton.setAttribute("aria-label", "Pause game");
+    gameState = "idle";
+    resetGame();
+    statusElement.textContent = "Ready";
+    showOverlay({
+      kicker: "Culture ready",
+      title: "Feed your tiny colony",
+      copy: "Swipe, tap, or use your arrow keys. Every base makes your little colony grow faster.",
+      button: "Start munching",
+      secondary: "Play Plate to Reads"
+    });
+  }
+
+  function hideModeHint() {
+    modeHint.hidden = true;
+    modeHint.classList.remove("is-error", "is-warning", "is-success");
+  }
+
   function setDirection(nextDirection) {
-    if (gameState !== "playing" || !canTurn || OPPOSITES[direction] === nextDirection) return;
+    if (activeMode !== "base" || gameState !== "playing" || !canTurn || OPPOSITES[direction] === nextDirection) return;
     direction = nextDirection;
     canTurn = false;
     flashDirectionButton(nextDirection);
@@ -339,6 +509,7 @@
   }
 
   function resizeCanvas() {
+    if (activeMode !== "base") return;
     const rect = canvas.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     boardSize = rect.width || 600;
@@ -349,6 +520,7 @@
   }
 
   function draw() {
+    if (activeMode !== "base") return;
     const cellSize = boardSize / GRID_SIZE;
     context.clearRect(0, 0, boardSize, boardSize);
     drawPlate(cellSize);
@@ -546,6 +718,23 @@
       allowHaptics = true;
     }
     const nextDirection = KEY_DIRECTIONS[event.key];
+    if (activeMode === "library") {
+      if (nextDirection && libraryGame) {
+        event.preventDefault();
+        libraryGame.nudge(nextDirection);
+        return;
+      }
+      if ((event.key === " " || event.key === "Enter") && libraryGame && libraryGame.getState() === "playing") {
+        event.preventDefault();
+        libraryGame.act();
+        return;
+      }
+      if ((event.key === "p" || event.key === "P") && libraryGame) {
+        event.preventDefault();
+        togglePause();
+      }
+      return;
+    }
     if (nextDirection) {
       event.preventDefault();
       setDirection(nextDirection);
@@ -562,7 +751,7 @@
     // Do not capture presses while an overlay button is being used. Capturing
     // the mouse on the dish can redirect pointerup away from the button and
     // prevent desktop browsers from dispatching its click event.
-    if (gameState !== "playing" || (event.pointerType === "mouse" && event.button !== 0)) {
+    if (activeMode !== "base" || gameState !== "playing" || (event.pointerType === "mouse" && event.button !== 0)) {
       return;
     }
     pointerStart = { x: event.clientX, y: event.clientY };
@@ -584,6 +773,10 @@
   }
 
   function handleVisibilityChange() {
+    if (activeMode === "library") {
+      if (document.hidden && libraryGame && libraryGame.getState() === "playing") togglePause();
+      return;
+    }
     if (document.hidden && gameState === "playing") {
       pauseGame();
     }
@@ -592,13 +785,18 @@
   overlayButton.addEventListener("pointerdown", event => event.stopPropagation());
   overlayButton.addEventListener("pointerup", handleOverlayAction);
   overlayButton.addEventListener("click", handleOverlayAction);
+  libraryButton.addEventListener("pointerdown", event => event.stopPropagation());
+  libraryButton.addEventListener("pointerup", handleLibraryAction);
+  libraryButton.addEventListener("click", handleLibraryAction);
   pauseButton.addEventListener("click", togglePause);
   directionButtons.forEach(button => {
     button.addEventListener("pointerdown", event => {
       event.preventDefault();
       setDirection(button.dataset.direction);
     });
-    button.addEventListener("click", () => setDirection(button.dataset.direction));
+    button.addEventListener("click", () => {
+      setDirection(button.dataset.direction);
+    });
   });
   boardWrap.addEventListener("pointerdown", handlePointerDown);
   boardWrap.addEventListener("pointerup", handlePointerUp);
@@ -612,9 +810,15 @@
   document.addEventListener("visibilitychange", handleVisibilityChange);
 
   if ("ResizeObserver" in window) {
-    new ResizeObserver(resizeCanvas).observe(boardWrap);
+    new ResizeObserver(() => {
+      if (activeMode === "library" && libraryGame) libraryGame.resize();
+      else resizeCanvas();
+    }).observe(boardWrap);
   } else {
-    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("resize", () => {
+      if (activeMode === "library" && libraryGame) libraryGame.resize();
+      else resizeCanvas();
+    });
   }
 
   resetGame();
