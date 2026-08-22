@@ -2,7 +2,7 @@
   "use strict";
 
   const GRID_SIZE = 20;
-  const START_SPEED = 170;
+  const START_SPEED = 140;
   const MIN_SPEED = 80;
   const SPEED_STEP = 12;
   const SPEED_INTERVAL = 5;
@@ -91,6 +91,7 @@
   let bursts = [];
   let effectFrame = null;
   let allowHaptics = false;
+  let lastOverlayActivation = -Infinity;
 
   function resetGame() {
     stopTimer();
@@ -238,7 +239,18 @@
     overlayButton.focus({ preventScroll: true });
   }
 
-  function handleOverlayAction() {
+  function handleOverlayAction(event) {
+    if (event.type === "pointerup") {
+      if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
+      event.stopPropagation();
+    }
+
+    // Pointer devices normally emit a click immediately after pointerup. Keep
+    // both paths for broad browser support, but treat them as one activation.
+    const now = performance.now();
+    if (now - lastOverlayActivation < 350) return;
+    lastOverlayActivation = now;
+
     if (gameState === "paused") {
       resumeGame();
     } else {
@@ -577,6 +589,8 @@
     }
   }
 
+  overlayButton.addEventListener("pointerdown", event => event.stopPropagation());
+  overlayButton.addEventListener("pointerup", handleOverlayAction);
   overlayButton.addEventListener("click", handleOverlayAction);
   pauseButton.addEventListener("click", togglePause);
   directionButtons.forEach(button => {
