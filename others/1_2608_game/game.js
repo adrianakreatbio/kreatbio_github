@@ -2,10 +2,10 @@
   "use strict";
 
   const GRID_SIZE = 20;
-  const START_SPEED = 90;
-  const MIN_SPEED = 80;
-  const SPEED_STEP = 12;
-  const SPEED_INTERVAL = 5;
+  const START_SPEED = 260;
+  const MIN_SPEED = 90;
+  const SPEED_STEP = 5;
+  const SPEED_INTERVAL = 1;
   const POINTS_PER_BASE = 10;
   const PLAY_RADIUS = 9.15;
   const GRID_CENTER = (GRID_SIZE - 1) / 2;
