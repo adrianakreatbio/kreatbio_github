@@ -547,6 +547,12 @@
   }
 
   function handlePointerDown(event) {
+    // Do not capture presses while an overlay button is being used. Capturing
+    // the mouse on the dish can redirect pointerup away from the button and
+    // prevent desktop browsers from dispatching its click event.
+    if (gameState !== "playing" || (event.pointerType === "mouse" && event.button !== 0)) {
+      return;
+    }
     pointerStart = { x: event.clientX, y: event.clientY };
     boardWrap.setPointerCapture?.(event.pointerId);
   }
