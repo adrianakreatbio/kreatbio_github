@@ -1961,7 +1961,7 @@ function configuredApiBase(){
   var params=new URLSearchParams(window.location.search);
   var fromUrl=params.get("api");
   var fromServer=window.KREATBIO_PORTAL_API||"";
-  var hostedDefault=/^(www\.)?kreatbio\.com$/i.test(window.location.hostname)?"https://portal-api.kreatbio.com":"";
+  var hostedDefault=/^(www\.)?kreatbio\.com$/i.test(window.location.hostname)?"https://kreatbio-report-api-716768606050.asia-southeast1.run.app":"";
   var base=(fromUrl||fromServer||hostedDefault||"").replace(/\/+$/,"");
   if(base)return base;
   return window.location.protocol==="file:"?"http://localhost:8080":window.location.origin;

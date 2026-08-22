@@ -2,10 +2,10 @@ steps:
   - name: gcr.io/cloud-builders/docker
     args:
       - build
-      - -f
-      - portal-backend/Dockerfile
       - -t
-      - gcr.io/$PROJECT_ID/kreatbio-client-portal
+      - ${_IMAGE}
       - .
 images:
-  - gcr.io/$PROJECT_ID/kreatbio-client-portal
+  - ${_IMAGE}
+substitutions:
+  _IMAGE: asia-southeast1-docker.pkg.dev/$PROJECT_ID/kreatbio/portal-report-api:manual

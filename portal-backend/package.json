@@ -6,7 +6,7 @@
   "description": "Private report and chat backend for the KreatBio client portal.",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js && node --check quota-store.js && node --check quota-admin.js && node --check report-access-store.js && node --check access-admin.js && node --check gcs-signer.js",
+    "check": "node --check server.js && node --check quota-store.js && node --check quota-admin.js && node --check report-access-store.js && node --check gcs-report-access-store.js && node --check access-admin.js && node --check gcs-signer.js",
     "quota": "node quota-admin.js",
     "access": "node access-admin.js",
     "test": "node --test tests/*.test.js"

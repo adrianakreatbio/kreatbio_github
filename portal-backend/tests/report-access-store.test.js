@@ -46,8 +46,8 @@ test("counts successful openings atomically and blocks opening 31", () => {
     context.store.add(CODE);
     for (let index = 0; index < 30; index += 1) context.store.consume(CODE);
     assert.equal(context.store.status(CODE).openingsRemaining, 0);
-    assert.throws(() => context.store.authorize(CODE, { requireOpening: true }), /30-opening limit/);
-    assert.throws(() => context.store.consume(CODE), /30-opening limit/);
+    assert.throws(() => context.store.authorize(CODE, { requireOpening: true }), /opening limit/);
+    assert.throws(() => context.store.consume(CODE), /opening limit/);
     assert.equal(context.store.authorize(CODE).openingsUsed, 30);
   } finally {
     context.cleanup();

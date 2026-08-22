@@ -80,7 +80,7 @@ export class ReportAccessStore {
       throw accessError(403, "This report's two-month access period has ended.");
     }
     if (requireOpening && access.openingsRemaining <= 0) {
-      throw accessError(429, "This report has reached its 30-opening limit.");
+      throw accessError(429, "This report has reached its opening limit.");
     }
     return access;
   }
@@ -94,7 +94,7 @@ export class ReportAccessStore {
         throw accessError(403, "This report's two-month access period has ended.");
       }
       if (row.openings_used >= row.max_openings) {
-        throw accessError(429, "This report has reached its 30-opening limit.");
+        throw accessError(429, "This report has reached its opening limit.");
       }
       const timestamp = new Date(this.now()).toISOString();
       this.db.prepare(`

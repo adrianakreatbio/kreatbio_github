@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { Storage } from "@google-cloud/storage";
 import { createGcsSignedUrl } from "./gcs-signer.js";
+import { GcsReportAccessStore } from "./gcs-report-access-store.js";
 import { ChatQuotaStore } from "./quota-store.js";
 import { ReportAccessStore } from "./report-access-store.js";
 
@@ -33,9 +34,12 @@ const PORTAL_API_BASE = cleanUrl(process.env.PORTAL_API_BASE || "");
 const STATIC_DIR = process.env.PORTAL_STATIC_DIR || path.join(__dirname, "public");
 const CHAT_QUOTA_DB = process.env.CHAT_QUOTA_DB || path.join(__dirname, ".data", "chat-quota.sqlite");
 const REPORT_ACCESS_DB = process.env.REPORT_ACCESS_DB || path.join(__dirname, ".data", "report-access.sqlite");
+const REPORT_ACCESS_GCS_PREFIX = cleanPrefix(process.env.REPORT_ACCESS_GCS_PREFIX || "");
 const REPORT_ACCESS_MAX_OPENINGS = Number(process.env.REPORT_ACCESS_MAX_OPENINGS || 30);
 const REPORT_ACCESS_DAYS = Number(process.env.REPORT_ACCESS_DAYS || 60);
 const ALLOW_CLIENT_DOWNLOADS = /^(1|true|yes)$/i.test(process.env.ALLOW_CLIENT_DOWNLOADS || "");
+const SESSION_ATTEMPT_LIMIT = Number(process.env.SESSION_ATTEMPT_LIMIT || 10);
+const SESSION_ATTEMPT_WINDOW_SECONDS = Number(process.env.SESSION_ATTEMPT_WINDOW_SECONDS || 15 * 60);
 const FIGURE_PREFIXES = [
   "output/o6_figures/",
   "output/o4_diversity/"
@@ -81,13 +85,22 @@ const chatQuotaStore = new ChatQuotaStore({
   defaultLimit: CHAT_TOKEN_LIMIT,
   reservationTtlSeconds: CHAT_RESERVATION_TTL_SECONDS
 });
-const reportAccessStore = new ReportAccessStore({
-  databasePath: REPORT_ACCESS_DB,
-  secret: SESSION_SECRET || "development-only-secret-change-me",
-  defaultMaxOpenings: REPORT_ACCESS_MAX_OPENINGS,
-  defaultAccessDays: REPORT_ACCESS_DAYS
-});
+const reportAccessStore = REPORT_ACCESS_GCS_PREFIX
+  ? new GcsReportAccessStore({
+      storage,
+      bucket: GCS_BUCKET,
+      prefix: REPORT_ACCESS_GCS_PREFIX,
+      defaultMaxOpenings: REPORT_ACCESS_MAX_OPENINGS,
+      defaultAccessDays: REPORT_ACCESS_DAYS
+    })
+  : new ReportAccessStore({
+      databasePath: REPORT_ACCESS_DB,
+      secret: SESSION_SECRET || "development-only-secret-change-me",
+      defaultMaxOpenings: REPORT_ACCESS_MAX_OPENINGS,
+      defaultAccessDays: REPORT_ACCESS_DAYS
+    });
 const app = express();
+const sessionAttemptBuckets = new Map();
 
 app.disable("x-powered-by");
 app.set("trust proxy", true);
@@ -109,19 +122,19 @@ if (fs.existsSync(repoClientSupplementsDir)) {
   app.use("/client_supplements", express.static(repoClientSupplementsDir));
 }
 
-app.get("/healthz", (req, res) => {
+app.get(["/healthz", "/api/health"], (req, res) => {
   res.json({ ok: true, service: "kreatbio-client-portal" });
 });
 
-app.post("/api/session", async (req, res, next) => {
+app.post("/api/session", requirePortalOrigin, limitSessionAttempts, async (req, res, next) => {
   try {
     const code = normalizeCode(req.body?.code);
-    const pendingAccess = reportAccessStore.authorize(code, { requireOpening: true });
+    const pendingAccess = await reportAccessStore.authorize(code, { requireOpening: true });
     const manifest = await readManifest(code);
     validateManifestCode(code, manifest);
     validateManifestAssay(code, manifest);
     const report = await sanitizeManifest(code, manifest, pendingAccess);
-    const access = reportAccessStore.consume(code);
+    const access = await reportAccessStore.consume(code);
     const token = signToken({ code, scope: "report" });
     res.json({ token, report: { ...report, access: publicReportAccess(access) } });
   } catch (err) {
@@ -131,7 +144,7 @@ app.post("/api/session", async (req, res, next) => {
 
 app.get("/api/report", requireSession, async (req, res, next) => {
   try {
-    const access = reportAccessStore.authorize(req.session.code);
+    const access = await reportAccessStore.authorize(req.session.code);
     const manifest = await readManifest(req.session.code);
     validateManifestCode(req.session.code, manifest);
     validateManifestAssay(req.session.code, manifest);
@@ -295,7 +308,6 @@ app.post("/api/external/string/network", requireSession, async (req, res, next) 
 app.post("/api/chat/session", requirePortalChatOrigin, (req, res, next) => {
   try {
     const code = normalizeCode(req.body?.code);
-    reportAccessStore.authorize(code);
     const quota = chatQuotaStore.authenticate(code);
     const token = signToken({ code, scope: "chat" });
     res.json({ token, ...publicChatQuota(quota) });
@@ -411,11 +423,36 @@ function corsOrigin(requestOrigin) {
   return PORTAL_ORIGINS.find((origin) => origin.replace(/\/+$/, "") === normalizedRequestOrigin) || "";
 }
 
-function requirePortalChatOrigin(req, res, next) {
+function requirePortalOrigin(req, res, next) {
   const origin = String(req.get("Origin") || "").replace(/\/+$/, "");
   const allowed = corsOrigin(origin);
   if (!origin || !allowed || (allowed !== "*" && allowed.replace(/\/+$/, "") !== origin)) {
-    next(httpError(403, "Chat requests are only accepted from the configured portal origin."));
+    next(httpError(403, "Requests are only accepted from the configured portal origin."));
+    return;
+  }
+  next();
+}
+
+function requirePortalChatOrigin(req, res, next) {
+  requirePortalOrigin(req, res, next);
+}
+
+function limitSessionAttempts(req, res, next) {
+  const now = Date.now();
+  const windowMs = SESSION_ATTEMPT_WINDOW_SECONDS * 1000;
+  const key = String(req.ip || req.socket?.remoteAddress || "unknown");
+  for (const [address, bucket] of sessionAttemptBuckets) {
+    if (bucket.startedAt + windowMs <= now) sessionAttemptBuckets.delete(address);
+  }
+  let bucket = sessionAttemptBuckets.get(key);
+  if (!bucket || bucket.startedAt + windowMs <= now) {
+    bucket = { startedAt: now, attempts: 0 };
+    sessionAttemptBuckets.set(key, bucket);
+  }
+  bucket.attempts += 1;
+  if (bucket.attempts > SESSION_ATTEMPT_LIMIT) {
+    res.setHeader("Retry-After", String(Math.max(1, Math.ceil((bucket.startedAt + windowMs - now) / 1000))));
+    next(httpError(429, "Too many report access attempts. Please try again later."));
     return;
   }
   next();
@@ -1005,14 +1042,14 @@ function validateManifestAssay(code, manifest) {
 async function sanitizeManifest(code, manifest, access) {
   const assay = assayForCode(code);
   const filteredManifest = filterManifestForAssay({ ...manifest, assay });
-  const files = normalizeFiles(filteredManifest).map((file) => publicFileWithSignedUrl(code, file, access));
+  const files = await Promise.all(normalizeFiles(filteredManifest).map((file) => publicFileWithSignedUrl(code, file, access)));
   const modules = supportedModules(filteredManifest).map(publicModule);
   const reportPdf = manifest.report_pdf ? publicReportPdf(manifest.report_pdf) : defaultReportPdf(files);
   if (reportPdf) {
     const matchingFile = files.find((file) => file.id === reportPdf.fileId);
     if (matchingFile?.url) reportPdf.url = matchingFile.url;
     const pdfPath = manifest.report_pdf && (manifest.report_pdf.path || manifest.report_pdf.gcs_path);
-    if (!reportPdf.url && pdfPath) reportPdf.url = signedObjectUrl(code, cleanRelativePath(pdfPath), access);
+    if (!reportPdf.url && pdfPath) reportPdf.url = await signedObjectUrl(code, cleanRelativePath(pdfPath), access);
   }
   return {
     code,
@@ -1075,12 +1112,12 @@ function verifyToken(token, expectedScope = "report") {
   return { code: normalizeCode(body.code), scope: body.scope };
 }
 
-function requireSession(req, res, next) {
+async function requireSession(req, res, next) {
   try {
     const header = req.get("authorization") || "";
     const token = header.toLowerCase().startsWith("bearer ") ? header.slice(7) : req.query.token;
     req.session = verifyToken(token, "report");
-    reportAccessStore.authorize(req.session.code);
+    await reportAccessStore.authorize(req.session.code);
     next();
   } catch (err) {
     next(err);
@@ -1411,22 +1448,35 @@ function publicFile(file) {
   return out;
 }
 
-function publicFileWithSignedUrl(code, file, access) {
+async function publicFileWithSignedUrl(code, file, access) {
   const out = publicFile(file);
-  const url = signedObjectUrl(code, file.path, access);
+  const url = await signedObjectUrl(code, file.path, access);
   if (url) out.url = url;
   return out;
 }
 
-function signedObjectUrl(code, relativePath, access) {
-  if (!GCS_HMAC_ACCESS_ID || !GCS_HMAC_SECRET) return "";
-  return createGcsSignedUrl({
-    bucket: GCS_BUCKET,
-    objectName: objectPath(code, relativePath),
-    accessId: GCS_HMAC_ACCESS_ID,
-    secret: GCS_HMAC_SECRET,
-    expiresSeconds: signedUrlLifetime(access)
-  });
+async function signedObjectUrl(code, relativePath, access) {
+  const objectName = objectPath(code, relativePath);
+  const expiresSeconds = signedUrlLifetime(access);
+  if (GCS_HMAC_ACCESS_ID && GCS_HMAC_SECRET) {
+    return createGcsSignedUrl({
+      bucket: GCS_BUCKET,
+      objectName,
+      accessId: GCS_HMAC_ACCESS_ID,
+      secret: GCS_HMAC_SECRET,
+      expiresSeconds
+    });
+  }
+  try {
+    const [url] = await storage.bucket(GCS_BUCKET).file(objectName).getSignedUrl({
+      version: "v4",
+      action: "read",
+      expires: Date.now() + expiresSeconds * 1000
+    });
+    return url;
+  } catch (err) {
+    throw gcsClientError(err);
+  }
 }
 
 function signedUrlLifetime(access) {

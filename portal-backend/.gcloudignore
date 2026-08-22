@@ -1,0 +1,12 @@
+.gcloudignore
+.gitignore
+.data/
+node_modules/
+tests/
+deploy/
+README.md
+guide.txt
+sample-manifest.json
+cloudbuild.yaml
+node
+kreatbio-client-portal-backend@1.0.0

@@ -5,6 +5,12 @@ repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 backend_dir="$repo_root/portal-backend"
 vps_host="root@72.62.252.76"
 vps_app_dir="/opt/kreatbio-portal"
+gcp_project="project-045c22a7-6787-403c-8c6"
+cloud_run_region="asia-southeast1"
+cloud_run_service="kreatbio-report-api"
+cloud_run_service_account="kreatbio-portal-vps@$gcp_project.iam.gserviceaccount.com"
+artifact_image="$cloud_run_region-docker.pkg.dev/$gcp_project/kreatbio/portal-report-api"
+report_api_url="https://kreatbio-report-api-716768606050.asia-southeast1.run.app"
 release_id="$(date -u +%Y%m%d-%H%M%S)"
 remote_stage="/tmp/kreatbio-portal-deploy-$release_id"
 commit_message="${1:-Deploy client portal}"
@@ -14,25 +20,26 @@ fail() {
   exit 1
 }
 
-command -v git >/dev/null || fail "git is not installed."
-command -v npm >/dev/null || fail "npm is not installed."
-command -v node >/dev/null || fail "node is not installed."
-command -v ssh >/dev/null || fail "ssh is not installed."
-command -v scp >/dev/null || fail "scp is not installed."
-command -v curl >/dev/null || fail "curl is not installed."
+for command in git npm node ssh scp curl gcloud; do
+  command -v "$command" >/dev/null || fail "$command is not installed."
+done
+
+if [[ -n "${KREATBIO_GCLOUD_CONFIG:-}" ]]; then
+  export CLOUDSDK_CONFIG="$KREATBIO_GCLOUD_CONFIG"
+fi
 
 cd "$repo_root"
 branch="$(git branch --show-current)"
 [[ "$branch" == "master" ]] || fail "switch to the master branch first."
 
 printf '\nPortal changes to deploy:\n'
-git status --short -- client-portal.html client_supplements portal-backend deploy.sh
-printf '\nThis will update the Hostinger chatbot backend when needed and push GitHub Pages.\n'
+git status --short -- client-portal.html client_supplements portal-backend deploy.sh activate-report.sh
+printf '\nThis updates the report API, chatbot API, and GitHub Pages when needed.\n'
 read -r -p 'Continue? [y/N] ' answer
 [[ "$answer" =~ ^[Yy]$ ]] || fail "cancelled."
 
 printf '\nRunning checks...\n'
-git diff --check
+git diff --check -- client-portal.html client_supplements portal-backend deploy.sh activate-report.sh
 (
   cd "$backend_dir"
   npm run check
@@ -53,9 +60,9 @@ for (const part of html.split("<script").slice(1)) {
 console.log(`Portal JavaScript check passed (${count} inline scripts).`);
 NODE
 
-git add -- client-portal.html client_supplements portal-backend deploy.sh
-if ! git diff --cached --quiet; then
-  git commit -m "$commit_message"
+git add -- client-portal.html client_supplements portal-backend deploy.sh activate-report.sh
+if ! git diff --cached --quiet -- client-portal.html client_supplements portal-backend deploy.sh activate-report.sh; then
+  git commit -m "$commit_message" -- client-portal.html client_supplements portal-backend deploy.sh activate-report.sh
 fi
 release_commit="$(git rev-parse HEAD)"
 
@@ -68,7 +75,31 @@ if [[ -n "$remote_commit" ]] && git cat-file -e "$remote_commit^{commit}" 2>/dev
 fi
 
 if [[ "$deploy_backend" == true ]]; then
-  printf '\nDeploying chatbot backend to Hostinger...\n'
+  image="$artifact_image:$release_commit"
+  printf '\nDeploying private-report API to Cloud Run...\n'
+  gcloud builds submit "$backend_dir" \
+    --project "$gcp_project" \
+    --tag "$image" \
+    --quiet
+  gcloud run deploy "$cloud_run_service" \
+    --project "$gcp_project" \
+    --region "$cloud_run_region" \
+    --platform managed \
+    --image "$image" \
+    --service-account "$cloud_run_service_account" \
+    --allow-unauthenticated \
+    --min-instances 0 \
+    --max-instances 1 \
+    --cpu 1 \
+    --memory 512Mi \
+    --concurrency 20 \
+    --cpu-throttling \
+    --env-vars-file "$backend_dir/deploy/cloud-run/env.yaml" \
+    --set-secrets SESSION_SECRET=kreatbio-report-session-secret:latest \
+    --quiet
+  curl --retry 8 --retry-all-errors -fsS "$report_api_url/api/health" >/dev/null
+
+  printf '\nDeploying chatbot API to Hostinger...\n'
   runtime_files=("$backend_dir"/*.js "$backend_dir"/package.json "$backend_dir"/package-lock.json)
   ssh "$vps_host" "install -d -m 700 '$remote_stage'"
   scp "${runtime_files[@]}" \
@@ -92,7 +123,7 @@ done
 [[ -e /etc/nginx/sites-enabled/portal-api.kreatbio.com ]] && cp -a /etc/nginx/sites-enabled/portal-api.kreatbio.com "$backup_dir/portal-api.enabled"
 
 rollback() {
-  printf 'Backend deployment failed; restoring %s.\n' "$backup_dir" >&2
+  printf 'Chatbot deployment failed; restoring %s.\n' "$backup_dir" >&2
   install -m 0644 "$backup_dir"/*.js "$backup_dir"/package.json "$backup_dir"/package-lock.json "$vps_app_dir/"
   if [[ -e "$backup_dir/kreatbio-portal.service" ]]; then
     install -m 0644 "$backup_dir/kreatbio-portal.service" /etc/systemd/system/kreatbio-portal.service
@@ -124,13 +155,14 @@ printf '%s\n' "$release_commit" > "$vps_app_dir/.deployed-git-commit"
 trap - ERR
 REMOTE
 else
-  printf '\nBackend is unchanged; skipping the VPS restart.\n'
+  printf '\nBackend is unchanged; skipping Cloud Run and VPS deployment.\n'
 fi
 
 printf '\nPublishing GitHub Pages...\n'
 git push origin master
 
-printf '\nVerifying public services...\n'
+printf '\nVerifying live services...\n'
+curl --retry 8 --retry-all-errors -fsS "$report_api_url/api/health" >/dev/null
 curl --retry 5 --retry-all-errors -fsS https://portal-api.kreatbio.com/healthz >/dev/null
 curl --retry 5 --retry-all-errors -fsS https://kreatbio.com/client-portal >/dev/null
 

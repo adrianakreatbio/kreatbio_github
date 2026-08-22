@@ -11,10 +11,7 @@ WorkingDirectory=/opt/kreatbio-portal
 EnvironmentFile=/etc/kreatbio-portal/runtime.env
 Environment=SESSION_SECRET_FILE=/etc/kreatbio-portal/session-secret
 Environment=GEMINI_API_KEY_FILE=/etc/kreatbio-portal/gemini-api-key
-Environment=GCS_HMAC_ACCESS_ID_FILE=/etc/kreatbio-portal/gcs-hmac-access-id
-Environment=GCS_HMAC_SECRET_FILE=/etc/kreatbio-portal/gcs-hmac-secret
 Environment=CHAT_QUOTA_DB=/var/lib/kreatbio-portal/chat-quota.sqlite
-Environment=REPORT_ACCESS_DB=/var/lib/kreatbio-portal/report-access.sqlite
 StateDirectory=kreatbio-portal
 StateDirectoryMode=0750
 ExecStart=/usr/bin/node server.js
