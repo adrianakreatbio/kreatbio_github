@@ -4450,7 +4450,7 @@ function alphaSelfExperimentPanel(d){
   var sampleNumbers={};all.forEach(function(id,i){sampleNumbers[id]=i+1;});
   var checks=all.map(function(id){var s=byId[id];return '<label class="self-experiment-sample"><input type="checkbox" data-alpha-self-sample="'+esc(id)+'"'+(selected.indexOf(id)>=0?' checked':'')+'><span class="self-experiment-sample-number">'+sampleNumbers[id]+'</span><span>'+esc(s?sampleLabel(s):id)+'</span><small>'+esc(s&&s.group||"Unknown group")+'</small></label>';}).join("");
   var cards=metrics.map(function(metric){var result=alphaSelfKruskal(d,metric.id,selected),label=metric.label||metric.id;if(!result)return '<div class="self-experiment-stats-card"><b>'+esc(label)+'</b><strong>Not estimable</strong><small>At least two retained groups are required.</small></div>';var interpretation=result.p<0.05?"supported group difference":result.p<0.10?"exploratory signal":"no supported group difference";return '<div class="self-experiment-stats-card"><div class="alpha-self-card-head"><b>'+esc(label)+'</b><strong>p='+result.p.toFixed(3)+'</strong><span>H='+result.H.toFixed(3)+' · '+interpretation+'</span></div>'+alphaSelfMiniPlot(d,metric.id,result,selected,byId,sampleNumbers)+'</div>';}).join("");
-  var body='<div class="self-experiment-shell alpha-self-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to recalculate Shannon, Simpson, and Faith PD. The statistic cards are calculated outputs.</small></div><button type="button" class="btn secondary" data-alpha-self-reset>Reset to all samples</button>'+checks+'</div><div class="alpha-self-cards">'+cards+'</div><p class="table-caption">Exploratory only; the released alpha-diversity results remain the report reference.</p></div>';
+  var body='<div class="self-experiment-shell alpha-self-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to recalculate Shannon, Simpson, and Faith PD. The statistic cards are calculated outputs.</small></div><button type="button" class="btn secondary" data-alpha-self-reset>Reset to all samples</button><button type="button" class="keyviz-download" data-self-experiment-download="alpha">Download SVG plots</button>'+checks+'</div><div class="alpha-self-cards">'+cards+'</div><p class="table-caption">Exploratory only; the released alpha-diversity results remain the report reference.</p></div>';
   return clinicalDetails("Self-experiment",body).replace('<details class="clinical-details">','<details data-alpha-self-details'+(alphaSelfState.open?' open':'')+' class="clinical-details">');
 }
 function betaSupportTone(d,metric){
@@ -4886,7 +4886,7 @@ function betaSelfExperimentPanel(d){
   var dispersionNote=stats&&!stats.permdisp?(minGroupN<2?'PERMDISP is unavailable because each retained group needs at least two samples.':'PERMDISP is unavailable for this selection because each group has only two samples. Their distances to the group centroid are identical, leaving zero within-group variance for the F-statistic.'):'';
   var statHtml=stats?'<div class="self-experiment-stats"><b>Exploratory recalculation</b><span>PERMANOVA p<strong>'+(stats.permanova.p==null?'Not estimable':stats.permanova.p.toFixed(3))+'</strong></span><span>PERMANOVA R²<strong>'+(stats.permanova.R2*100).toFixed(1)+'%</strong></span><span>Pseudo-F<strong>'+(stats.permanova.F==null?'Not estimable':stats.permanova.F.toFixed(3))+'</strong></span><span>PERMDISP p / F<strong>'+(stats.permdisp?stats.permdisp.p.toFixed(3)+' / '+stats.permdisp.F.toFixed(3):'Not estimable')+'</strong></span><span>PCoA 1 / PCoA 2<strong>'+(stats.pcoa.pc1*100).toFixed(1)+'% / '+(stats.pcoa.pc2*100).toFixed(1)+'%</strong></span><span>Interpretation<strong>'+esc(significance)+'</strong></span><span>Retained groups<strong>'+esc(countText)+'</strong></span>'+(dispersionNote?'<small class="self-experiment-note">'+esc(dispersionNote)+'</small>':'')+'</div>':'<p class="table-caption">Select at least two groups with enough samples to recalculate statistics.</p>';
   var plot=stats?betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers):'<div class="self-experiment-empty">No recalculable PCoA for this selection.</div>';
-  var body='<div class="self-experiment-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to test how the result changes. The statistic cards are calculated outputs and cannot be edited directly.</small></div>'+checks+'</div><div class="self-experiment-intro"><label>Distance metric <select data-beta-self-metric>'+options+'</select></label><button type="button" class="btn secondary" data-beta-self-reset>Reset to all samples</button></div><div class="self-experiment-main">'+plot+statHtml+'</div><p class="table-caption">Exploratory only: sample removal should be justified by independent quality or biological evidence.</p></div>';
+  var body='<div class="self-experiment-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to test how the result changes. The statistic cards are calculated outputs and cannot be edited directly.</small></div>'+checks+'</div><div class="self-experiment-intro"><label>Distance metric <select data-beta-self-metric>'+options+'</select></label><button type="button" class="btn secondary" data-beta-self-reset>Reset to all samples</button><button type="button" class="keyviz-download" data-self-experiment-download="beta">Download SVG plot</button></div><div class="self-experiment-main">'+plot+statHtml+'</div><p class="table-caption">Exploratory only: sample removal should be justified by independent quality or biological evidence.</p></div>';
   return clinicalDetails("Self-experiment",body).replace('<details class="clinical-details">','<details data-beta-self-details'+(betaSelfState.open?' open':'')+' class="clinical-details">');
 }
 function betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers){
@@ -5597,6 +5597,13 @@ function downloadTextFile(filename,text,type){
 function downloadKeyViz(kind){
   var d=ds(),svg=keyVizExportSvg(kind,d);
   if(svg)downloadTextFile(keyVizFilename(kind,d),svg,"image/svg+xml;charset=utf-8");
+}
+function downloadSelfExperimentPlots(kind){
+  var root=$("#content"),nodes=kind==="alpha"?$$(".alpha-self-mini-plot svg",root):$$(".self-experiment-main .self-experiment-plot svg",root);
+  nodes.forEach(function(svg,index){
+    var label=kind==="alpha"?((svg.getAttribute("aria-label")||"alpha").replace(/[^a-z0-9]+/gi,"_").toLowerCase()):"beta_self_experiment";
+    downloadTextFile(label+"_"+(index+1)+".svg",svg.outerHTML,"image/svg+xml;charset=utf-8");
+  });
 }
 function manifestFiles(){
   return state.report&&Array.isArray(state.report.files)?state.report.files:[];
@@ -9348,6 +9355,9 @@ function wireSectionButtons(){
   $$("[data-alpha-self-reset]",$("#content")).forEach(function(button){button.addEventListener("click",function(){
     alphaSelfState.selected=(ds().samples||[]).map(function(s){return String(s.raw||s.id);});
     showSection(state.section,{preserveScroll:true});
+  });});
+  $$("[data-self-experiment-download]",$("#content")).forEach(function(button){button.addEventListener("click",function(){
+    downloadSelfExperimentPlots(button.dataset.selfExperimentDownload);
   });});
   $$("[data-chart-size]",$("#content")).forEach(function(input){input.addEventListener("input",function(){
     state.chartWidth=chartWidthValueFrom(input.value);

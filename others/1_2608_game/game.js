@@ -40,6 +40,8 @@
     G: "#9b6d00",
     T: "#87548a"
   };
+  const TRAIL_COLORS = ["#07958f", "#3975b7", "#d59a19", "#8b5aa0"];
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const canvas = document.querySelector("#game-board");
   const context = canvas.getContext("2d");
@@ -65,9 +67,17 @@
   let timerId = null;
   let boardSize = 600;
   let pointerStart = null;
+  let bursts = [];
+  let effectFrame = null;
+  let allowHaptics = false;
 
   function resetGame() {
     stopTimer();
+    if (effectFrame !== null) {
+      window.cancelAnimationFrame(effectFrame);
+      effectFrame = null;
+    }
+    bursts = [];
     snake = [
       { x: 10, y: 10 },
       { x: 9, y: 10 },
@@ -123,11 +133,13 @@
     snake.unshift(nextHead);
 
     if (ateFood) {
+      const collectedBase = food.base;
       collected += 1;
       score += POINTS_PER_BASE;
       speed = Math.max(MIN_SPEED, START_SPEED - Math.floor(collected / SPEED_INTERVAL) * SPEED_STEP);
       food = createFood();
       updateScore();
+      addCollectionEffect(nextHead, collectedBase);
       vibrate(18);
       if (food === null) {
         draw();
@@ -255,10 +267,37 @@
 
   function updateScore() {
     scoreElement.textContent = String(score);
+    if (score > 0 && !reducedMotion) {
+      scoreElement.classList.remove("score-pop");
+      void scoreElement.offsetWidth;
+      scoreElement.classList.add("score-pop");
+      window.setTimeout(() => scoreElement.classList.remove("score-pop"), 180);
+    }
+  }
+
+  function addCollectionEffect(cell, base) {
+    if (reducedMotion) return;
+    bursts.push({ ...cell, color: BASE_COLORS[base], startedAt: performance.now() });
+    if (effectFrame === null) {
+      effectFrame = window.requestAnimationFrame(animateEffects);
+    }
+  }
+
+  function animateEffects(timestamp) {
+    bursts = bursts.filter(burst => timestamp - burst.startedAt < 380);
+    draw();
+    bursts.forEach(burst => drawBurst(burst, timestamp));
+
+    if (bursts.length > 0) {
+      effectFrame = window.requestAnimationFrame(animateEffects);
+    } else {
+      effectFrame = null;
+    }
   }
 
   function vibrate(pattern) {
-    if ("vibrate" in navigator) {
+    const hasUserActivation = !("userActivation" in navigator) || navigator.userActivation.hasBeenActive;
+    if ("vibrate" in navigator && allowHaptics && hasUserActivation) {
       navigator.vibrate(pattern);
     }
   }
@@ -289,12 +328,24 @@
   }
 
   function drawPlate(cellSize) {
-    context.fillStyle = "#f5fbfa";
+    context.fillStyle = "#f2faf8";
     context.fillRect(0, 0, boardSize, boardSize);
-    context.strokeStyle = "rgba(0, 124, 120, 0.09)";
-    context.lineWidth = 1;
 
-    for (let index = 1; index < GRID_SIZE; index += 1) {
+    for (let y = 0; y < GRID_SIZE; y += 1) {
+      for (let x = 0; x < GRID_SIZE; x += 1) {
+        context.fillStyle = (x + y) % 2 === 0 ? "rgba(0, 124, 120, 0.04)" : "rgba(57, 117, 183, 0.025)";
+        context.strokeStyle = "rgba(0, 124, 120, 0.075)";
+        context.lineWidth = Math.max(0.6, cellSize * 0.035);
+        context.beginPath();
+        context.arc((x + 0.5) * cellSize, (y + 0.5) * cellSize, cellSize * 0.34, 0, Math.PI * 2);
+        context.fill();
+        context.stroke();
+      }
+    }
+
+    context.strokeStyle = "rgba(7, 27, 58, 0.08)";
+    context.lineWidth = 1;
+    for (let index = 5; index < GRID_SIZE; index += 5) {
       const position = index * cellSize;
       context.beginPath();
       context.moveTo(position, 0);
@@ -322,6 +373,12 @@
     context.fill();
     context.restore();
 
+    context.strokeStyle = `${BASE_COLORS[item.base]}55`;
+    context.lineWidth = Math.max(1.5, cellSize * 0.08);
+    context.beginPath();
+    context.arc(centerX, centerY, radius + cellSize * 0.1, 0, Math.PI * 2);
+    context.stroke();
+
     context.fillStyle = "#ffffff";
     context.font = `800 ${cellSize * 0.48}px Inter, system-ui, sans-serif`;
     context.textAlign = "center";
@@ -335,18 +392,50 @@
     const y = segment.y * cellSize + padding;
     const size = cellSize - padding * 2;
 
-    context.fillStyle = index === 0 ? "#071b3a" : index % 2 === 0 ? "#007c78" : "#13938d";
+    context.fillStyle = index === 0 ? "#071b3a" : TRAIL_COLORS[(index - 1) % TRAIL_COLORS.length];
     roundRect(context, x, y, size, size, cellSize * 0.22);
     context.fill();
 
     if (index === 0) {
       drawPipetteHead(segment, cellSize);
     } else {
-      context.fillStyle = "rgba(255, 255, 255, 0.68)";
+      context.fillStyle = "rgba(255, 255, 255, 0.78)";
       context.beginPath();
       context.arc((segment.x + 0.5) * cellSize, (segment.y + 0.5) * cellSize, cellSize * 0.075, 0, Math.PI * 2);
       context.fill();
     }
+  }
+
+  function drawBurst(burst, timestamp) {
+    const cellSize = boardSize / GRID_SIZE;
+    const progress = Math.min(1, (timestamp - burst.startedAt) / 380);
+    const centerX = (burst.x + 0.5) * cellSize;
+    const centerY = (burst.y + 0.5) * cellSize;
+    const radius = cellSize * (0.35 + progress * 1.15);
+
+    context.save();
+    context.globalAlpha = 1 - progress;
+    context.strokeStyle = burst.color;
+    context.lineWidth = Math.max(1, cellSize * 0.11 * (1 - progress));
+    context.beginPath();
+    context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    context.stroke();
+
+    for (let index = 0; index < 6; index += 1) {
+      const angle = (Math.PI * 2 * index) / 6;
+      const distance = cellSize * (0.5 + progress * 1.35);
+      context.fillStyle = index % 2 === 0 ? burst.color : "#7fd6cc";
+      context.beginPath();
+      context.arc(
+        centerX + Math.cos(angle) * distance,
+        centerY + Math.sin(angle) * distance,
+        Math.max(1.2, cellSize * 0.09 * (1 - progress * 0.55)),
+        0,
+        Math.PI * 2
+      );
+      context.fill();
+    }
+    context.restore();
   }
 
   function drawPipetteHead(segment, cellSize) {
@@ -370,10 +459,22 @@
   function roundRect(ctx, x, y, width, height, radius) {
     const safeRadius = Math.min(radius, width / 2, height / 2);
     ctx.beginPath();
-    ctx.roundRect(x, y, width, height, safeRadius);
+    ctx.moveTo(x + safeRadius, y);
+    ctx.lineTo(x + width - safeRadius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + safeRadius);
+    ctx.lineTo(x + width, y + height - safeRadius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - safeRadius, y + height);
+    ctx.lineTo(x + safeRadius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - safeRadius);
+    ctx.lineTo(x, y + safeRadius);
+    ctx.quadraticCurveTo(x, y, x + safeRadius, y);
+    ctx.closePath();
   }
 
   function handleKeydown(event) {
+    if (event.isTrusted) {
+      allowHaptics = true;
+    }
     const nextDirection = KEY_DIRECTIONS[event.key];
     if (nextDirection) {
       event.preventDefault();
@@ -425,6 +526,11 @@
   boardWrap.addEventListener("pointerup", handlePointerUp);
   boardWrap.addEventListener("pointercancel", () => { pointerStart = null; });
   document.addEventListener("keydown", handleKeydown);
+  document.addEventListener("pointerdown", event => {
+    if (event.isTrusted) {
+      allowHaptics = true;
+    }
+  }, { passive: true });
   document.addEventListener("visibilitychange", handleVisibilityChange);
 
   if ("ResizeObserver" in window) {
