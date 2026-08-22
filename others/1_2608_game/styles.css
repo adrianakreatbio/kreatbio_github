@@ -70,7 +70,7 @@ button:focus-visible, a:focus-visible {
   width: calc(100% - 36px);
   max-width: 1040px;
   margin: 0 auto;
-  padding: 14px 0;
+  padding: 10px 0;
 }
 
 .brand {
@@ -78,7 +78,7 @@ button:focus-visible, a:focus-visible {
   align-items: center;
   padding: 0;
 }
-.brand img { display: block; width: 126px; height: auto; }
+.brand img { display: block; width: 100px; height: auto; }
 
 .header-note {
   display: inline-flex;
@@ -101,7 +101,7 @@ button:focus-visible, a:focus-visible {
 
 .game-page {
   width: calc(100% - 28px);
-  max-width: 680px;
+  max-width: 600px;
   margin: 0 auto;
   padding: clamp(14px, 3.6vw, 36px) 0 48px;
 }
@@ -137,29 +137,17 @@ h1 span { color: var(--lime); text-shadow: 0 0 24px rgba(212, 255, 112, .25); }
 
 .game-card {
   position: relative;
-  padding: clamp(9px, 2.2vw, 15px);
-  background: #20232a;
-  border: 1px solid rgba(183, 138, 255, .35);
-  border-radius: 30px;
-  box-shadow: 0 0 0 1px rgba(114, 234, 220, .06), 0 26px 75px -35px rgba(0, 0, 0, .92), 0 0 52px -38px rgba(183, 138, 255, .8);
-}
-.game-card::before {
-  position: absolute;
-  top: 0;
-  right: 30px;
-  left: 30px;
-  height: 3px;
-  background: var(--cyan);
-  border-radius: 0 0 999px 999px;
-  content: "";
+  padding: 0;
 }
 
 .game-bar {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  min-height: 50px;
-  padding: 0 3px 10px;
+  width: min(100%, 520px);
+  min-height: 48px;
+  margin: 0 auto;
+  padding: 0 4px 11px;
 }
 .score-block { display: flex; align-items: center; gap: 9px; }
 .score-block span, .game-status {
@@ -184,8 +172,8 @@ h1 span { color: var(--lime); text-shadow: 0 0 24px rgba(212, 255, 112, .25); }
 .icon-button {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   justify-self: end;
   padding: 0;
   color: var(--cyan);
@@ -204,13 +192,14 @@ h1 span { color: var(--lime); text-shadow: 0 0 24px rgba(212, 255, 112, .25); }
 
 .board-wrap {
   position: relative;
-  width: 100%;
+  width: min(100%, 520px);
   aspect-ratio: 1;
+  margin: 0 auto;
   overflow: hidden;
   background: #111b20;
   border: 3px solid rgba(114, 234, 220, .9);
   border-radius: 50%;
-  box-shadow: inset 0 0 0 5px rgba(255, 255, 255, .035), inset 0 0 48px rgba(114, 234, 220, .08), 0 0 0 5px rgba(10, 12, 17, .8), 0 0 0 7px rgba(183, 138, 255, .22), 0 20px 52px -25px rgba(0, 0, 0, .95), 0 0 38px -21px rgba(114, 234, 220, .75);
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .035), 0 0 0 4px rgba(10, 12, 17, .72), 0 0 0 6px rgba(183, 138, 255, .2), 0 18px 40px -24px rgba(0, 0, 0, .9);
   touch-action: none;
   user-select: none;
 }
@@ -223,38 +212,31 @@ h1 span { color: var(--lime); text-shadow: 0 0 24px rgba(212, 255, 112, .25); }
   inset: 0;
   display: grid;
   place-items: center;
-  padding: 31px;
-  background: rgba(17, 19, 24, .82);
+  padding: 24px;
+  background: rgba(17, 19, 24, .7);
   border-radius: 50%;
   backdrop-filter: blur(5px);
 }
 .game-overlay[hidden] { display: none; }
 .overlay-panel {
   position: relative;
-  width: min(100%, 292px);
-  padding: 38px 17px 17px;
+  width: min(100%, 330px);
+  padding: 0 15px;
   color: #d9dee7;
   text-align: center;
-  background: #26232f;
-  border: 1px solid rgba(183, 138, 255, .53);
-  border-radius: 27px;
-  box-shadow: 0 22px 55px rgba(0, 0, 0, .48), inset 0 1px 0 rgba(255, 255, 255, .06), 0 0 28px -15px rgba(183, 138, 255, .85);
 }
-.overlay-panel::before { position: absolute; top: 0; right: 24px; left: 24px; height: 3px; background: var(--violet); border-radius: 0 0 99px 99px; content: ""; }
 .microbe-mascot {
-  position: absolute;
-  top: -57px;
-  left: 50%;
-  width: 112px;
-  height: 112px;
+  display: block;
+  width: 108px;
+  height: 108px;
+  margin: -9px auto -16px;
   object-fit: contain;
   filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .42)) drop-shadow(0 0 10px rgba(183, 138, 255, .42));
-  transform: translateX(-50%);
   animation: mascot-float 2.6s ease-in-out infinite;
 }
 .microbe-mascot.is-unavailable { display: none; }
 .overlay-kicker { color: var(--cyan); font-size: .61rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
-.overlay-panel h2 { margin: 5px 0 8px; color: #fff; font-size: clamp(1.3rem, 4.5vw, 1.75rem); line-height: 1.04; letter-spacing: -.035em; }
+.overlay-panel h2 { margin: 5px 0 8px; color: #fff; font-size: clamp(1.35rem, 4.5vw, 1.8rem); line-height: 1.04; letter-spacing: -.035em; }
 .base-key { display: flex; justify-content: center; gap: 6px; margin: 0 0 9px; }
 .base-key span { display: grid; place-items: center; width: 23px; height: 23px; color: #17191f; font-size: .64rem; font-weight: 950; border: 1px solid rgba(255, 255, 255, .3); border-radius: 50%; }
 .base-key .base-a { background: var(--cyan); }
@@ -263,7 +245,7 @@ h1 span { color: var(--lime); text-shadow: 0 0 24px rgba(212, 255, 112, .25); }
 .base-key .base-t { background: var(--coral); }
 .overlay-panel p { margin: 0 auto 11px; color: #bec4cf; font-family: Inter, system-ui, sans-serif; font-size: clamp(.73rem, 2.35vw, .86rem); line-height: 1.42; }
 .primary-button {
-  min-height: 43px;
+  min-height: 44px;
   padding: 10px 18px;
   color: #15171c;
   font-size: .85rem;
@@ -291,7 +273,7 @@ h1 span { color: var(--lime); text-shadow: 0 0 24px rgba(212, 255, 112, .25); }
   background: color-mix(in srgb, var(--control-color, var(--cyan)) 10%, #242832);
   border: 1px solid #4a5060;
   border: 1px solid color-mix(in srgb, var(--control-color, var(--cyan)) 48%, #343945);
-  border-radius: 15px;
+  border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 4px 0 #15171d, 0 0 17px -12px var(--control-color, var(--cyan));
   transition: transform 80ms ease, box-shadow 80ms ease, background 100ms ease, border-color 100ms ease;
@@ -319,24 +301,54 @@ footer a { color: var(--cyan); font-weight: 800; text-underline-offset: 3px; }
 @media (max-width: 440px) {
   .header-inner { width: calc(100% - 28px); padding: 12px 0; }
   .brand { padding: 0; }
-  .brand img { width: 112px; }
+  .brand img { width: 92px; }
   .header-note { font-size: .58rem; }
   .game-page { padding-top: 8px; }
   .intro { margin-bottom: 17px; }
   .intro > p:last-child { margin-top: 12px; }
-  .game-card { border-radius: 24px; }
   .game-bar { min-height: 46px; padding-bottom: 8px; }
-  .game-overlay { padding: 27px; }
-  .overlay-panel { padding: 43px 14px 14px; }
-  .microbe-mascot { top: -55px; width: 108px; height: 108px; }
+  .game-overlay { padding: 21px; }
+  .overlay-panel { padding: 0 11px; }
+  .microbe-mascot { width: 94px; height: 94px; margin-bottom: -14px; }
   .controls { padding: 13px 0 1px; }
   .controls > p { margin-bottom: 8px; }
-  .direction-pad { grid-template-columns: repeat(3, 43px); grid-template-rows: repeat(3, 43px); gap: 5px; }
-  .direction-button { border-radius: 13px; }
+  .direction-pad { grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); gap: 5px; }
 }
 
 @media (min-width: 720px) {
   .direction-pad { grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(3, 46px); }
+}
+
+@media (min-width: 900px) {
+  .game-page { max-width: 760px; }
+  .game-card {
+    display: grid;
+    grid-template-columns: 480px 170px;
+    grid-template-rows: auto auto;
+    justify-content: center;
+    align-items: center;
+    column-gap: 30px;
+  }
+  .game-bar {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+  }
+  .board-wrap {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+  }
+  .controls {
+    grid-column: 2;
+    grid-row: 2;
+    padding: 0;
+  }
+  .controls > p {
+    max-width: 138px;
+    margin: 0 auto 16px;
+    line-height: 1.45;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -344,8 +356,8 @@ footer a { color: var(--cyan); font-weight: 800; text-underline-offset: 3px; }
 }
 
 @keyframes mascot-float {
-  0%, 100% { transform: translateX(-50%) translateY(0) rotate(-2deg); }
-  50% { transform: translateX(-50%) translateY(-5px) rotate(2deg); }
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-5px) rotate(2deg); }
 }
 @keyframes status-pulse {
   0%, 100% { opacity: .58; transform: scale(.88); }
