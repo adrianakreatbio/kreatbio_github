@@ -148,7 +148,7 @@ install -m 0644 "$remote_stage/portal-api.kreatbio.com.nginx" /etc/nginx/sites-e
 systemctl daemon-reload
 systemctl restart kreatbio-portal
 systemctl is-active --quiet kreatbio-portal
-curl -fsS http://127.0.0.1:8080/healthz >/dev/null
+curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/healthz >/dev/null
 nginx -t
 systemctl reload nginx
 printf '%s\n' "$release_commit" > "$vps_app_dir/.deployed-git-commit"
