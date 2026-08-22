@@ -7,6 +7,8 @@
   const SPEED_STEP = 12;
   const SPEED_INTERVAL = 5;
   const POINTS_PER_BASE = 10;
+  const PLAY_RADIUS = 9.15;
+  const GRID_CENTER = (GRID_SIZE - 1) / 2;
   const BASES = ["A", "C", "G", "T"];
   const VECTORS = {
     up: { x: 0, y: -1 },
@@ -35,12 +37,18 @@
     D: "right"
   };
   const BASE_COLORS = {
-    A: "#007c78",
-    C: "#2667a6",
-    G: "#9b6d00",
-    T: "#87548a"
+    A: "#72eadc",
+    C: "#6ca9ff",
+    G: "#ffc857",
+    T: "#ff7595"
   };
-  const TRAIL_COLORS = ["#07958f", "#3975b7", "#d59a19", "#8b5aa0"];
+  const TRAIL_COLORS = ["#a879f2", "#72eadc", "#ff7595", "#6ca9ff", "#d4ff70"];
+  const DIRECTION_ANGLES = {
+    up: 0,
+    right: Math.PI / 2,
+    down: Math.PI,
+    left: -Math.PI / 2
+  };
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const canvas = document.querySelector("#game-board");
@@ -54,7 +62,20 @@
   const overlayTitle = document.querySelector("#overlay-title");
   const overlayCopy = document.querySelector("#overlay-copy");
   const overlayButton = document.querySelector("#overlay-button");
+  const mascotElement = document.querySelector(".microbe-mascot");
   const directionButtons = [...document.querySelectorAll("[data-direction]")];
+  mascotElement.addEventListener("error", () => mascotElement.classList.add("is-unavailable"));
+  const microbeImage = new Image();
+  let microbeImageReady = false;
+  microbeImage.addEventListener("load", () => {
+    microbeImageReady = true;
+    draw();
+  });
+  microbeImage.addEventListener("error", () => {
+    microbeImageReady = false;
+    mascotElement.classList.add("is-unavailable");
+  });
+  microbeImage.src = "assets/base-muncher-bacterium.png";
 
   let snake = [];
   let food = null;
@@ -96,7 +117,7 @@
   function startGame() {
     resetGame();
     gameState = "playing";
-    statusElement.textContent = "Running";
+    statusElement.textContent = "Munching";
     pauseButton.disabled = false;
     pauseButton.classList.remove("is-paused");
     pauseButton.setAttribute("aria-label", "Pause game");
@@ -122,10 +143,10 @@
     const vector = VECTORS[direction];
     const head = snake[0];
     const nextHead = { x: head.x + vector.x, y: head.y + vector.y };
-    const ateFood = nextHead.x === food.x && nextHead.y === food.y;
+    const ateFood = food && nextHead.x === food.x && nextHead.y === food.y;
     const bodyToCheck = ateFood ? snake : snake.slice(0, -1);
 
-    if (isOutsideBoard(nextHead) || bodyToCheck.some(segment => sameCell(segment, nextHead))) {
+    if (!isPlayableCell(nextHead) || bodyToCheck.some(segment => sameCell(segment, nextHead))) {
       endGame();
       return;
     }
@@ -158,20 +179,20 @@
   function endGame(completedPlate = false) {
     gameState = "gameover";
     stopTimer();
-    statusElement.textContent = completedPlate ? "Plate complete" : "Run complete";
+    statusElement.textContent = completedPlate ? "Dish cleared" : "Culture crash";
     pauseButton.disabled = true;
     pauseButton.classList.remove("is-paused");
     vibrate([30, 45, 30]);
     showOverlay(completedPlate ? {
-      kicker: "Perfect sequence",
-      title: "You cleared the plate",
-      copy: `Final score: ${score}. That was exceptionally clean work.`,
-      button: "Play again"
+      kicker: "Super colony",
+      title: "You cleared the dish!",
+      copy: `Final score: ${score}. Your tiny culture has a huge appetite.`,
+      button: "Grow again"
     } : {
-      kicker: "Sequence interrupted",
-      title: `You collected ${collected} ${collected === 1 ? "base" : "bases"}`,
-      copy: `Final score: ${score}. Clean the plate and try another run.`,
-      button: "Play again"
+      kicker: "Culture crash",
+      title: `You munched ${collected} ${collected === 1 ? "base" : "bases"}`,
+      copy: `Final score: ${score}. Give your little colony another chance.`,
+      button: "Grow again"
     });
   }
 
@@ -187,21 +208,21 @@
     if (gameState !== "playing") return;
     gameState = "paused";
     stopTimer();
-    statusElement.textContent = "Paused";
+    statusElement.textContent = "Napping";
     pauseButton.classList.add("is-paused");
     pauseButton.setAttribute("aria-label", "Resume game");
     showOverlay({
-      kicker: "Run paused",
-      title: "Your sample is safe",
-      copy: "Resume whenever you’re ready to get back to the plate.",
-      button: "Resume"
+      kicker: "Microbe nap time",
+      title: "Your colony is snoozing",
+      copy: "Wake the little muncher whenever you’re ready.",
+      button: "Wake up"
     });
   }
 
   function resumeGame() {
     if (gameState !== "paused") return;
     gameState = "playing";
-    statusElement.textContent = "Running";
+    statusElement.textContent = "Munching";
     pauseButton.classList.remove("is-paused");
     pauseButton.setAttribute("aria-label", "Pause game");
     overlay.hidden = true;
@@ -243,7 +264,7 @@
     const openCells = [];
     for (let y = 0; y < GRID_SIZE; y += 1) {
       for (let x = 0; x < GRID_SIZE; x += 1) {
-        if (!snake.some(segment => segment.x === x && segment.y === y)) {
+        if (isPlayableCell({ x, y }) && !snake.some(segment => segment.x === x && segment.y === y)) {
           openCells.push({ x, y });
         }
       }
@@ -257,8 +278,11 @@
     return { ...cell, base: BASES[Math.floor(Math.random() * BASES.length)] };
   }
 
-  function isOutsideBoard(cell) {
-    return cell.x < 0 || cell.y < 0 || cell.x >= GRID_SIZE || cell.y >= GRID_SIZE;
+  function isPlayableCell(cell) {
+    if (cell.x < 0 || cell.y < 0 || cell.x >= GRID_SIZE || cell.y >= GRID_SIZE) {
+      return false;
+    }
+    return Math.hypot(cell.x - GRID_CENTER, cell.y - GRID_CENTER) <= PLAY_RADIUS;
   }
 
   function sameCell(a, b) {
@@ -328,82 +352,134 @@
   }
 
   function drawPlate(cellSize) {
-    context.fillStyle = "#f2faf8";
+    context.fillStyle = "#0d1015";
     context.fillRect(0, 0, boardSize, boardSize);
 
-    for (let y = 0; y < GRID_SIZE; y += 1) {
-      for (let x = 0; x < GRID_SIZE; x += 1) {
-        context.fillStyle = (x + y) % 2 === 0 ? "rgba(0, 124, 120, 0.04)" : "rgba(57, 117, 183, 0.025)";
-        context.strokeStyle = "rgba(0, 124, 120, 0.075)";
-        context.lineWidth = Math.max(0.6, cellSize * 0.035);
-        context.beginPath();
-        context.arc((x + 0.5) * cellSize, (y + 0.5) * cellSize, cellSize * 0.34, 0, Math.PI * 2);
-        context.fill();
-        context.stroke();
-      }
-    }
+    context.save();
+    context.beginPath();
+    context.arc(boardSize / 2, boardSize / 2, boardSize * 0.495, 0, Math.PI * 2);
+    context.clip();
 
-    context.strokeStyle = "rgba(7, 27, 58, 0.08)";
-    context.lineWidth = 1;
-    for (let index = 5; index < GRID_SIZE; index += 5) {
-      const position = index * cellSize;
-      context.beginPath();
-      context.moveTo(position, 0);
-      context.lineTo(position, boardSize);
-      context.stroke();
-      context.beginPath();
-      context.moveTo(0, position);
-      context.lineTo(boardSize, position);
-      context.stroke();
-    }
+    context.fillStyle = "#15252a";
+    context.fillRect(0, 0, boardSize, boardSize);
+
+    context.strokeStyle = "rgba(114, 234, 220, 0.14)";
+    context.lineWidth = Math.max(1, cellSize * 0.08);
+    context.beginPath();
+    context.arc(boardSize / 2, boardSize / 2, boardSize * 0.47, 0, Math.PI * 2);
+    context.stroke();
+    context.restore();
   }
 
   function drawFood(item, cellSize) {
     const centerX = (item.x + 0.5) * cellSize;
     const centerY = (item.y + 0.5) * cellSize;
-    const radius = cellSize * 0.37;
+    const pulse = reducedMotion ? 0 : Math.sin(performance.now() / 135) * cellSize * 0.035;
+    const radius = cellSize * 0.41 + pulse;
 
     context.save();
-    context.shadowColor = "rgba(7, 27, 58, 0.2)";
-    context.shadowBlur = cellSize * 0.24;
-    context.shadowOffsetY = cellSize * 0.08;
+    context.shadowColor = BASE_COLORS[item.base];
+    context.shadowBlur = cellSize * 0.75;
     context.fillStyle = BASE_COLORS[item.base];
     context.beginPath();
     context.arc(centerX, centerY, radius, 0, Math.PI * 2);
     context.fill();
     context.restore();
 
-    context.strokeStyle = `${BASE_COLORS[item.base]}55`;
-    context.lineWidth = Math.max(1.5, cellSize * 0.08);
+    context.strokeStyle = `${BASE_COLORS[item.base]}99`;
+    context.lineWidth = Math.max(1.2, cellSize * 0.065);
     context.beginPath();
     context.arc(centerX, centerY, radius + cellSize * 0.1, 0, Math.PI * 2);
     context.stroke();
 
-    context.fillStyle = "#ffffff";
-    context.font = `800 ${cellSize * 0.48}px Inter, system-ui, sans-serif`;
+    context.fillStyle = "#15171c";
+    context.font = `900 ${cellSize * 0.5}px ui-rounded, system-ui, sans-serif`;
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillText(item.base, centerX, centerY + cellSize * 0.02);
   }
 
   function drawSnakeSegment(segment, index, cellSize) {
-    const padding = cellSize * (index === 0 ? 0.08 : 0.13);
-    const x = segment.x * cellSize + padding;
-    const y = segment.y * cellSize + padding;
-    const size = cellSize - padding * 2;
-
-    context.fillStyle = index === 0 ? "#071b3a" : TRAIL_COLORS[(index - 1) % TRAIL_COLORS.length];
-    roundRect(context, x, y, size, size, cellSize * 0.22);
-    context.fill();
-
     if (index === 0) {
-      drawPipetteHead(segment, cellSize);
+      drawMicrobeLeader(segment, cellSize);
     } else {
-      context.fillStyle = "rgba(255, 255, 255, 0.78)";
-      context.beginPath();
-      context.arc((segment.x + 0.5) * cellSize, (segment.y + 0.5) * cellSize, cellSize * 0.075, 0, Math.PI * 2);
-      context.fill();
+      drawDaughterCell(segment, index, cellSize);
     }
+  }
+
+  function drawMicrobeLeader(segment, cellSize) {
+    const centerX = (segment.x + 0.5) * cellSize;
+    const centerY = (segment.y + 0.5) * cellSize;
+    const angle = DIRECTION_ANGLES[direction];
+
+    context.save();
+    context.translate(centerX, centerY);
+    context.shadowColor = "rgba(183, 138, 255, 0.8)";
+    context.shadowBlur = cellSize * 0.75;
+    context.fillStyle = "rgba(183, 138, 255, 0.18)";
+    context.beginPath();
+    context.arc(0, 0, cellSize * 0.58, 0, Math.PI * 2);
+    context.fill();
+    context.shadowBlur = 0;
+    context.rotate(angle);
+
+    if (microbeImageReady) {
+      const imageSize = cellSize * 2.75;
+      context.drawImage(microbeImage, -imageSize / 2, -imageSize / 2, imageSize, imageSize);
+    } else {
+      drawFallbackMicrobe(cellSize);
+    }
+    context.restore();
+  }
+
+  function drawFallbackMicrobe(cellSize) {
+    const width = cellSize * 0.72;
+    const height = cellSize * 1.04;
+    context.fillStyle = "#a968ef";
+    roundRect(context, -width / 2, -height / 2, width, height, width / 2);
+    context.fill();
+    context.fillStyle = "#17191f";
+    context.beginPath();
+    context.arc(-width * 0.16, -height * 0.08, cellSize * 0.055, 0, Math.PI * 2);
+    context.arc(width * 0.16, -height * 0.08, cellSize * 0.055, 0, Math.PI * 2);
+    context.fill();
+    context.strokeStyle = "#17191f";
+    context.lineWidth = Math.max(1, cellSize * 0.05);
+    context.beginPath();
+    context.arc(0, height * 0.06, cellSize * 0.13, 0.15, Math.PI - 0.15);
+    context.stroke();
+  }
+
+  function drawDaughterCell(segment, index, cellSize) {
+    const ahead = snake[index - 1];
+    const vector = ahead ? { x: ahead.x - segment.x, y: ahead.y - segment.y } : VECTORS[direction];
+    const angle = Math.atan2(vector.y, vector.x);
+    const centerX = (segment.x + 0.5) * cellSize;
+    const centerY = (segment.y + 0.5) * cellSize;
+    const width = cellSize * 0.82;
+    const height = cellSize * 0.57;
+    const color = TRAIL_COLORS[(index - 1) % TRAIL_COLORS.length];
+
+    context.save();
+    context.translate(centerX, centerY);
+    context.rotate(angle);
+    context.shadowColor = color;
+    context.shadowBlur = cellSize * 0.34;
+    context.fillStyle = color;
+    roundRect(context, -width / 2, -height / 2, width, height, height / 2);
+    context.fill();
+    context.shadowBlur = 0;
+    context.strokeStyle = "rgba(22, 24, 30, 0.46)";
+    context.lineWidth = Math.max(1, cellSize * 0.055);
+    context.beginPath();
+    context.moveTo(0, -height * 0.34);
+    context.lineTo(0, height * 0.34);
+    context.stroke();
+    context.fillStyle = "rgba(255, 255, 255, 0.58)";
+    context.beginPath();
+    context.ellipse(-width * 0.2, -height * 0.17, width * 0.09, height * 0.08, 0, 0, Math.PI * 2);
+    context.fill();
+    context.restore();
   }
 
   function drawBurst(burst, timestamp) {
@@ -424,7 +500,7 @@
     for (let index = 0; index < 6; index += 1) {
       const angle = (Math.PI * 2 * index) / 6;
       const distance = cellSize * (0.5 + progress * 1.35);
-      context.fillStyle = index % 2 === 0 ? burst.color : "#7fd6cc";
+      context.fillStyle = index % 2 === 0 ? burst.color : "#d4ff70";
       context.beginPath();
       context.arc(
         centerX + Math.cos(angle) * distance,
@@ -436,24 +512,6 @@
       context.fill();
     }
     context.restore();
-  }
-
-  function drawPipetteHead(segment, cellSize) {
-    const centerX = (segment.x + 0.5) * cellSize;
-    const centerY = (segment.y + 0.5) * cellSize;
-    const vector = VECTORS[direction];
-    const sideX = -vector.y;
-    const sideY = vector.x;
-    const tipX = centerX + vector.x * cellSize * 0.3;
-    const tipY = centerY + vector.y * cellSize * 0.3;
-
-    context.fillStyle = "#7fd6cc";
-    context.beginPath();
-    context.moveTo(tipX, tipY);
-    context.lineTo(centerX - vector.x * cellSize * 0.12 + sideX * cellSize * 0.16, centerY - vector.y * cellSize * 0.12 + sideY * cellSize * 0.16);
-    context.lineTo(centerX - vector.x * cellSize * 0.12 - sideX * cellSize * 0.16, centerY - vector.y * cellSize * 0.12 - sideY * cellSize * 0.16);
-    context.closePath();
-    context.fill();
   }
 
   function roundRect(ctx, x, y, width, height, radius) {

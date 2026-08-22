@@ -3,16 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#071b3a">
-  <meta name="description" content="Take a quick lab break with DNA Collector, a bite-sized game from KreatBio.">
+  <meta name="theme-color" content="#181a20">
+  <meta name="description" content="Feed a tiny bacterium A, C, G and T in Base Muncher, a neon petri-dish game from KreatBio.">
   <link rel="canonical" href="https://kreatbio.com/others/1_2608_game/">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23071b3a'/%3E%3Cpath d='M20 14c0 18 24 18 24 36M44 14c0 18-24 18-24 36M22 21h20M20 32h24M22 43h20' fill='none' stroke='%237fd6cc' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="icon" href="assets/base-muncher-bacterium.png">
+  <link rel="apple-touch-icon" href="assets/base-muncher-bacterium.png">
+  <link rel="preload" as="image" href="assets/base-muncher-bacterium.png">
+  <link rel="preload" as="image" href="assets/kreatbio-logo.png">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="KreatBio">
-  <meta property="og:title" content="DNA Collector — a quick lab break">
-  <meta property="og:description" content="Collect A, C, G and T without contaminating your run.">
+  <meta property="og:title" content="Base Muncher — feed the tiny colony">
+  <meta property="og:description" content="Guide a cute bacterium around a neon petri dish and munch A, C, G and T.">
   <meta property="og:url" content="https://kreatbio.com/others/1_2608_game/">
-  <title>DNA Collector | KreatBio</title>
+  <meta property="og:image" content="https://kreatbio.com/others/1_2608_game/assets/base-muncher-bacterium.png">
+  <title>Base Muncher | KreatBio</title>
   <link rel="stylesheet" href="styles.css">
   <script src="game.js" defer></script>
 </head>
@@ -20,20 +24,22 @@
   <a class="skip-link" href="#game">Skip to game</a>
 
   <header class="site-header">
-    <a class="brand" href="https://kreatbio.com/" aria-label="Visit KreatBio.com">
-      <span>Kreat</span><span>Bio</span>
-    </a>
-    <span class="header-note">A quick lab break</span>
+    <div class="header-inner">
+      <a class="brand" href="https://kreatbio.com/" aria-label="Visit KreatBio.com">
+        <img src="assets/kreatbio-logo.png" width="1200" height="262" alt="KreatBio">
+      </a>
+      <span class="header-note"><span aria-hidden="true"></span> Culture arcade</span>
+    </div>
   </header>
 
   <main id="game" class="game-page">
     <section class="intro" aria-labelledby="page-title">
       <p class="eyebrow">KreatBio mini game</p>
-      <h1 id="page-title">DNA Collector</h1>
-      <p>Guide the pipette through the plate and collect the bases. Just don’t cross your own sample trail.</p>
+      <h1 id="page-title"><span>Base</span> Muncher</h1>
+      <p>A tiny microbe with a very big appetite. Munch A, C, G and T—but don’t bump the dish or your growing colony.</p>
     </section>
 
-    <section class="game-card" aria-label="DNA Collector game">
+    <section class="game-card" aria-label="Base Muncher game">
       <div class="game-bar">
         <div class="score-block" aria-live="polite" aria-atomic="true">
           <span>Score</span>
@@ -51,28 +57,29 @@
       </div>
 
       <div id="board-wrap" class="board-wrap">
-        <canvas id="game-board" width="600" height="600" aria-label="DNA Collector game board">
+        <canvas id="game-board" width="600" height="600" aria-label="Base Muncher circular petri-dish game board">
           Your browser does not support the canvas required for this game.
         </canvas>
 
         <div id="game-overlay" class="game-overlay">
           <div class="overlay-panel">
-            <span id="overlay-kicker" class="overlay-kicker">Pipette ready</span>
-            <h2 id="overlay-title">Collect the code of life</h2>
+            <img class="microbe-mascot" src="assets/base-muncher-bacterium.png" width="512" height="512" alt="" aria-hidden="true">
+            <span id="overlay-kicker" class="overlay-kicker">Culture ready</span>
+            <h2 id="overlay-title">Feed your tiny colony</h2>
             <div class="base-key" aria-hidden="true">
               <span class="base-a">A</span>
               <span class="base-c">C</span>
               <span class="base-g">G</span>
               <span class="base-t">T</span>
             </div>
-            <p id="overlay-copy">Swipe, tap the controls, or use your arrow keys. The pace picks up every five bases.</p>
-            <button id="overlay-button" class="primary-button" type="button">Start collecting</button>
+            <p id="overlay-copy">Swipe, tap, or use your arrow keys. Every base makes your little colony grow faster.</p>
+            <button id="overlay-button" class="primary-button" type="button"><span aria-hidden="true">▶</span> Start munching</button>
           </div>
         </div>
       </div>
 
       <div class="controls" aria-label="Movement controls">
-        <p>Swipe the plate or tap to move</p>
+        <p><span aria-hidden="true">✦</span> Swipe the dish or tap to move <span aria-hidden="true">✦</span></p>
         <div class="direction-pad">
           <button class="direction-button up" type="button" data-direction="up" aria-label="Move up">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
@@ -93,11 +100,11 @@
       </div>
     </section>
 
-    <p class="lab-note"><span aria-hidden="true">◌</span> No samples, scores, or personal data leave this page.</p>
+    <p class="lab-note"><span aria-hidden="true">◌</span> This culture keeps no samples, scores, or personal data.</p>
   </main>
 
   <footer>
-    <p>Made for curious lab minds by <a href="https://kreatbio.com/">KreatBio</a>.</p>
+    <p>Grown for curious lab minds by <a href="https://kreatbio.com/">KreatBio</a>.</p>
   </footer>
 </body>
 </html>
