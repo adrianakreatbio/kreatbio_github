@@ -4,7 +4,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
 import { Storage } from "@google-cloud/storage";
+import { createGcsSignedUrl } from "./gcs-signer.js";
 import { ChatQuotaStore } from "./quota-store.js";
+import { ReportAccessStore } from "./report-access-store.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,6 +15,9 @@ const PORT = Number(process.env.PORT || 8080);
 const GCS_BUCKET = process.env.GCS_BUCKET || "";
 const GCS_CLIENT_PREFIX = cleanPrefix(process.env.GCS_CLIENT_PREFIX || "");
 const GCS_ACCESS_TOKEN = process.env.GCS_ACCESS_TOKEN || "";
+const GCS_HMAC_ACCESS_ID = environmentSecret("GCS_HMAC_ACCESS_ID");
+const GCS_HMAC_SECRET = environmentSecret("GCS_HMAC_SECRET");
+const GCS_SIGNED_URL_TTL_SECONDS = Math.min(604800, Number(process.env.GCS_SIGNED_URL_TTL_SECONDS || 30 * 60));
 const SESSION_SECRET = environmentSecret("SESSION_SECRET");
 const SESSION_TTL_SECONDS = Number(process.env.SESSION_TTL_SECONDS || 60 * 60 * 8);
 const DATA_TEXT_LIMIT = Number(process.env.DATA_TEXT_LIMIT || 5 * 1024 * 1024);
@@ -27,6 +32,9 @@ const PORTAL_ORIGINS = PORTAL_ORIGIN.split(",").map((origin) => origin.trim()).f
 const PORTAL_API_BASE = cleanUrl(process.env.PORTAL_API_BASE || "");
 const STATIC_DIR = process.env.PORTAL_STATIC_DIR || path.join(__dirname, "public");
 const CHAT_QUOTA_DB = process.env.CHAT_QUOTA_DB || path.join(__dirname, ".data", "chat-quota.sqlite");
+const REPORT_ACCESS_DB = process.env.REPORT_ACCESS_DB || path.join(__dirname, ".data", "report-access.sqlite");
+const REPORT_ACCESS_MAX_OPENINGS = Number(process.env.REPORT_ACCESS_MAX_OPENINGS || 30);
+const REPORT_ACCESS_DAYS = Number(process.env.REPORT_ACCESS_DAYS || 60);
 const ALLOW_CLIENT_DOWNLOADS = /^(1|true|yes)$/i.test(process.env.ALLOW_CLIENT_DOWNLOADS || "");
 const FIGURE_PREFIXES = [
   "output/o6_figures/",
@@ -59,6 +67,9 @@ if (!GCS_BUCKET) {
 if (GCS_ACCESS_TOKEN) {
   console.warn("Using GCS_ACCESS_TOKEN for local testing. Do not use short-lived user tokens in production.");
 }
+if (Boolean(GCS_HMAC_ACCESS_ID) !== Boolean(GCS_HMAC_SECRET)) {
+  console.warn("Both GCS_HMAC_ACCESS_ID and GCS_HMAC_SECRET must be configured together.");
+}
 if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
   console.warn("SESSION_SECRET should be set to a random value with at least 32 characters.");
 }
@@ -69,6 +80,12 @@ const chatQuotaStore = new ChatQuotaStore({
   secret: SESSION_SECRET || "development-only-secret-change-me",
   defaultLimit: CHAT_TOKEN_LIMIT,
   reservationTtlSeconds: CHAT_RESERVATION_TTL_SECONDS
+});
+const reportAccessStore = new ReportAccessStore({
+  databasePath: REPORT_ACCESS_DB,
+  secret: SESSION_SECRET || "development-only-secret-change-me",
+  defaultMaxOpenings: REPORT_ACCESS_MAX_OPENINGS,
+  defaultAccessDays: REPORT_ACCESS_DAYS
 });
 const app = express();
 
