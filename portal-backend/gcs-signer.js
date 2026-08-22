@@ -62,9 +62,14 @@ function canonicalQueryString(query) {
   return Object.entries(query)
     .filter(([, value]) => value !== undefined && value !== null)
     .map(([key, value]) => [percentEncode(key), percentEncode(value)])
-    .sort(([leftKey, leftValue], [rightKey, rightValue]) => leftKey.localeCompare(rightKey) || leftValue.localeCompare(rightValue))
+    .sort(([leftKey, leftValue], [rightKey, rightValue]) => compareBytes(leftKey, rightKey) || compareBytes(leftValue, rightValue))
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
+}
+
+function compareBytes(left, right) {
+  if (left === right) return 0;
+  return left < right ? -1 : 1;
 }
 
 function percentEncode(value) {

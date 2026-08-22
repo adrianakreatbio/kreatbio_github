@@ -31,4 +31,5 @@ test("supports signed bucket listing query parameters", () => {
   assert.equal(url.pathname, "/koda123");
   assert.equal(url.searchParams.get("list-type"), "2");
   assert.equal(url.searchParams.get("prefix"), "clients26/120000000/");
+  assert.ok(signed.indexOf("X-Goog-Algorithm=") < signed.indexOf("list-type="));
 });
