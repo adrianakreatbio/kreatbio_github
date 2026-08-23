@@ -421,6 +421,20 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .result-next-evidence span{display:inline-flex;align-items:center;gap:6px;min-height:29px;padding:0 10px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(4,24,44,.24);color:#F4F9FC;font-family:var(--mono);font-size:.66rem;font-weight:700}
 .result-next-evidence i{display:grid;place-items:center;color:var(--decision)}
 .result-next-evidence .icon{width:13px;height:13px;stroke-width:2}
+.result-next-context{position:relative;z-index:1;margin-top:18px;border:1px solid #D8E4EF;border-radius:14px;background:#F7FAFC;overflow:hidden}
+.result-next-context-head{padding:15px 17px 13px;border-bottom:1px solid #D8E4EF}
+.result-next-context-head b{display:block;color:var(--navy);font-size:.9rem}
+.result-next-context-head p{margin-top:4px;color:var(--muted);font-size:.8rem;line-height:1.45}
+.result-next-context-table{overflow-x:auto;background:#fff}
+.result-next-context-row{display:grid;grid-template-columns:minmax(230px,1.45fr) minmax(155px,.9fr) minmax(115px,.62fr) minmax(100px,.55fr) minmax(135px,.7fr);min-width:820px;border-top:1px solid #E5EDF4;align-items:center}
+.result-next-context-row:first-child{border-top:0;background:#102E4F;color:#fff}
+.result-next-context-row > *{padding:9px 12px;font-size:.78rem;line-height:1.35}
+.result-next-context-row > * + *{border-left:1px solid #E5EDF4}
+.result-next-context-row:first-child > * + *{border-left-color:rgba(255,255,255,.16)}
+.result-next-context-row strong{color:var(--navy);font-size:.8rem}
+.result-next-context-row:first-child b{color:#fff;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase}
+.result-next-context-row:nth-child(odd):not(:first-child){background:#FBFDFE}
+.result-next-context-method{margin:0;padding:11px 17px;border-top:1px solid #D8E4EF;color:var(--muted);font-size:.76rem;line-height:1.45}
 .result-next-roadmap{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px;margin-top:38px;padding:0 4px}
 .result-next-step{--step:#287C96;position:relative;z-index:1;display:flex;flex-direction:column;min-width:0;min-height:205px;padding:0 4px;background:#fff}
 .result-next-step:nth-child(2){--step:#B26A1C}
@@ -484,6 +498,10 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .self-experiment-legend{display:flex;flex-wrap:wrap;gap:8px 16px;padding:9px 14px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
 .self-experiment-legend span{display:inline-flex;align-items:center;gap:5px}
 .self-experiment-legend i{display:inline-block;width:10px;height:10px;border-radius:50%}
+.self-experiment-plot-warning{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-top:1px solid #E4C78C;background:#FFF4DE;color:#6B4918;font-size:.78rem;line-height:1.4}
+.self-experiment-plot-warning strong{color:#5A390D;font-size:.8rem}
+.beta-self-download{display:flex;padding:10px 12px;border-top:1px solid var(--line);background:#fff}
+.beta-self-download .keyviz-download{display:inline-flex;align-items:center;justify-content:center;width:100%}
 .self-experiment-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px;border:1px solid #CDB9EA;border-radius:12px;background:#FFF9F1;color:#51327E}
 .self-experiment-stats b{grid-column:1/-1;font-size:.86rem;letter-spacing:.02em}
 .self-experiment-stats span{display:flex;flex-direction:column;gap:3px;padding:10px;border:1px solid #16365B;border-radius:9px;background:#071B3A;color:#CDE8F2;font-size:.78rem}
@@ -509,6 +527,8 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .alpha-self-cards .self-experiment-stats-card span,.alpha-self-cards .self-experiment-stats-card small{font-size:.76rem;color:#CDE8F2;line-height:1.35}
 .alpha-self-mini-plot{border-radius:8px;background:#FCFAFF;overflow:hidden}
 .alpha-self-mini-plot svg{display:block;width:100%;height:auto}
+.self-experiment-downloads{display:flex;justify-content:flex-end;margin-top:12px}
+.self-experiment-downloads .keyviz-download{display:inline-flex;align-items:center;justify-content:center}
 @media(max-width:900px){.alpha-self-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.alpha-self-cards{grid-template-columns:1fr}}
 .genus-inspection-section{margin-top:22px}
@@ -768,6 +788,8 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .group-selector-panel label{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:#fff;font-weight:800}
 .group-selector-panel select{height:34px;border:1px solid rgba(255,255,255,.68);border-radius:6px;background:#fff;color:var(--navy);font-size:.82rem;font-weight:700;padding:0 9px}
 .group-selector-panel span{min-width:0;color:rgba(255,255,255,.9);font-size:.86rem;line-height:1.4;overflow-wrap:anywhere}
+.grouping-scope-notice{display:flex;align-items:flex-start;gap:9px;margin-top:10px;padding:10px 12px;border:1px solid #E4C78C;border-radius:9px;background:#FFF8E9;color:#674819;font-size:.8rem;line-height:1.45}
+.grouping-scope-notice .icon{flex:none;width:16px;height:16px;margin-top:1px}
 .pattern-panel{margin-top:18px;background:#fff;border:1px solid #DCE7F1;border-radius:14px;padding:20px;box-shadow:var(--shadow-1)}
 .content[class*="theme-"] .pattern-panel{border-color:var(--topic-line,#DCE7F1)}
 .pattern-panel h3{font-size:1.16rem;color:var(--navy)}
@@ -1332,6 +1354,11 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .filter-panel{margin:0 0 18px;padding:14px 16px;border:1px solid #DCE7F1;border-radius:14px;background:#fff;box-shadow:var(--shadow-1)}
 .filter-panel b{display:block;color:var(--navy);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
 .filter-chip-row{display:flex;flex-wrap:wrap;gap:8px}
+.functional-diff-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin:12px 0}
+.functional-diff-summary article{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#F8FBFE}
+.functional-diff-summary b{color:var(--navy);font-size:.82rem}
+.functional-diff-summary span{color:var(--muted);font-size:.76rem;line-height:1.4}
+.functional-diff-method-note{margin:11px 0 0;padding:10px 12px;border-left:3px solid var(--blue);background:#F4F8FC;color:var(--muted);font-size:.78rem;line-height:1.5}
 
 /* report chat */
 .report-chat{position:fixed;right:22px;bottom:22px;z-index:90;display:none;align-items:flex-end;gap:12px}
@@ -1951,7 +1978,7 @@ function exampleReportCode(){
 function assayLabel(id){var a=ASSAYS[id]||{};return [a.kingdom,a.marker,a.region].filter(Boolean).join(" · ")||"Report";}
 
 /* ---------------- app state ---------------- */
-var state={assay:"",mode:"plain",section:"welcome",pipeStep:0,visited:{},token:"",localExample:false,report:null,reportRefreshPromise:null,apiBase:configuredApiBase(),chatApiBase:configuredChatApiBase(),chatToken:"",chatQuota:null,chatAvailable:false,chatAuthError:"",chartIndex:{taxonomy:0,alpha:0,beta:0,functional:0},chartView:{alpha:"chart",beta:"chart",functional:"chart"},chartWidth:storedChartWidth(),chartZoom:100,metricReturnSection:"",taxonomyRankTables:{},taxonomyRankIndex:0,groupBy:"",flowFilter:"diversity",flowQuery:"",filesFilter:"all",metricFilter:"all",glossaryFilter:"all",learningTopic:"all",learningIndex:0,chatMessages:[],chatBusy:false,reportHydrating:false};
+var state={assay:"",mode:"plain",section:"welcome",pipeStep:0,visited:{},token:"",localExample:false,report:null,reportRefreshPromise:null,apiBase:configuredApiBase(),chatApiBase:configuredChatApiBase(),chatToken:"",chatQuota:null,chatAvailable:false,chatAuthError:"",chartIndex:{taxonomy:0,alpha:0,beta:0,functional:0},chartView:{alpha:"chart",beta:"chart",functional:"chart"},chartWidth:storedChartWidth(),chartZoom:100,metricReturnSection:"",taxonomyRankTables:{},taxonomyRankIndex:0,groupBy:"",functionalDiffFilter:"all",functionalDetailsOpen:false,flowFilter:"diversity",flowQuery:"",filesFilter:"all",metricFilter:"all",glossaryFilter:"all",learningTopic:"all",learningIndex:0,chatMessages:[],chatBusy:false,reportHydrating:false};
 function baseDataset(){
   var assay=ASSAYS[state.assay];
   return assay&&DATASETS[assay.data]?DATASETS[assay.data]:emptyReportDataset({code:exampleReportCode()});
@@ -2203,9 +2230,10 @@ function groupObjectsFromSamples(samples){
   return groups;
 }
 function emptyReportDataset(report){
+  var assay=report.assay||{},taxonomyMethods=(assay.taxonomy_methods||[]).map(function(method){return String(method||"").toUpperCase();});
   return {
-    kind:"bacteria",
-    refdb:"SILVA / EMU taxonomy",
+    kind:String(assay.kingdom||"").toLowerCase()==="fungi"?"fungi":"bacteria",
+    refdb:taxonomyMethods.length?taxonomyMethods.join(" / ")+" taxonomy":"Taxonomy reference database",
     reportCode:report.code||exampleReportCode(),
     site:report.title||"Amplicon microbiome report",
     assay:report.assay||null,
@@ -2215,6 +2243,7 @@ function emptyReportDataset(report){
     betaDistanceMatrices:{},
     samples:[],
     groups:[],
+    defaultGroupingColumn:"group",
     permanova:{},
     betaMetrics:[{id:"bray",label:"Bray-Curtis"}],
     alphaMetrics:[{id:"shannon",label:"Shannon"},{id:"observed",label:"Observed features"},{id:"simpson",label:"Simpson"}],
@@ -2232,16 +2261,21 @@ async function buildReportDataset(report){
   if(metadata){
     try{
       var rows=parseMetadataText(await loadFileText(metadata));
+      var requestedGroupColumn=d.methodConfig.analysisColumn||"group";
+      var groupColumn=rows.some(function(r){return metadataObjectValue(r.metadata,requestedGroupColumn)!=="";})?requestedGroupColumn:"group";
+      d.defaultGroupingColumn=groupColumn;
       d.samples=rows.map(function(r){
-        var name=r.metadata.sample_name||r.metadata.SampleName||r.metadata.sample||r.id;
-        var group=r.metadata.group||r.metadata.Group||"Ungrouped";
+        var name=metadataObjectValue(r.metadata,"sample_name")||metadataObjectValue(r.metadata,"sample")||r.id;
+        var group=metadataObjectValue(r.metadata,groupColumn)||"Ungrouped";
         return {id:name,raw:r.id,group:group,metadata:r.metadata,fr:{},pco:{}};
       });
       d.groups=groupObjectsFromSamples(d.samples);
     }catch(err){}
   }
   if(!d.samples.length&&report&&Array.isArray(report.samples)){
-    d.samples=report.samples.map(function(s){return {id:s.sample_name||s.name||s.id,raw:s.sample_id||s.raw||s.id,group:s.group||"Ungrouped",metadata:s,fr:{},pco:{}};});
+    var reportGroupColumn=d.methodConfig.analysisColumn||"group";
+    d.defaultGroupingColumn=reportGroupColumn;
+    d.samples=report.samples.map(function(s){return {id:s.sample_name||s.name||s.id,raw:s.sample_id||s.raw||s.id,group:metadataObjectValue(s,reportGroupColumn)||s.group||"Ungrouped",metadata:s,fr:{},pco:{}};});
     d.groups=groupObjectsFromSamples(d.samples);
   }
   return d;
@@ -2258,6 +2292,7 @@ async function hydrateMethodMetadataIntoDataset(d){
   var versions=versionsFile?parseSoftwareVersions(await loadFileText(versionsFile)):{};
   d.methodSources=[methodsFile,paramsFile,versionsFile].filter(Boolean).map(function(f){return f.name||f.path||f.id;});
   d.methodConfig=methodConfigFromRelease(methodsText,params,versions,d.assay);
+  if(d.methodConfig.taxonomyDatabaseLabel)d.refdb=d.methodConfig.taxonomyDatabaseLabel;
   d.methodNotes=[
     {label:"Important limits",bodyKey:"limitNote"},
     {label:"Source files",type:"sources"}
@@ -2347,10 +2382,11 @@ function methodConfigFromRelease(methodsText,params,versions,assay){
   var minLen=numberFromParam(params.min_read_length);
   var maxLen=numberFromParam(params.max_read_length);
   var minQ=numberFromParam(params.min_read_qscore);
-  var silvaVersion=/silva-?(\d+)-(\d+)/i.test(params.qiime_classifier_qza||"")?RegExp.$1+"."+RegExp.$2:"138.2";
+  var silvaVersion=params.silva_version||(/silva-?(\d+)-(\d+)/i.test(params.qiime_classifier_qza||"")?RegExp.$1+"."+RegExp.$2:"138.2");
   var emuVersion=params.emu_database_build||versionShort(versions.emu)||"v3.6.2";
   var cutadaptVersion=versionShort(versions.cutadapt,"cutadapt");
   var chopperVersion=versionShort(versions.chopper,"chopper");
+  var fastpVersion=versionShort(versions.fastp,"fastp");
   var vsearchVersion=versionShort(versions.vsearch,"vsearch");
   var qiimeVersion=versionShort(versions.qiime,"QIIME 2");
   var picrustVersion=versionShort(versions.picrust2pipelinepy,"PICRUSt2");
@@ -2358,6 +2394,7 @@ function methodConfigFromRelease(methodsText,params,versions,assay){
   var mafftVersion=versionShort(versions.mafft,"MAFFT");
   var fasttreeVersion=versionShort(versions.fasttree,"FastTree");
   var qcTools=compactJoin([
+    toolVersionLabel(versions,"fastqc","FastQC",text),
     toolVersionLabel(versions,"nanoplot","NanoPlot",text),
     toolVersionLabel(versions,"nanostat","NanoStat",text),
     toolVersionLabel(versions,"multiqc","MultiQC",text)
@@ -2369,13 +2406,24 @@ function methodConfigFromRelease(methodsText,params,versions,assay){
   assay=assay||ASSAY_REGISTRY["11"];
   var isFungi=assay.id==="illuits1fungi";
   var isOnt=assay.id==="ont16sfl";
+  var functionalDisabled=/^(false|0|no|off)$/i.test(String(params.run_picrust2||""));
+  var classifierPath=String(params.qiime_classifier_qza||"");
+  var classifierName=classifierPath.split(/[\\/]/).pop()||"the configured classifier";
+  var taxonomyDatabase=String(params.taxonomy_database||"SILVA");
+  var taxonomyDatabaseLabel=taxonomyDatabase+(silvaVersion?" "+silvaVersion:"")+(isOnt?" / EMU "+emuVersion:"");
+  var illuminaFilterSettings="fastp"+(fastpVersion?" "+fastpVersion:"")+" used quality threshold "+(params.fastp_qual||"the configured value")+" and maximum unqualified bases "+(params.fastp_unqual_pct||"the configured percentage")+"%. DADA2 used forward/reverse truncation lengths "+(params.dada2_trunc_len_f||"configured")+"/"+(params.dada2_trunc_len_r||"configured")+" bp and maximum expected errors "+(params.dada2_max_ee_f||"configured")+"/"+(params.dada2_max_ee_r||"configured")+".";
+  var ontRange=minLen!=null&&maxLen!=null?minLen+" to "+maxLen+" bp":"the configured length range";
+  var ontQuality=minQ!=null?" with minimum Q-score "+minQ:"";
   return {
     assayNote:assay.label+" marker-gene profiling.",
-    sampleFileType:isOnt?"ONT FASTQ files":"Illumina FASTQ files",
-    sampleNameMap:"SRR accessions mapped to released sample names in metadata.tsv",
+    sampleFileType:isOnt?"ONT sequencing samples":"Illumina paired-end samples",
+    sampleNameMap:"metadata.tsv",
     analysisColumn:params.analysis_group_column||"group",
-    comparisonNoun:"groups",
+    comparisonNoun:/^group$/i.test(params.analysis_group_column||"group")?"groups":factorLabelFromKey(params.analysis_group_column)+" categories",
+    functional_prediction:assay.functional_prediction!==false&&!functionalDisabled,
     targetLabel:isFungi?"the ITS1 fungal barcode region":(isOnt?"approximately 1.5 kb full-length bacterial 16S rRNA gene":"the "+assay.region+" bacterial 16S rRNA region"),
+    targetStepName:isFungi?"ITS1 target":"16S target",
+    rawReadsLabel:isOnt?"ONT FASTQ reads":"Illumina paired-end FASTQ reads",
     primerNames:fwd&&rev?methodPrimerLabel(fwdName,revName):"reported primers",
     forwardPrimerName:fwdName,
     reversePrimerName:revName,
@@ -2385,18 +2433,27 @@ function methodConfigFromRelease(methodsText,params,versions,assay){
     readLengthMaxBp:maxLen,
     minQScore:minQ,
     trimTool:"Cutadapt"+(cutadaptVersion?" "+cutadaptVersion:""),
-    filterTool:"Chopper"+(chopperVersion?" "+chopperVersion:""),
-    qcReadType:isOnt?"Single-end ONT long reads":"Illumina short reads",
+    filterTool:isOnt?"Chopper"+(chopperVersion?" "+chopperVersion:""):"fastp"+(fastpVersion?" "+fastpVersion:""),
+    filterWhat:isOnt?"Primer sequences were removed, then reads outside the configured full-length 16S size and quality range were filtered.":"Primer sequences were removed, paired reads were quality-filtered, and DADA2 applied its configured trimming and error thresholds.",
+    filterSettings:isOnt?("Chopper retained reads in "+ontRange+ontQuality+"."):illuminaFilterSettings,
+    qcReadType:isOnt?"Single-end ONT long reads":"Illumina paired-end short reads",
     qcTools:qcTools+" profiled or collected read/run-level QC outputs.",
-    reconstructionTools:"VSEARCH"+(vsearchVersion?" "+vsearchVersion:"")+" screened chimeras; FOI NanoPulse performed de novo feature inference; cohort representatives were clustered at 99% identity.",
+    qcWhy:isOnt?"QC checks whether read length and quality support full-length 16S interpretation.":"QC checks read quality and pairing before denoising and taxonomic analysis.",
+    featureWhat:isOnt?"Filtered reads were screened for chimeras and reconstructed into shared 99% clustered features/OTUs.":"DADA2 denoised the paired reads, removed chimeras, and produced an ASV feature table.",
+    featureInputLabel:isOnt?"Filtered reads":"Quality-filtered paired reads",
+    featureOutputLabel:isOnt?"Feature table":"ASV feature table",
+    reconstructionTools:isOnt?("VSEARCH"+(vsearchVersion?" "+vsearchVersion:"")+" screened chimeras; FOI NanoPulse performed de novo feature inference; cohort representatives were clustered at 99% identity."):("QIIME 2"+(qiimeVersion?" "+qiimeVersion:"")+" DADA2 paired-end processing used the thresholds recorded in the parameter snapshot"+(params.asv_min_length?" and retained ASVs at least "+params.asv_min_length+" bp long":"")+"."),
     taxonomyOutputs:isOnt?["QIIME 2 SILVA "+silvaVersion,"EMU "+emuVersion]:["QIIME 2 SILVA "+silvaVersion],
-    taxonomyNote:"QIIME 2"+(qiimeVersion?" "+qiimeVersion:"")+" used "+(params.qiime_classifier_qza||"the SILVA classifier")+(isOnt?"; EMU used "+(params.emu_database_name||"default EMU database")+" "+emuVersion:".") ,
-    taxonomySettings:"QIIME 2 assigned taxonomy with the SILVA "+silvaVersion+" full-length classifier. EMU reportable tables used minimum relative abundance "+(params.emu_report_min_rel_abundance||"0.005")+" and minimum estimated reads "+(params.emu_report_min_reads||"10")+".",
+    taxonomyDatabaseLabel:taxonomyDatabaseLabel,
+    taxonomyNote:"QIIME 2"+(qiimeVersion?" "+qiimeVersion:"")+" used "+classifierName+(isOnt?"; EMU used "+(params.emu_database_name||"the configured EMU database")+" "+emuVersion:"."),
+    taxonomyWhat:isOnt?"Taxonomy was assigned from the final feature table, and EMU read-level species profiling was summarized separately.":"Taxonomy was assigned to the final ASV feature table using the region-specific classifier recorded for this run.",
+    taxonomyInputLabel:isOnt?"Feature table":"ASV feature table",
+    taxonomySettings:isOnt?("QIIME 2 assigned taxonomy with the SILVA "+silvaVersion+" full-length classifier. EMU reportable tables used minimum relative abundance "+(params.emu_report_min_rel_abundance||"0.005")+" and minimum estimated reads "+(params.emu_report_min_reads||"10")+"."):("QIIME 2 assigned taxonomy with "+classifierName+" against "+taxonomyDatabase+" "+silvaVersion+"."),
     functionTool:isFungi?"Not applicable":"PICRUSt2"+(picrustVersion?" "+picrustVersion:""),
     analysisSettings:"Alpha diversity used "+methodAlphaMetricText(text)+". Beta diversity used "+betaMetrics+" with PCoA, PERMANOVA, and PERMDISP where those outputs are present."+(isFungi?" Functional prediction is not provided for ITS1 fungal data.":" PICRUSt2 predicted "+functionOutputs+" outputs from a "+picrustClusterLabel+" clustered input; ALDEx2"+(aldexVersion?" "+aldexVersion:"")+" tested differential taxonomy and functions where released statistics are available."),
     functionSettings:isFungi?"Functional prediction is not applicable to this ITS1 fungal assay.":"PICRUSt2"+(picrustVersion?" "+picrustVersion:"")+" used "+picrustClusterLabel+" clustered representative sequences with max NSTI "+(params.picrust2_max_nsti||"2.0")+".",
     picrustClusterLabel:picrustClusterLabel,
-    sequencingDetails:[params.sequencing_instrument,params.sequencing_flow_cell_chemistry,params.sequencing_library_kit,params.basecaller_model].filter(Boolean).join("; "),
+    sequencingDetails:[params.sequencing_instrument,params.sequencing_flow_cell_chemistry,params.sequencing_library_kit,params.basecaller_model].filter(Boolean).join("; ")||"not included in the released metadata",
     phylogenyTools:["MAFFT"+(mafftVersion?" "+mafftVersion:""),"FastTree"+(fasttreeVersion?" "+fasttreeVersion:"")].join("; "),
     limitNote:isFungi?"This is ITS1 fungal marker-gene amplicon sequencing. Bacterial PICRUSt2 functional prediction is not provided for this assay.":"This is marker-gene amplicon sequencing, not shotgun metagenomics. It estimates community composition; PICRUSt2 functional output is predicted potential, not measured gene activity."
   };
@@ -2420,45 +2477,45 @@ function versionShort(value,toolName){
 function methodStepsFromRelease(m){
   return [
     {name:"Samples",tag:"Input",glyph:"sample",
-      what:"{sampleCount} {sampleFileType} were analysed with sample metadata assigning them to {comparisonValues} {comparisonNoun}.",
-      settings:"Sample names map through {sampleNameMap}. The analysis metadata column was `{analysisColumn}`.",
+      what:"{sampleCount} {sampleFileType} were analysed. The selected comparison contains {comparisonValues}.",
+      settings:"Sample identifiers and names were mapped through {sampleNameMap}. The analysis metadata column was `{analysisColumn}`.",
       why:"Metadata connects sequencing results to the report's comparison groups instead of treating samples as unrelated.",
-      input:["ONT FASTQ reads","metadata.tsv"],
+      input:["{rawReadsLabel}","metadata.tsv"],
       output:["Named samples","Group labels"],
       feeds:["Primer trimming","Every downstream comparison"]},
-    {name:"16S target",tag:"Target",glyph:"pcr",
+    {name:(m&&m.targetStepName)||"Marker target",tag:"Target",glyph:"pcr",
       what:"The run targeted {targetLabel} using the {primerNames} primers.",
       settings:"{forwardPrimerName}: {forwardPrimer}. {reversePrimerName}: {reversePrimer}. {trimTool} removed primer sequence before filtering.",
       why:"Primers define the marker region measured by this amplicon assay.",
-      input:["Raw full-length 16S reads"],
+      input:["{rawReadsLabel}"],
       output:["Primer-trimmed target reads"],
       feeds:["Read QC","Length and quality filtering"]},
     {name:"Read QC",tag:"Sequencing",glyph:"seq",
       what:"{qcReadType} were quality-profiled before downstream analysis.",
       settings:"{qcTools} Sequencing provenance: {sequencingDetails}.",
-      why:"QC confirms the reads are long and clean enough for full-length 16S interpretation.",
+      why:"{qcWhy}",
       input:["Primer-trimmed reads"],
       output:["Read length and quality summaries"],
       feeds:["QC figures","Read filtering thresholds"]},
     {name:"Trim and filter",tag:"QC",glyph:"clean",
-      what:"Primer sequences were removed, then reads outside the expected full-length 16S size and quality range were filtered.",
-      settings:"{filterTool} retained reads from {readLengthMinBp} to {readLengthMaxBp} bp with minimum Q-score {minQScore}.",
+      what:"{filterWhat}",
+      settings:"{filterSettings}",
       why:"Filtering reduces off-target and low-quality reads before taxonomy and diversity analysis.",
       input:["QC-profiled reads","Primer trimming report"],
       output:["Filtered reads","Read-depth summary"],
       feeds:["Build feature table","Rarefaction and QC checks"]},
     {name:"Build feature table",tag:"Features",glyph:"asv",
-      what:"Filtered reads were screened for chimeras and reconstructed into shared 99% clustered features/OTUs.",
+      what:"{featureWhat}",
       settings:"{reconstructionTools}",
       why:"Shared features provide a consistent table for diversity, phylogeny, and downstream comparisons.",
-      input:["Filtered reads","Non-chimeric representatives"],
-      output:["Feature table","Representative sequences"],
-      feeds:["Taxonomy","Phylogeny","Diversity","PICRUSt2"]},
+      input:["{featureInputLabel}"],
+      output:["{featureOutputLabel}","Representative sequences"],
+      feeds:(m&&m.functional_prediction===false)?["Taxonomy","Phylogeny","Diversity"]:["Taxonomy","Phylogeny","Diversity","PICRUSt2"]},
     {name:"Name organisms and tree",tag:"Classification",glyph:"tax",
-      what:"Taxonomy was assigned from the final feature table and read-level species profiling was summarized separately.",
+      what:"{taxonomyWhat}",
       settings:"{taxonomySettings} Phylogeny tools: {phylogenyTools}.",
-      why:"Taxonomy names detected organisms; phylogeny supports UniFrac and Faith PD metrics.",
-      input:["Feature table","Representative sequences"],
+      why:"Taxonomy labels the detected organisms; phylogeny supports UniFrac and Faith PD metrics.",
+      input:["{taxonomyInputLabel}","Representative sequences"],
       output:["Taxonomy abundance tables","Rooted tree"],
       feeds:["Composition page","Alpha and beta diversity"]},
     {name:"Composition outputs",tag:"Result",glyph:"tax",
@@ -2473,7 +2530,7 @@ function methodStepsFromRelease(m){
       what:"Within-sample and between-sample diversity were computed from the feature table, metadata, and phylogeny.",
       settings:"{analysisSettings}",
       why:"Diversity outputs show sample richness/evenness and whole-community similarity between samples.",
-      input:["Feature table","Rooted tree","Group labels"],
+      input:["{featureOutputLabel}","Rooted tree","Group labels"],
       output:["Alpha diversity tables","PCoA, PERMANOVA, and PERMDISP"],
       feeds:["Within Samples section","Between Samples & Groups section"],
       sections:[{id:"alpha",label:"Within Samples"},{id:"beta",label:"Between Samples & Groups"}]},
@@ -2551,6 +2608,26 @@ function betaMetricFromRow(row,fallback){
   var rowText=[tableValue(row,["metric","distance_metric","distance","method","test","name","comparison"]),Object.keys(row||{}).map(function(k){return row[k];}).join(" ")].join(" ");
   return betaMetricFromText(rowText)||fallback||"bray";
 }
+function deriveMissingBetaR2(d){
+  var metadataGroups={},metadataSamples=0;
+  (d.samples||[]).forEach(function(sample){
+    var group=String(sample.group||"").trim();
+    if(!group)return;
+    metadataGroups[group]=true;
+    metadataSamples++;
+  });
+  Object.keys(d.permanova||{}).forEach(function(metric){
+    var pm=d.permanova[metric];
+    if(!pm||pm.R2!=null||pm.F==null||!isFinite(Number(pm.F)))return;
+    var n=pm.n!=null&&isFinite(Number(pm.n))?Number(pm.n):metadataSamples;
+    var k=pm.groupCount!=null&&isFinite(Number(pm.groupCount))?Number(pm.groupCount):Object.keys(metadataGroups).length;
+    var f=Number(pm.F),betweenDf=k-1,withinDf=n-k,denominator=f*betweenDf+withinDf;
+    if(f<0||k<2||n<=k||denominator<=0)return;
+    pm.R2=(f*betweenDf)/denominator;
+    pm.R2Derived=true;
+    pm.R2Method="Calculated from pseudo-F and one-factor PERMANOVA degrees of freedom";
+  });
+}
 async function hydrateBetaIntoDataset(d){
   function hydratePcoaMetric(metric,file){
     if(!file)return;
@@ -2612,7 +2689,8 @@ async function hydrateBetaIntoDataset(d){
         R2:parseMaybeNumber(tableValue(pm,["r2","R2","variance_explained"])),
         p:parseMaybeNumber(tableValue(pm,["p_value","p","pvalue","permanova_p_value"])),
         permutations:parseMaybeNumber(tableValue(pm,["permutations"])),
-        n:parseMaybeNumber(tableValue(pm,["n","N","samples","sample_count","n_samples"]))
+        n:parseMaybeNumber(tableValue(pm,["n","N","samples","sample_count","n_samples"])),
+        groupCount:parseMaybeNumber(tableValue(pm,["groups","group_count","n_groups"]))
       });
     });
   }
@@ -2659,7 +2737,8 @@ async function hydrateBetaIntoDataset(d){
         F:phyloValues[prefix+"_permanova_pseudo_f"],
         p:phyloValues[prefix+"_permanova_p_value"],
         permutations:phyloValues[prefix+"_permanova_permutations"],
-        n:phyloValues[prefix+"_samples"]
+        n:phyloValues[prefix+"_samples"],
+        groupCount:phyloValues[prefix+"_groups"]
       };
       Object.keys(pmValues).forEach(function(key){if(pmValues[key]!=null&&pmCurrent[key]==null)pmCurrent[key]=pmValues[key];});
       d.permanova[metric]=pmCurrent;
@@ -2672,6 +2751,7 @@ async function hydrateBetaIntoDataset(d){
     });
     d.sourceStats.permdisp=permdispByMetric;
   }
+  deriveMissingBetaR2(d);
   [["unweighted_unifrac","Unweighted UniFrac"],["weighted_unifrac","Weighted UniFrac"]].forEach(function(item){
     if((d.samples||[]).some(function(s){return s.pco&&s.pco[item[0]];})&&!(d.betaMetrics||[]).some(function(m){return m.id===item[0];})){
       d.betaMetrics=(d.betaMetrics||[]).concat([{id:item[0],label:item[1]}]);
@@ -2819,6 +2899,9 @@ async function hydrateTaxonomyIntoDataset(d){
 async function openReportCode(code){
   state.localExample=false;
   state.chatMessages=[];
+  state.visited={};
+  state.pipeStep=0;
+  state.reportRefreshPromise=null;
   var data=await apiJson("/api/session",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
@@ -2836,6 +2919,9 @@ async function openReportCode(code){
   state.chartIndex={taxonomy:0,alpha:0,beta:0,functional:0};
   state.chartView={alpha:"chart",beta:"chart",functional:"chart"};
   state.groupBy="";
+  state.functionalDiffFilter="all";
+  state.functionalDetailsOpen=false;
+  resetSelfExperimentState();
   hydrateReportExtras(id,DATASETS[id]);
   await initializeReportChat(state.report&&state.report.code||code);
   return data;
@@ -2848,8 +2934,19 @@ async function openLocalExample(){
   state.chatQuota=null;
   state.chatAuthError="Chat is disabled for the public example report.";
   state.chatMessages=[];
+  state.visited={};
+  state.pipeStep=0;
+  state.reportRefreshPromise=null;
+  resetSelfExperimentState();
   updateChatAvailability(false);
   state.report=LOCAL_EXAMPLE_MANIFEST;
+  state.taxonomyRankTables={};
+  state.taxonomyRankIndex=0;
+  state.chartIndex={taxonomy:0,alpha:0,beta:0,functional:0};
+  state.chartView={alpha:"chart",beta:"chart",functional:"chart"};
+  state.groupBy="";
+  state.functionalDiffFilter="all";
+  state.functionalDetailsOpen=false;
   var id=reportAssayId(LOCAL_EXAMPLE_CODE);
   DATASETS[id]=await buildReportDataset(state.report);
   ASSAYS[id]=reportAssayMeta(DATASETS[id],id,LOCAL_EXAMPLE_CODE);
@@ -2874,7 +2971,7 @@ function reportAssayMeta(d,id,code){
     region:a.region|| (isFull?"Full-length":""),
     assayId:a.id||"",
     hasEmu:a.has_emu!==false,
-    functionalPrediction:a.functional_prediction!==false,
+    functionalPrediction:a.functional_prediction!==false&&m.functional_prediction!==false,
     primers:primers.join(" · "),
     amplicon:m.assayNote||m.targetLabel||"Amplicon report",
     good:"Report "+(code||"current")
@@ -3012,7 +3109,7 @@ function parseAlphaStatsText(text){
     };
   }).filter(function(x){return x.metric||x.p!=null||x.q!=null||x.statistic!=null;});
 }
-function parsePhylogeneticAlphaStatsText(text){
+function parsePhylogeneticAlphaStatsText(text,groupColumn){
   var lines=String(text||"").split(/\r?\n/).filter(function(line){return line.trim()&&!/^#q2:types/i.test(line.trim());});
   if(lines.length<2)return [];
   var delim=lines[0].indexOf("\t")>=0?"\t":",",header=splitTableLine(lines[0],delim).map(normalizeHeaderKey),values={};
@@ -3037,7 +3134,7 @@ function parsePhylogeneticAlphaStatsText(text){
     p:p,
     q:null,
     effect:effect,
-    groupColumn:"group",
+    groupColumn:groupColumn||"group",
     groupCount:null,
     n:n!=null?String(n):"",
     raw:{metric:"faith_pd_kruskal_p_value",value:p}
@@ -3118,7 +3215,7 @@ async function hydrateAlphaStatsFromManifest(){
   }catch(err){}
   if(phyloFile&&!rows.some(function(row){return normalizeAlphaMetricName(row.metric||row.metricLabel)==="faith"&&row.p!=null;}))try{
     var phyloRes=await manifestText(phyloFile);
-    rows=rows.concat(parsePhylogeneticAlphaStatsText(phyloRes.text).map(function(row){row.sourceName=String(phyloFile.path||phyloFile.name||"phylogenetic diversity summary").split("/").pop();return row;}));
+    rows=rows.concat(parsePhylogeneticAlphaStatsText(phyloRes.text,defaultGroupFactor(d).id).map(function(row){row.sourceName=String(phyloFile.path||phyloFile.name||"phylogenetic diversity summary").split("/").pop();return row;}));
   }catch(err){}
   d.alphaStats=deriveMissingAlphaStats(rows,d);
 }
@@ -3140,6 +3237,14 @@ function functionalDiffKind(file){
   if(hasDelimitedToken(text,"ko")||/kegg/.test(text))return "KO";
   if(/pathway/.test(text))return "Pathway";
   return "Function";
+}
+function functionalDiffKindFromRow(file,row,feature){
+  var declared=String(rowValue(row,["type","table","kind","feature_type","feature type","feature_level","feature level"] )||"").toLowerCase();
+  var id=String(feature||"").trim();
+  if(/(^|[^a-z])ec([^a-z]|$)|enzyme/.test(declared)||/^ec:/i.test(id)||/^\d+\.\d+\.\d+\.[\d-]+$/.test(id))return "EC";
+  if(/(^|[^a-z])ko([^a-z]|$)|kegg/.test(declared)||/^ko:/i.test(id)||/^K\d{5}$/i.test(id))return "KO";
+  if(/pathway|metacyc/.test(declared)||/pwy/i.test(id))return "Pathway";
+  return functionalDiffKind(file);
 }
 function parseFunctionalDiffText(text,file){
   var lines=String(text||"").split(/\r?\n/).filter(function(line){return line.trim()&&!/^#q2:types/i.test(line.trim());});
@@ -3164,7 +3269,7 @@ function parseFunctionalDiffText(text,file){
       if(contrastMatch){groupA=groupA||contrastMatch[1];groupB=groupB||contrastMatch[2];}
     }
     return {
-      kind:functionalDiffKind(file),
+      kind:functionalDiffKindFromRow(file,row,feature),
       source:file&&file.name||"Functional differential statistics",
       sourcePath:file&&file.path||"",
       feature:feature,
@@ -3194,6 +3299,7 @@ async function hydrateFunctionalDiffStatsFromManifest(){
   }
   var seen={};
   d.functionalDiffStats=rows.filter(function(r){
+    if(["Pathway","KO","EC"].indexOf(String(r.kind||""))<0)return false;
     var key=[r.kind,r.feature,r.effect,r.p,r.q,r.overlap,r.groupA,r.groupB].join("|").toLowerCase();
     if(seen[key])return false;
     seen[key]=true;
@@ -3207,12 +3313,7 @@ function taxonomyDiffFiles(){
   });
 }
 function taxonomyDiffRank(file){
-  var text=[file&&file.id,file&&file.name,file&&file.path,(file&&file.roles||[]).join(" ")].join(" ").toLowerCase();
-  if(/\bspecies\b/.test(text))return "species";
-  if(/\bgenus|genera\b/.test(text))return "genus";
-  if(/\bfamily|families\b/.test(text))return "family";
-  if(/\bphylum\b/.test(text))return "phylum";
-  return "taxon";
+  return manifestTaxonomyRank(file);
 }
 function parseTaxonomyDiffText(text,file){
   var lines=String(text||"").split(/\r?\n/).filter(function(line){return line.trim()&&!/^#q2:types/i.test(line.trim());});
@@ -3280,9 +3381,16 @@ var NAV=[
  ]}
 ];
 var SECTION_ORDER=["welcome","overall","pipeline","taxonomy","alpha","beta","functional","flow","learning","metrics","glossary"];
+function functionalSectionAvailable(){
+  var d=baseDataset(),a=ASSAYS[state.assay]||{};
+  return !(d&&d.assay&&d.assay.functional_prediction===false)&&!(d&&d.methodConfig&&d.methodConfig.functional_prediction===false)&&a.functionalPrediction!==false;
+}
+function availableSectionOrder(){
+  return SECTION_ORDER.filter(function(id){return id!=="functional"||functionalSectionAvailable();});
+}
 
 function renderNav(){
-  var allowFunctional=!(ds()&&ds().assay&&ds().assay.functional_prediction===false);
+  var allowFunctional=functionalSectionAvailable();
   $("#nav").innerHTML=NAV.map(function(g){
     var items=g.items.filter(function(it){return it.id!=="functional"||allowFunctional;});
     return '<div class="nav-sec">'+esc(g.sec)+'</div>'+items.map(function(it){
@@ -3295,9 +3403,9 @@ function renderNav(){
         '</button>';
     }).join("");
   }).join("");
-  var read=Object.keys(state.visited).length;
-  $("#progress-fill").style.width=(read/SECTION_ORDER.length*100)+"%";
-  $("#progress-label").textContent=read+" of "+SECTION_ORDER.length+" sections read";
+  var order=availableSectionOrder(),read=order.filter(function(id){return state.visited[id];}).length;
+  $("#progress-fill").style.width=(read/order.length*100)+"%";
+  $("#progress-label").textContent=read+" of "+order.length+" sections read";
 }
 
 /* ---------------- section framing ---------------- */
@@ -3306,11 +3414,11 @@ function head(kick,title,dek){
     '<h1>'+esc(title)+'</h1>'+(dek?'<p class="dek">'+dek+'</p>':'')+'</div></div>';
 }
 function nextBar(){
-  var i=SECTION_ORDER.indexOf(state.section);
-  var prev=i>0?SECTION_ORDER[i-1]:"welcome";
+  var order=availableSectionOrder(),i=order.indexOf(state.section);
+  var prev=i>0?order[i-1]:"welcome";
   var back='<button class="btn btn-ghost btn-sm" data-sec="'+prev+'" aria-label="Return">'+svgIcon('<path d="M19 12H5M11 6l-6 6 6 6"/>')+'Return</button>';
-  if(i>=SECTION_ORDER.length-1)return '<div class="next-bar">'+back+'<button class="btn btn-ghost btn-sm" data-sec="welcome">Return to start</button></div>';
-  var nx=SECTION_ORDER[i+1];
+  if(i>=order.length-1)return '<div class="next-bar">'+back+'<button class="btn btn-ghost btn-sm" data-sec="welcome">Return to start</button></div>';
+  var nx=order[i+1];
   return '<div class="next-bar">'+back+'<button class="btn btn-primary btn-sm" data-sec="'+nx+'">Continue '+svgIcon(ICN.arrow)+'</button></div>';
 }
 function navMeta(id){var m;NAV.forEach(function(g){g.items.forEach(function(it){if(it.id===id)m=it;});});return m||{title:id};}
@@ -3582,12 +3690,21 @@ function taxonList(d){
 function taxonLevelLabel(d){
   return (d&&d.taxonLevel)||((d&&Array.isArray(d.genera))?"Genus":"Taxon");
 }
+function metadataObjectValue(object,key){
+  if(!object||!key)return "";
+  if(object[key]!=null&&String(object[key]).trim()!=="")return object[key];
+  var wanted=normalizeHeaderKey(key);
+  var matched=Object.keys(object).filter(function(candidate){return normalizeHeaderKey(candidate)===wanted;})[0];
+  return matched&&object[matched]!=null?object[matched]:"";
+}
 function sampleMetadataValue(sample,key){
   if(!sample||!key)return "";
   var meta=sample.metadata||sample.meta||{};
-  if(key==="group")return sample.group||meta.group||meta.Group||"";
-  if(meta[key]!=null)return meta[key];
-  if(sample[key]!=null)return sample[key];
+  var value=metadataObjectValue(meta,key);
+  if(value!=="")return value;
+  if(normalizeHeaderKey(key)==="group"&&sample.group!=null)return sample.group;
+  value=metadataObjectValue(sample,key);
+  if(value!=="")return value;
   return "";
 }
 function factorLabelFromKey(key){
@@ -3601,24 +3718,27 @@ function groupColor(i){
 }
 function metadataFactors(d){
   d=d||baseDataset();
+  var defaultId=String(d.defaultGroupingColumn||(d.methodConfig&&d.methodConfig.analysisColumn)||"group");
+  var defaultKey=normalizeHeaderKey(defaultId);
   var factors=[];
   var declared=(d.comparisonFactors||d.metadataFactors||[]).map(function(f){
     var id=f.id||f.key||f.name||"";
-    return {id:String(id||"").trim(),label:f.label||f.name||factorLabelFromKey(id),values:(f.values||[]).filter(Boolean),isDefault:!!f.default};
+    return {id:String(id||"").trim(),label:f.label||f.name||factorLabelFromKey(id),values:(f.values||[]).filter(function(value){return value!=null&&String(value).trim()!=="";}),isDefault:!!f.default||normalizeHeaderKey(id)===defaultKey};
   }).filter(function(f){return f.id;});
   factors=factors.concat(declared);
   var seen={};
-  factors.forEach(function(f){seen[f.id]=true;});
-  if(!seen.group){
-    factors.unshift({id:"group",label:"Group",values:(d.groups||[]).map(function(g){return g.label||g.id;}),isDefault:true});
-    seen.group=true;
+  factors.forEach(function(f){seen[normalizeHeaderKey(f.id)]=true;});
+  if(!seen[defaultKey]){
+    factors.unshift({id:defaultId,label:factorLabelFromKey(defaultId),values:(d.groups||[]).map(function(g){return g.label||g.id;}),isDefault:true});
+    seen[defaultKey]=true;
   }
   (d.samples||[]).forEach(function(s){
     var meta=s.metadata||s.meta||{};
     Object.keys(meta).forEach(function(key){
-      if(seen[key])return;
-      seen[key]=true;
-      factors.push({id:key,label:factorLabelFromKey(key),values:[],isDefault:false});
+      var normalized=normalizeHeaderKey(key);
+      if(seen[normalized])return;
+      seen[normalized]=true;
+      factors.push({id:key,label:factorLabelFromKey(key),values:[],isDefault:normalized===defaultKey});
     });
   });
   factors.forEach(function(f){
@@ -3632,14 +3752,16 @@ function metadataFactors(d){
   var sampleN=(d.samples||[]).length;
   return factors.filter(function(f){
     var n=(f.values||[]).length;
+    if(normalizeHeaderKey(f.id)===defaultKey)return n>=1;
     if(n<2||n>12)return false;
-    if(f.id!=="group"&&sampleN>3&&n>=sampleN)return false;
+    if(sampleN>3&&n>=sampleN)return false;
     return true;
   });
 }
 function defaultGroupFactor(d){
   var factors=metadataFactors(d);
-  return factors.filter(function(f){return f.isDefault;})[0]||factors[0]||{id:"group",label:"Group",values:[]};
+  var defaultId=String((d&&d.defaultGroupingColumn)||(d&&d.methodConfig&&d.methodConfig.analysisColumn)||"group");
+  return factors.filter(function(f){return f.isDefault||normalizeHeaderKey(f.id)===normalizeHeaderKey(defaultId);})[0]||factors[0]||{id:defaultId,label:factorLabelFromKey(defaultId),values:[]};
 }
 function activeGroupFactor(d){
   var factors=metadataFactors(d),wanted=state.groupBy||defaultGroupFactor(d).id;
@@ -3648,7 +3770,7 @@ function activeGroupFactor(d){
 function activeDataset(d){
   if(!d)return d;
   var factor=activeGroupFactor(d),defaultFactor=defaultGroupFactor(d);
-  if(!factor||factor.id==="group")return d;
+  if(!factor||normalizeHeaderKey(factor.id)===normalizeHeaderKey(defaultFactor.id))return d;
   var groups=(factor.values||[]).map(function(v,i){return {id:String(v),label:String(v),color:groupColor(i)};});
   var allowed=groups.map(function(g){return g.id;});
   var samples=(d.samples||[]).map(function(s){
@@ -3674,7 +3796,7 @@ function isDefaultGroupView(d){
   d=d||ds();
   var active=d.activeGroupFactor||activeGroupFactor(baseDataset());
   var def=d.defaultGroupFactor||defaultGroupFactor(baseDataset());
-  return !active||!def||active.id===def.id;
+  return !active||!def||normalizeHeaderKey(active.id)===normalizeHeaderKey(def.id);
 }
 function activeGroupingLabel(d){
   var active=(d&&d.activeGroupFactor)||activeGroupFactor(baseDataset());
@@ -3704,6 +3826,12 @@ function groupSelectorPanel(context){
   return '<div class="group-selector-panel"><label for="group-by-'+esc(context||"page")+'">Group by</label><select id="group-by-'+esc(context||"page")+'" data-group-by'+(factors.length<2?' disabled aria-disabled="true"':'')+'>'+
     factors.map(function(f){return '<option value="'+esc(f.id)+'"'+(f.id===active.id?' selected':'')+'>'+esc(f.label)+'</option>';}).join("")+
     '</select>'+(values?'<span>Categories: '+esc(values)+'.</span>':'')+'</div>';
+}
+function alternateGroupingScopeNotice(d){
+  d=d||ds();
+  var active=(d&&d.activeGroupFactor)||activeGroupFactor(baseDataset()),def=(d&&d.defaultGroupFactor)||defaultGroupFactor(baseDataset());
+  if(!active||!def||normalizeHeaderKey(active.id)===normalizeHeaderKey(def.id))return "";
+  return '<div class="grouping-scope-notice" role="note">'+svgIcon('<path d="M12 3 2 21h20z"/><path d="M12 9v5M12 18h.01"/>')+'<span>Calculated summaries and tables now use <b>'+esc(active.label)+'</b>. Released chart images were generated with <b>'+esc(def.label)+'</b> and do not recolor when the grouping selector changes; use those images as sample-level references only.</span></div>';
 }
 function filterChips(set,label,filters,active){
   return '<div class="filter-panel"><b>'+esc(label)+'</b><div class="filter-chip-row">'+filters.map(function(f){
@@ -4274,11 +4402,18 @@ function genusInspectionTab(d,method,active){
   return '<div class="genus-inspection-tab-panel" id="'+id+'-panel" role="tabpanel" aria-labelledby="'+id+'-tab" data-genus-inspection-method="'+esc(method)+'"'+(active?'':' hidden')+'><div data-genus-inspection-body="'+esc(method)+'">'+genusInspectionMethodBody(d,method)+'</div></div>';
 }
 function taxonomyGenusInspectionPanel(d){
+  var methods=[];
+  if(taxonomyRankFile("genus","EMU")||taxonomyRankFile("species","EMU"))methods.push("EMU");
+  if(taxonomyRankFile("genus","SILVA"))methods.push("SILVA");
+  if(!methods.length&&taxonList(d).length)methods.push(String(d.refdb||"").toUpperCase().indexOf("EMU")>=0?"EMU":"SILVA");
+  if(!methods.length)return "";
+  var tabs=methods.map(function(method,index){
+    var id="genus-inspection-"+method.toLowerCase();
+    return '<button class="genus-inspection-tab" id="'+id+'-tab" type="button" role="tab" aria-selected="'+(index===0?'true':'false')+'" aria-controls="'+id+'-panel" data-genus-inspection-tab="'+esc(method)+'"'+(index?' tabindex="-1"':'')+'>'+esc(method)+'</button>';
+  }).join("");
   return '<section class="genus-inspection-section"><h3>Top 5 Genus-Level Assignments</h3><div class="genus-inspection-methods">'+
-    '<div class="genus-inspection-tabs" role="tablist" aria-label="Taxonomy database">'+
-      '<button class="genus-inspection-tab" id="genus-inspection-emu-tab" type="button" role="tab" aria-selected="true" aria-controls="genus-inspection-emu-panel" data-genus-inspection-tab="EMU">EMU</button>'+
-      '<button class="genus-inspection-tab" id="genus-inspection-silva-tab" type="button" role="tab" aria-selected="false" aria-controls="genus-inspection-silva-panel" data-genus-inspection-tab="SILVA" tabindex="-1">SILVA</button>'+
-    '</div>'+genusInspectionTab(d,"EMU",true)+genusInspectionTab(d,"SILVA",false)+'</div></section>';
+    (methods.length>1?'<div class="genus-inspection-tabs" role="tablist" aria-label="Taxonomy database">'+tabs+'</div>':"")+
+    methods.map(function(method,index){return genusInspectionTab(d,method,index===0);}).join("")+'</div></section>';
 }
 function patternSummaryPanel(title,rows){
   return '<div class="pattern-panel"><h3>'+esc(title)+'</h3><div class="pattern-list">'+rows.map(function(x){
@@ -4454,8 +4589,9 @@ function alphaSelfKruskal(d,metric,selected){
   values.sort(function(a,b){return a.value-b.value;});var sums={},ties=0;
   for(var i=0;i<n;){var end=i+1;while(end<n&&values[end].value===values[i].value)end++;var rank=((i+1)+end)/2,size=end-i;if(size>1)ties+=size*size*size-size;for(var j=i;j<end;j++)sums[values[j].group]=(sums[values[j].group]||0)+rank;i=end;}
   var h=12/(n*(n+1))*keys.reduce(function(sum,key){return sum+Math.pow(sums[key],2)/groups[key].length;},0)-3*(n+1),corr=1-(ties/(Math.pow(n,3)-n));if(corr>0)h/=corr;
+  h=Math.max(0,h);
   var p=alphaSelfGammaQ((k-1)/2,h/2),means={};keys.forEach(function(key){means[key]=mean(groups[key]);});
-  return {H:Math.max(0,h),p:p,n:n,k:k,means:means,counts:keys.reduce(function(o,key){o[key]=groups[key].length;return o;},{})};
+  return {H:h,p:p,n:n,k:k,means:means,counts:keys.reduce(function(o,key){o[key]=groups[key].length;return o;},{})};
 }
 function alphaSelfMiniPlot(d,metric,result,selected,byId,sampleNumbers){
   var w=360,h=210,p={l:34,r:50,t:30,b:30},groups={},values=[];
@@ -4464,7 +4600,7 @@ function alphaSelfMiniPlot(d,metric,result,selected,byId,sampleNumbers){
   var sx=function(i){return keys.length===1?(w+p.l-p.r)/2:p.l+i*(w-p.l-p.r)/(keys.length-1);},sy=function(v){return h-p.b-(v-minY)/(maxY-minY)*(h-p.t-p.b);};
   var body='<line x1="'+p.l+'" y1="'+(h-p.b)+'" x2="'+(w-p.r)+'" y2="'+(h-p.b)+'" stroke="#AAB9C8"/>';
   keys.forEach(function(key,gi){var vals=groups[key].map(function(x){return x.value;}).sort(function(a,b){return a-b;}),med=median(vals),q=function(prob){if(vals.length<2)return null;var pos=(vals.length-1)*prob,lo=Math.floor(pos),hi=Math.ceil(pos);return vals[lo]+(vals[hi]-vals[lo])*(pos-lo);},q1=q(.25),q3=q(.75),min=vals[0],max=vals[vals.length-1],x=sx(gi),color=groupColor((d.groups||[]).findIndex(function(g){return g.id===key;}));if(q1!=null&&q3!=null){var boxTop=sy(q3),boxBottom=sy(q1),boxHeight=Math.max(2,boxBottom-boxTop),minYPos=sy(min),maxYPos=sy(max);body+='<line x1="'+x.toFixed(1)+'" y1="'+maxYPos.toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+minYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-7)+'" y1="'+maxYPos.toFixed(1)+'" x2="'+(x+7)+'" y2="'+maxYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-7)+'" y1="'+minYPos.toFixed(1)+'" x2="'+(x+7)+'" y2="'+minYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><rect x="'+(x-15)+'" y="'+boxTop.toFixed(1)+'" width="30" height="'+boxHeight.toFixed(1)+'" fill="'+color+'" opacity=".3" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-15)+'" y1="'+sy(med).toFixed(1)+'" x2="'+(x+15)+'" y2="'+sy(med).toFixed(1)+'" stroke="'+color+'" stroke-width="1.5"/>';};groups[key].forEach(function(item,ii){var jitter=(ii-(groups[key].length-1)/2)*6,px=x+jitter,py=sy(item.value),num=sampleNumbers[item.id]||"";body+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="3" fill="'+color+'"><title>'+esc(num+'. '+(byId[item.id]?sampleLabel(byId[item.id]):item.id))+'</title></circle><text x="'+(x+22).toFixed(1)+'" y="'+(py+3).toFixed(1)+'" font-size="8" fill="#071B3A">'+esc(num)+'</text>';});var groupObj=(d.groups||[]).filter(function(g){return g.id===key;})[0];body+='<text x="'+x.toFixed(1)+'" y="'+(h-10)+'" text-anchor="middle" font-size="10" fill="#51327E">'+esc(groupObj?groupObj.label:key)+'</text>';});
-  return '<div class="alpha-self-mini-plot"><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(metricLabel(d,"alpha",metric))+' retained sample distribution">'+body+'<text x="8" y="18" font-size="11" fill="#705F85">Box = IQR · line = median · whiskers = min/max</text></svg></div>';
+  return '<div class="alpha-self-mini-plot"><svg data-alpha-self-metric="'+esc(metric)+'" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(metricLabel(d,"alpha",metric))+' retained sample distribution">'+body+'<text x="8" y="18" font-size="11" fill="#705F85">Box = IQR · line = median · whiskers = min/max</text></svg></div>';
 }
 var alphaSelfState={selected:null,open:false};
 function alphaSelfExperimentPanel(d){
@@ -4473,20 +4609,28 @@ function alphaSelfExperimentPanel(d){
   var byId={};(d.samples||[]).forEach(function(s){byId[String(s.raw||s.id)]=s;});
   var sampleNumbers={};all.forEach(function(id,i){sampleNumbers[id]=i+1;});
   var checks=all.map(function(id){var s=byId[id];return '<label class="self-experiment-sample"><input type="checkbox" data-alpha-self-sample="'+esc(id)+'"'+(selected.indexOf(id)>=0?' checked':'')+'><span class="self-experiment-sample-number">'+sampleNumbers[id]+'</span><span>'+esc(s?sampleLabel(s):id)+'</span><small>'+esc(s&&s.group||"Unknown group")+'</small></label>';}).join("");
-  var cards=metrics.map(function(metric){var result=alphaSelfKruskal(d,metric.id,selected),label=metric.label||metric.id;if(!result)return '<div class="self-experiment-stats-card"><b>'+esc(label)+'</b><strong>Not estimable</strong><small>At least two retained groups are required.</small></div>';var interpretation=result.p<0.05?"supported group difference":result.p<0.10?"exploratory signal":"no supported group difference";return '<div class="self-experiment-stats-card"><div class="alpha-self-card-head"><b>'+esc(label)+'</b><strong>p='+result.p.toFixed(3)+'</strong><span>H='+result.H.toFixed(3)+' · '+interpretation+'</span></div>'+alphaSelfMiniPlot(d,metric.id,result,selected,byId,sampleNumbers)+'</div>';}).join("");
-  var body='<div class="self-experiment-shell alpha-self-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to recalculate Shannon, Simpson, and Faith PD. The statistic cards are calculated outputs.</small></div><button type="button" class="btn secondary" data-alpha-self-reset>Reset to all samples</button><button type="button" class="keyviz-download" data-self-experiment-download="alpha">Download SVG plots</button>'+checks+'</div><div class="alpha-self-cards">'+cards+'</div><p class="table-caption">Exploratory only; the released alpha-diversity results remain the report reference.</p></div>';
+  var plotCount=0,cards=metrics.map(function(metric){
+    var result=alphaSelfKruskal(d,metric.id,selected),label=metric.label||metric.id;
+    if(!result)return '<div class="self-experiment-stats-card"><b>'+esc(label)+'</b><strong>Not estimable</strong><small>At least two retained groups are required.</small></div>';
+    var hasP=result.p!=null&&isFinite(result.p),interpretation=!hasP?"p-value not estimable":(result.p<0.05?"supported group difference":result.p<0.10?"exploratory signal":"no supported group difference");
+    plotCount++;
+    var plot=alphaSelfMiniPlot(d,metric.id,result,selected,byId,sampleNumbers);
+    return '<div class="self-experiment-stats-card"><div class="alpha-self-card-head"><b>'+esc(label)+'</b><strong>p='+(hasP?result.p.toFixed(3):"Not estimable")+'</strong><span>H='+result.H.toFixed(3)+' · '+interpretation+'</span></div>'+plot+'</div>';
+  }).join("");
+  var download=plotCount?'<div class="self-experiment-downloads"><button type="button" class="keyviz-download" data-self-experiment-download="alpha">Download SVG</button></div>':"";
+  var body='<div class="self-experiment-shell alpha-self-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to recalculate Shannon, Simpson, and Faith PD. The statistic cards are calculated outputs.</small></div><button type="button" class="btn secondary" data-alpha-self-reset>Reset to all samples</button>'+checks+'</div><div class="alpha-self-cards">'+cards+'</div>'+download+'<p class="table-caption">Exploratory only; the released alpha-diversity results remain the report reference.</p></div>';
   return clinicalDetails("Self-experiment",body).replace('<details class="clinical-details">','<details data-alpha-self-details'+(alphaSelfState.open?' open':'')+' class="clinical-details">');
 }
 function betaSupportTone(d,metric){
-  var pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric);
-  return pm&&pm.p!=null&&pm.R2!=null&&pm.p<0.05&&pm.R2>=0.10&&(!pd||Number(pd.p)>=0.05)?"good":"poor";
+  var status=betaNextDecisionStatus(d,metric);
+  return status==="supported"||status==="small"?"good":"poor";
 }
 function betaStatDetail(d,metric){
   var pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric);
   if(!pm)return "No matching PERMANOVA result was found for this grouping.";
   var trimPeriod=function(text){return String(text||"").replace(/\.\s*$/,"");};
   var permanova=["p="+fmtP(pm.p)];
-  if(pm.R2!=null)permanova.push("R²="+(Number(pm.R2)*100).toFixed(1)+"%");
+  if(pm.R2!=null)permanova.push("R²="+(Number(pm.R2)*100).toFixed(1)+"%"+(pm.R2Derived?" (calculated)":""));
   if(pm.F!=null)permanova.push("pseudo-F="+fmtStatNumber(pm.F));
   if(pm.permutations!=null)permanova.push("permutations="+fmtNum(pm.permutations));
   var parts=["PERMANOVA: "+permanova.join("; ")];
@@ -4503,7 +4647,7 @@ function betaStatCompact(d,metric){
   var pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric);
   if(!pm)return "No matching PERMANOVA result was found for "+activeGroupingLabel(d)+".";
   var permanova=["p="+fmtP(pm.p)];
-  if(pm.R2!=null)permanova.push("R²="+(Number(pm.R2)*100).toFixed(1)+"%");
+  if(pm.R2!=null)permanova.push("R²="+(Number(pm.R2)*100).toFixed(1)+"%"+(pm.R2Derived?" (calculated)":""));
   var parts=["PERMANOVA: "+permanova.join("; ")];
   if(pd)parts.push("PERMDISP: p="+fmtP(pd.p));
   return parts.join("; ")+".";
@@ -4524,7 +4668,7 @@ function betaMetricDefinition(metric,label){
   return {value:"Between-sample community distance",note:(label||"This metric")+" compares whole microbial communities between samples; nearby PCoA points are more similar."};
 }
 function betaResultSummaryPanel(d,metric){
-  var label=metricLabel(d,"beta",metric),definition=betaMetricDefinition(metric,label),top=betaTopLevel(d,metric),pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric),tone=betaSupportTone(d,metric),pattern=betaGroupPattern(d,metric);
+  var label=metricLabel(d,"beta",metric),definition=betaMetricDefinition(metric,label),top=betaTopLevel(d,metric),pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric),status=betaNextDecisionStatus(d,metric),tone=betaSupportTone(d,metric),pattern=betaGroupPattern(d,metric);
   var relationshipValue="Group relationship not available",relationshipDetail='<span>At least two '+esc(groupingUnitLabel(d))+' with PCoA coordinates are needed.</span>';
   if(pattern.closest){
     var closestLabel=pattern.closest.a.label+" and "+pattern.closest.b.label;
@@ -4534,11 +4678,11 @@ function betaResultSummaryPanel(d,metric){
     if(pattern.furthest&&pattern.furthest!==pattern.closest)relationshipDetail+='<span>'+esc(furthestLabel+" are farthest apart · "+pattern.furthest.distance.toFixed(3))+'.</span>';
     relationshipDetail+='<span>'+esc(label+": "+definition.note)+'</span>';
   }
-  var statValue=!pm?"Not available":(tone==="good"?"Supported":(pm.p<0.10&&pm.R2>=0.10?"Exploratory only":"Not supported"));
+  var statValue=!pm?"Not available":({supported:"Supported",small:"Supported · small effect",dispersion:"Group-spread caution",exploratory:"Exploratory only",unavailable:"Not available",unsupported:"Not supported"}[status]||"Not supported");
   var statLines=[];
   if(pm){
     var permanovaParts=["p="+fmtP(pm.p)];
-    if(pm.R2!=null)permanovaParts.push("R²="+(Number(pm.R2)*100).toFixed(1)+"%");
+    if(pm.R2!=null)permanovaParts.push("R²="+(Number(pm.R2)*100).toFixed(1)+"%"+(pm.R2Derived?" (calculated)":""));
     statLines.push('<span class="takeaway-stat-line">PERMANOVA '+esc(permanovaParts.join(" · "))+'</span>');
     if(pd)statLines.push('<span class="takeaway-stat-line">PERMDISP p='+esc(fmtP(pd.p))+'</span>');
   }else{
@@ -4597,12 +4741,39 @@ function topFunctionRows(d,limit){
     return {name:row.displayName||row.p||row.pathway||row.feature||"Predicted feature",vals:vals,hi:vals[0],lo:vals[vals.length-1],range:vals.length>1?vals[0].val-vals[vals.length-1].val:0,mean:meanVal};
   }).filter(function(x){return x&&(x.mean>0||x.range>0);}).sort(function(a,b){return b.range-a.range||b.mean-a.mean;}).slice(0,limit||5);
 }
-function rankedFunctionalDiffRows(d,limit){
-  return (d.functionalDiffStats||[]).slice().sort(function(a,b){
-    var aq=a.q!=null?a.q:(a.p!=null?a.p:999),bq=b.q!=null?b.q:(b.p!=null?b.p:999);
-    if(aq!==bq)return aq-bq;
-    return Math.abs(b.effect||0)-Math.abs(a.effect||0);
+function functionalDiffKindId(row){
+  var kind=String(row&&row.kind||"function").toLowerCase();
+  return kind==="pathway"||kind==="ko"||kind==="ec"?kind:"";
+}
+function functionalDiffPriority(row){
+  if(row&&row.q!=null&&Number(row.q)<0.05)return 0;
+  if(row&&row.p!=null&&Number(row.p)<0.05)return 1;
+  return 2;
+}
+function rankedFunctionalDiffRows(d,limit,kind){
+  var rows=(d.functionalDiffStats||[]).filter(function(row){var id=functionalDiffKindId(row);return id&&(!kind||kind==="all"||id===kind);});
+  return rows.slice().sort(function(a,b){
+    var ap=functionalDiffPriority(a),bp=functionalDiffPriority(b);
+    if(ap!==bp)return ap-bp;
+    if(ap===0){var aq=Number(a.q),bq=Number(b.q);if(aq!==bq)return aq-bq;}
+    if(ap===1){var ar=Number(a.p),br=Number(b.p);if(ar!==br)return ar-br;}
+    var av=a.q!=null?Number(a.q):(a.p!=null?Number(a.p):999),bv=b.q!=null?Number(b.q):(b.p!=null?Number(b.p):999);
+    if(av!==bv)return av-bv;
+    return Math.abs(Number(b.effect)||0)-Math.abs(Number(a.effect)||0);
   }).slice(0,limit||8);
+}
+function functionalDiffFeatureDisplay(d,row){
+  var kind=functionalDiffKindId(row),feature=String(row&&row.feature||"Predicted feature"),key=feature.toLowerCase().replace(/^(ko|ec|pathway):/,"");
+  var match=((d.functionalTables&&d.functionalTables[kind])||[]).filter(function(item){
+    var id=String(item.featureId||item.p||item.pathway||"").toLowerCase().replace(/^(ko|ec|pathway):/,"");
+    return id===key;
+  })[0];
+  return functionalFeatureDisplay(feature,match&&match.featureName);
+}
+function functionalSignedEffect(value){
+  if(value==null||!isFinite(Number(value)))return "NA";
+  var number=Number(value),formatted=fmtStatNumber(number);
+  return number>0?"+"+formatted:formatted;
 }
 function functionalDiffOverview(rows){
   rows=rows||[];
@@ -4693,28 +4864,42 @@ function functionalInspectionTable(d,kind){
     refLink(REFS.picrust)+'</div>';
 }
 function functionalDiffStatsPanel(d){
-  var rows=rankedFunctionalDiffRows(d,8);
-  if(!rows.length)return "";
-  var allRows=d.functionalDiffStats||[],testLabel=functionalDiffTestLabel(allRows),isWelch=testLabel==="ALDEx2 Welch";
+  var allRows=d.functionalDiffStats||[];
+  if(!allRows.length)return "";
+  var testLabel=functionalDiffTestLabel(allRows),isWelch=testLabel==="ALDEx2 Welch",kindOrder=["pathway","ko","ec"];
+  var loadedKinds=kindOrder.filter(function(kind){return allRows.some(function(row){return functionalDiffKindId(row)===kind;});});
+  var active=state.functionalDiffFilter||"all";
+  if(active!=="all"&&loadedKinds.indexOf(active)<0)active="all";
+  var rows=rankedFunctionalDiffRows(d,8,active),kindName=function(kind){return kind==="pathway"?"Pathway":functionalKindLabel(kind);};
+  var overview='<div class="functional-diff-summary">'+loadedKinds.map(function(kind){
+    var summary=functionalDiffOverview(allRows.filter(function(row){return functionalDiffKindId(row)===kind;}));
+    return '<article><b>'+esc(kindName(kind))+'</b><span>'+esc(fmtNum(summary.results)+" comparisons · "+fmtNum(summary.raw)+" uncorrected p < 0.05 · "+fmtNum(summary.supported)+" FDR-supported")+'</span></article>';
+  }).join("")+'</div>';
+  var filters=[{id:"all",label:"All"}].concat(loadedKinds.map(function(kind){return {id:kind,label:kindName(kind)};}));
+  var filterHtml=loadedKinds.length>1?filterChips("functional-diff","Show results",filters,active):"";
   var body=rows.map(function(r){
     var adjustedSupport=r.q!=null&&Number(r.q)<0.05;
     var rawLead=!adjustedSupport&&r.p!=null&&Number(r.p)<0.05;
-    var tone=adjustedSupport?"good":"poor";
-    var support=adjustedSupport?"FDR-supported":(rawLead?"Exploratory (raw p only)":"Not supported");
-    var contrast=[r.groupA,r.groupB].filter(Boolean).join(" vs ")||("Released "+activeGroupingLabel(d)+" categories");
-    return '<div class="inspection-row" style="--cols:minmax(150px,.6fr) minmax(240px,1.2fr) minmax(130px,.55fr) minmax(110px,.5fr) minmax(110px,.5fr) minmax(170px,.8fr)"'+metricToneAttr(tone)+'>'+
+    var support=r.q==null?(rawLead?"Exploratory — FDR unavailable":"FDR unavailable"):(adjustedSupport?"FDR-supported":(rawLead?"Exploratory — uncorrected p only":"Not supported"));
+    var contrast=[r.groupA,r.groupB].filter(Boolean).join(" vs ")||"Not specified";
+    return '<div class="inspection-row" style="--cols:minmax(105px,.45fr) minmax(240px,1.2fr) minmax(165px,.75fr) minmax(115px,.5fr) minmax(135px,.58fr) minmax(135px,.58fr) minmax(190px,.85fr)">'+
       '<b>'+esc(r.kind)+'</b>'+
-      '<span><strong>'+esc(r.feature)+'</strong></span>'+
-      '<span><strong>'+esc(r.effect!=null?fmtStatNumber(r.effect):"NA")+'</strong></span>'+
+      '<span><strong>'+esc(functionalDiffFeatureDisplay(d,r))+'</strong></span>'+
+      '<span><strong>'+esc(contrast)+'</strong></span>'+
+      '<span><strong>'+esc(functionalSignedEffect(r.effect))+'</strong></span>'+
       '<span><strong>'+esc(r.p!=null?fmtP(r.p):"NA")+'</strong></span>'+
       '<span><strong>'+esc(r.q!=null?fmtP(r.q):"NA")+'</strong></span>'+
-      '<span><strong>'+esc(support)+'</strong><small>'+esc(contrast)+(r.overlap!=null?"; overlap="+fmtStatNumber(r.overlap):"")+'</small></span>'+
+      '<span><strong class="'+esc(adjustedSupport?"metric-good":(!rawLead&&r.q!=null?"metric-poor":""))+'">'+esc(support)+'</strong></span>'+
     '</div>';
   }).join("");
+  var methodNote=isWelch
+    ? "ALDEx2 calculates the effect as the second group minus the first group. For A vs B, a positive effect indicates higher predicted abundance in B, while a negative effect indicates higher predicted abundance in A. Larger absolute effects represent larger, more consistent differences relative to variation within the groups. Effect direction or magnitude alone does not establish statistical support; use the FDR-adjusted p-value for conclusions."
+    : "The effect sign follows the contrast coding in the loaded differential-statistics file. Larger absolute effects indicate stronger separation, but statistical support depends on the adjusted p-value.";
+  var shownLabel=active==="all"?"all loaded function types":kindName(active);
   return '<div class="pattern-panel"><h3>Differential Function Statistics</h3>'+
-    '<p class="table-caption">'+helpCommon((isWelch?"ALDEx2 expected Welch tests":"ALDEx2 differential tests")+" of predicted functional abundance. Each row represents one feature in one pairwise group comparison; the adjusted p-value uses Benjamini-Hochberg correction. The table shows the eight highest-ranked loaded results.")+'</p>'+
+    '<p class="table-caption">'+helpCommon((isWelch?"ALDEx2 expected Welch tests":"ALDEx2 differential tests")+" of predicted functional abundance. Each row represents one feature in one pairwise group comparison; Benjamini-Hochberg correction is applied within the loaded comparison. The table shows up to eight "+shownLabel+" results, prioritizing FDR-supported rows, then uncorrected p-value leads, then unsupported rows.")+'</p>'+overview+filterHtml+
     '<div class="inspection-table">'+
-      '<div class="inspection-row" style="--cols:minmax(150px,.6fr) minmax(240px,1.2fr) minmax(130px,.55fr) minmax(110px,.5fr) minmax(110px,.5fr) minmax(170px,.8fr)"><b>Type</b><b>Feature</b><b>Effect</b><b>'+(isWelch?'Expected Welch p':'p-value')+'</b><b>'+(isWelch?'BH-adjusted p':'Adjusted p')+'</b><b>Support</b></div>'+body+'</div></div>';
+      '<div class="inspection-row" style="--cols:minmax(105px,.45fr) minmax(240px,1.2fr) minmax(165px,.75fr) minmax(115px,.5fr) minmax(135px,.58fr) minmax(135px,.58fr) minmax(190px,.85fr)"><b>Type</b><b>Feature</b><b>Comparison</b><b>Effect (second − first)</b><b>'+(isWelch?'Uncorrected Welch p':'Uncorrected p')+'</b><b>FDR-adjusted p</b><b>Conclusion</b></div>'+body+'</div><p class="functional-diff-method-note">'+helpCommon(methodNote)+'</p></div>';
 }
 function compositionHelpCallout(d,file){
   var s=taxonomyPatternSummary(d,file);
@@ -4843,6 +5028,17 @@ function betaSelfMatrixSubset(d,metric,selected){
   if(!indices.length)return null;
   return {ids:indices.map(function(i){return matrix.ids[i];}),values:indices.map(function(i){return indices.map(function(j){return Number(matrix.values[i][j])||0;});})};
 }
+function betaSelfConstantDistanceIssue(matrix){
+  if(!matrix||!matrix.values||matrix.values.length<2)return null;
+  var values=[];
+  for(var i=0;i<matrix.values.length;i++)for(var j=i+1;j<matrix.values.length;j++){
+    var value=Number(matrix.values[i][j]);
+    if(isFinite(value))values.push(value);
+  }
+  if(!values.length)return null;
+  var min=Math.min.apply(null,values),max=Math.max.apply(null,values);
+  return Math.abs(max-min)<1e-12?{value:min,count:values.length}:null;
+}
 function betaSelfPcoa(matrix){
   var n=matrix&&matrix.ids?matrix.ids.length:0;if(n<2)return null;
   var d2=matrix.values.map(function(row){return row.map(function(v){return v*v;});}),rowMean=[],total=0,i,j;
@@ -4893,6 +5089,13 @@ function betaSelfPermStats(matrix,groupsById,seed){
   return {pcoa:pcoa,permanova:{F:observed.F,R2:observed.R2,p:observed.F==null?null:(ge+1)/(perms+1),permutations:perms},permdisp:observedDisp&&observedDisp.F!=null?{F:observedDisp.F,p:(dispGe+1)/(perms+1),permutations:perms}:null,counts:counts};
 }
 var betaSelfState={metric:null,selected:{},open:false};
+function resetSelfExperimentState(){
+  alphaSelfState.selected=null;
+  alphaSelfState.open=false;
+  betaSelfState.metric=null;
+  betaSelfState.selected={};
+  betaSelfState.open=false;
+}
 function betaSelfExperimentPanel(d){
   var available=(d.betaMetrics||[]).filter(function(m){return d.betaDistanceMatrices&&d.betaDistanceMatrices[m.id];});
   if(!available.length)return clinicalDetails("Self-experiment",'<p class="table-caption">This exploratory tool needs a usable beta-diversity distance matrix, which is not available for this report.</p>').replace('<details class="clinical-details">','<details data-beta-self-details class="clinical-details">');
@@ -4900,27 +5103,33 @@ function betaSelfExperimentPanel(d){
   var matrix=d.betaDistanceMatrices[metric],all=matrix.ids.slice(),selected=betaSelfState.selected[metric];if(!selected)selected=all.slice();
   var groupsById={};(d.samples||[]).forEach(function(s){groupsById[String(s.raw||s.id)]=s.group;groupsById[String(s.id)]=s.group;});
   var subset=betaSelfMatrixSubset(d,metric,selected),byId={};(d.samples||[]).forEach(function(s){byId[String(s.raw||s.id)]=s;byId[String(s.id)]=s;});
-  var stats=subset?betaSelfPermStats(subset,groupsById,betaSelfSeed(metric,selected,all)):null;
+  var matrixIssue=betaSelfConstantDistanceIssue(subset),stats=subset?betaSelfPermStats(subset,groupsById,betaSelfSeed(metric,selected,all)):null;
   var options=available.map(function(m){return '<option value="'+esc(m.id)+'"'+(m.id===metric?' selected':'')+'>'+esc(m.label||m.id)+'</option>';}).join("");
   var sampleNumbers={};all.forEach(function(id,index){sampleNumbers[id]=index+1;});
   var checks=all.map(function(id){var s=byId[id],label=s?sampleLabel(s):id,group=s?(d.groups||[]).filter(function(g){return g.id===s.group;})[0]:null;return '<label class="self-experiment-sample"><input type="checkbox" data-beta-self-sample="'+esc(id)+'"'+(selected.indexOf(id)>=0?' checked':'')+'><span class="self-experiment-sample-number">'+sampleNumbers[id]+'</span><span>'+esc(label)+'</span><small>'+esc(group?group.label:(s&&s.group||"Unknown group"))+'</small></label>';}).join("");
-  var significance=stats&&stats.permanova.p!=null?(stats.permanova.p<0.05?'supported group difference':(stats.permanova.p<0.10?'exploratory signal':'no supported group difference')):'not estimable';
+  var significance=matrixIssue
+    ? 'not interpretable · identical pairwise distances'
+    : stats&&stats.permdisp&&stats.permdisp.p<0.05
+    ? 'group separation is affected by unequal spread'
+    : (stats&&stats.permanova.p!=null?(stats.permanova.p<0.05?'supported group difference':(stats.permanova.p<0.10?'exploratory signal':'no supported group difference')):'not estimable');
   var countText=stats?Object.keys(stats.counts).map(function(key){var g=(d.groups||[]).filter(function(x){return x.id===key;})[0];return (g?g.label:key)+' n='+stats.counts[key];}).join(' · '):'';
   var minGroupN=stats?Math.min.apply(null,Object.keys(stats.counts).map(function(key){return stats.counts[key];})):0;
-  var dispersionNote=stats&&!stats.permdisp?(minGroupN<2?'PERMDISP is unavailable because each retained group needs at least two samples.':'PERMDISP is unavailable for this selection because each group has only two samples. Their distances to the group centroid are identical, leaving zero within-group variance for the F-statistic.'):'';
-  var statHtml=stats?'<div class="self-experiment-stats"><b>Exploratory recalculation</b><span>PERMANOVA p<strong>'+(stats.permanova.p==null?'Not estimable':stats.permanova.p.toFixed(3))+'</strong></span><span>PERMANOVA R²<strong>'+(stats.permanova.R2*100).toFixed(1)+'%</strong></span><span>Pseudo-F<strong>'+(stats.permanova.F==null?'Not estimable':stats.permanova.F.toFixed(3))+'</strong></span><span>PERMDISP p / F<strong>'+(stats.permdisp?stats.permdisp.p.toFixed(3)+' / '+stats.permdisp.F.toFixed(3):'Not estimable')+'</strong></span><span>PCoA 1 / PCoA 2<strong>'+(stats.pcoa.pc1*100).toFixed(1)+'% / '+(stats.pcoa.pc2*100).toFixed(1)+'%</strong></span><span>Interpretation<strong>'+esc(significance)+'</strong></span><span>Retained groups<strong>'+esc(countText)+'</strong></span>'+(dispersionNote?'<small class="self-experiment-note">'+esc(dispersionNote)+'</small>':'')+'</div>':'<p class="table-caption">Select at least two groups with enough samples to recalculate statistics.</p>';
-  var plot=stats?betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers):'<div class="self-experiment-empty">No recalculable PCoA for this selection.</div>';
-  var body='<div class="self-experiment-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to test how the result changes. The statistic cards are calculated outputs and cannot be edited directly.</small></div>'+checks+'</div><div class="self-experiment-intro"><label>Distance metric <select data-beta-self-metric>'+options+'</select></label><button type="button" class="btn secondary" data-beta-self-reset>Reset to all samples</button><button type="button" class="keyviz-download" data-self-experiment-download="beta">Download SVG plot</button></div><div class="self-experiment-main">'+plot+statHtml+'</div><p class="table-caption">Exploratory only: sample removal should be justified by independent quality or biological evidence.</p></div>';
+  var dispersionNote=!matrixIssue&&stats&&!stats.permdisp?(minGroupN<2?'PERMDISP is unavailable because each retained group needs at least two samples.':'PERMDISP could not be estimated because distances to the group centroids have no usable within-group variation for the F-statistic.'):'';
+  var matrixNote=matrixIssue?'All pairwise distances are identical, so these statistics cannot support a biological interpretation.':'';
+  var statHtml=stats?'<div class="self-experiment-stats"><b>Exploratory recalculation</b><span>PERMANOVA p<strong>'+(stats.permanova.p==null?'Not estimable':stats.permanova.p.toFixed(3))+'</strong></span><span>PERMANOVA R²<strong>'+(stats.permanova.R2*100).toFixed(1)+'%</strong></span><span>Pseudo-F<strong>'+(stats.permanova.F==null?'Not estimable':stats.permanova.F.toFixed(3))+'</strong></span><span>PERMDISP p / F<strong>'+(stats.permdisp?stats.permdisp.p.toFixed(3)+' / '+stats.permdisp.F.toFixed(3):'Not estimable')+'</strong></span><span>PCoA 1 / PCoA 2<strong>'+(stats.pcoa.pc1*100).toFixed(1)+'% / '+(stats.pcoa.pc2*100).toFixed(1)+'%</strong></span><span>Interpretation<strong>'+esc(significance)+'</strong></span><span>Retained groups<strong>'+esc(countText)+'</strong></span>'+(matrixNote?'<small class="self-experiment-note">'+esc(matrixNote)+'</small>':'')+(dispersionNote?'<small class="self-experiment-note">'+esc(dispersionNote)+'</small>':'')+'</div>':'<p class="table-caption">Select at least two groups with enough samples to recalculate statistics.</p>';
+  var plot=stats?betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers,matrixIssue):'<div class="self-experiment-empty">No recalculable PCoA for this selection.</div>';
+  var body='<div class="self-experiment-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to test how the result changes. The statistic cards are calculated outputs and cannot be edited directly.</small></div>'+checks+'</div><div class="self-experiment-intro"><label>Distance metric <select data-beta-self-metric>'+options+'</select></label><button type="button" class="btn secondary" data-beta-self-reset>Reset to all samples</button></div><div class="self-experiment-main">'+plot+statHtml+'</div><p class="table-caption">Exploratory only: sample removal should be justified by independent quality or biological evidence.</p></div>';
   return clinicalDetails("Self-experiment",body).replace('<details class="clinical-details">','<details data-beta-self-details'+(betaSelfState.open?' open':'')+' class="clinical-details">');
 }
-function betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers){
+function betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers,matrixIssue){
   var w=680,h=320,p=42,pts=stats.pcoa.points,xy=pts.map(function(pt){return {x:pt.x,y:pt.y};}),xmin=Math.min.apply(null,xy.map(function(x){return x.x;})),xmax=Math.max.apply(null,xy.map(function(x){return x.x;})),ymin=Math.min.apply(null,xy.map(function(x){return x.y;})),ymax=Math.max.apply(null,xy.map(function(x){return x.y;}));
   var sx=function(x){return p+(x-xmin)/(xmax-xmin||1)*(w-2*p);},sy=function(y){return h-p-(y-ymin)/(ymax-ymin||1)*(h-2*p);};
   var axisX=Math.max(p,Math.min(w-p,sx(0))),axisY=Math.max(p,Math.min(h-p,sy(0)));
   var axes='<line x1="'+p+'" y1="'+axisY.toFixed(1)+'" x2="'+(w-p)+'" y2="'+axisY.toFixed(1)+'" stroke="#9AAFC2" stroke-width="1"/><line x1="'+axisX.toFixed(1)+'" y1="'+p+'" x2="'+axisX.toFixed(1)+'" y2="'+(h-p)+'" stroke="#9AAFC2" stroke-width="1"/>';
   var body=pts.map(function(pt,index){var s=byId[pt.id],gi=(d.groups||[]).findIndex(function(g){return s&&g.id===s.group;}),number=sampleNumbers&&sampleNumbers[pt.id]!=null?sampleNumbers[pt.id]:index+1,x=sx(pt.x),y=sy(pt.y);return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="7" fill="'+groupColor(Math.max(0,gi))+'"><title>'+esc(number+'. '+(s?sampleLabel(s):pt.id))+'</title></circle><text x="'+(x+9).toFixed(1)+'" y="'+(y+4).toFixed(1)+'" font-size="11" font-weight="800" fill="#071B3A">'+number+'</text>';}).join("");
   var legend=(d.groups||[]).filter(function(g){return pts.some(function(pt){var s=byId[pt.id];return s&&s.group===g.id;});}).map(function(g,i){return '<span><i style="background:'+groupColor((d.groups||[]).indexOf(g))+'"></i>'+esc(g.label)+'</span>';}).join("");
-  return '<div class="self-experiment-plot"><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Exploratory '+esc(metricLabel(d,"beta",metric))+' PCoA">'+axes+body+'<text x="'+(w/2)+'" y="'+(h-8)+'" text-anchor="middle">PCoA 1</text><text x="14" y="'+(h/2)+'" transform="rotate(-90 14 '+(h/2)+')" text-anchor="middle">PCoA 2</text></svg><div class="self-experiment-legend">'+legend+'</div></div>';
+  var warning=matrixIssue?'<div class="self-experiment-plot-warning"><strong data-svg-warning-line>Warning — uninformative distance matrix</strong><span data-svg-warning-line>Every retained sample pair has the same '+esc(metricLabel(d,"beta",metric))+' distance ('+esc(Number(matrixIssue.value).toFixed(3))+').</span><span data-svg-warning-line>Point positions, separation and overlap are arbitrary and should not be interpreted.</span></div>':"";
+  return '<div class="self-experiment-plot"><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Exploratory '+esc(metricLabel(d,"beta",metric))+' PCoA">'+axes+body+'<text x="'+(w/2)+'" y="'+(h-8)+'" text-anchor="middle">PCoA 1</text><text x="14" y="'+(h/2)+'" transform="rotate(-90 14 '+(h/2)+')" text-anchor="middle">PCoA 2</text></svg><div class="self-experiment-legend">'+legend+'</div>'+warning+'<div class="beta-self-download"><button type="button" class="keyviz-download" data-self-experiment-download="beta">Download SVG</button></div></div>';
 }
 function betaGroupPattern(d,metric){
   var cents=pcoCentroids(d,metric||defaultBetaMetric(d)),pairs=betaDistancePairs(d,metric).slice().sort(function(a,b){return a.distance-b.distance;});
@@ -5081,10 +5290,11 @@ function confidenceSummary(d){
   var metric=defaultBetaMetric(d);
   var pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric);
   if(!pm)return {value:"Statistical test not available",note:"No PERMANOVA table was available for the current report.",tone:"descriptive"};
-  var pg=pValueGuide(pm.p),r2=(pm.R2||0);
-  var meaningful=pm.p<0.05&&r2>=0.10&&(!pd||pd.p>=0.05);
-  if(meaningful)return {value:"Statistically supported",note:betaStatDetail(d,metric),tone:"supported"};
-  if(pm.p<0.10&&r2>=0.10)return {value:"Exploratory signal",note:betaStatDetail(d,metric)+" Pattern may be worth follow-up, but evidence is not strong enough for a firm "+groupingLabelForSentence(d)+" conclusion.",tone:"exploratory"};
+  var status=betaNextDecisionStatus(d,metric);
+  if(status==="unavailable")return {value:"Statistical support unavailable",note:"A PERMANOVA result was found, but its p-value could not be read.",tone:"descriptive"};
+  if(status==="supported"||status==="small")return {value:"Statistically supported",note:betaStatDetail(d,metric),tone:"supported"};
+  if(status==="dispersion")return {value:"Statistically supported with spread caution",note:betaStatDetail(d,metric)+" Unequal within-group spread limits interpretation of the group-centre difference.",tone:"caution"};
+  if(status==="exploratory")return {value:"Exploratory signal",note:betaStatDetail(d,metric)+" Pattern may be worth follow-up, but evidence is not strong enough for a firm "+groupingLabelForSentence(d)+" conclusion.",tone:"exploratory"};
   return {value:"No statistically supported "+groupingLabelForSentence(d)+" difference",note:betaStatDetail(d,metric)+" The chart can still describe visible sample patterns, but this test does not support a reliable "+groupingLevelTerm(d)+" difference.",tone:"descriptive"};
 }
 function alphaGroupStats(d,metric){
@@ -5182,15 +5392,16 @@ function alphaTopLevel(d,metric){
 }
 function betaTopLevel(d,metric){
   metric=metric||defaultBetaMetric(d);
-  var pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric);
+  var pm=d.permanova&&d.permanova[metric],status=betaNextDecisionStatus(d,metric);
   if(!pm)return {value:"No beta test available",note:"The report does not include a PERMANOVA result for this distance metric.",ref:REFS.permanova};
-  if(pm.p<0.05&&pm.R2>=0.10&&pd&&Number(pd.p)<0.05){
+  if(status==="unavailable")return {value:"Beta support unavailable",note:"The report includes a PERMANOVA row for this metric, but its p-value could not be read.",ref:REFS.permanova};
+  if(status==="dispersion"){
     return {value:"Separation with spread caution",note:"PERMANOVA indicates a "+groupingLabelForSentence(d)+" difference, but unequal group spread limits interpretation.",ref:REFS.permanova};
   }
-  if(pm.p<0.05&&pm.R2>=0.10){
-    return {value:"Supported "+groupingLevelTerm(d)+" separation",note:metricLabel(d,"beta",metric)+" supports a "+groupingLabelForSentence(d)+" difference.",ref:REFS.permanova};
+  if(status==="supported"||status==="small"){
+    return {value:"Supported "+groupingLevelTerm(d)+" separation",note:metricLabel(d,"beta",metric)+" supports a "+groupingLabelForSentence(d)+" difference."+(status==="small"?" The reported R² indicates a small effect magnitude.":""),ref:REFS.permanova};
   }
-  if(pm.p<0.10&&pm.R2>=0.10){
+  if(status==="exploratory"){
     return {value:"Exploratory "+groupingLabelForSentence(d)+" signal",note:"Evidence is weak; treat the plotted pattern as descriptive.",ref:REFS.permanova};
   }
   return {value:"No supported "+groupingLabelForSentence(d)+" separation",note:"Treat the "+metricLabel(d,"beta",metric)+" positions as descriptive.",ref:REFS.permanova};
@@ -5510,7 +5721,7 @@ function supportVisualForStart(d){
   var statTone=conf.tone==="supported"?"good":"poor",fnMetricTone=fnTone==="supported"?"good":"poor";
   return '<div class="keyviz-support">'+
     '<div class="keyviz-support-item" data-tone="'+esc(conf.tone)+'"><h4>Statistical support</h4><strong>'+esc(conf.value)+'</strong><p class="'+metricToneClass(statTone).trim()+'">'+detailLines(statDetail)+'</p>'+
-    keyVizFormula("Support rule", "Supported "+activeGroupingLabel(d)+" pattern = PERMANOVA p < 0.05 and R2 >= 0.10 and PERMDISP p >= 0.05")+'</div>'+
+    keyVizFormula("Support rule", "PERMANOVA p < 0.05 supports a group association; R2 describes its magnitude; PERMDISP p < 0.05 adds a spread caution")+'</div>'+
     '<div class="keyviz-support-item" data-tone="'+esc(fnTone)+'"><h4>Function prediction support</h4><strong>'+esc(fnValue)+'</strong><p class="'+metricToneClass(fnMetricTone).trim()+'">'+esc(fnDetail)+'</p>'+
     keyVizFormula("NSTI formula", {prefix:"Mean NSTI =",num:"sum(sample NSTI values)",den:"number of samples with NSTI"})+'</div>'+
     '</div>';
@@ -5616,17 +5827,50 @@ function downloadTextFile(filename,text,type){
   var blob=new Blob([text],{type:type||"image/svg+xml;charset=utf-8"});
   var url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download=filename;document.body.appendChild(a);a.click();
-  setTimeout(function(){URL.revokeObjectURL(url);a.remove();},0);
+  setTimeout(function(){URL.revokeObjectURL(url);a.remove();},1000);
 }
 function downloadKeyViz(kind){
   var d=ds(),svg=keyVizExportSvg(kind,d);
   if(svg)downloadTextFile(keyVizFilename(kind,d),svg,"image/svg+xml;charset=utf-8");
 }
+function standaloneSvgMarkup(svg,kind){
+  if(!svg)return "";
+  var copy=svg.cloneNode(true),viewBox=String(copy.getAttribute("viewBox")||"").trim().split(/\s+/).map(Number);
+  copy.setAttribute("xmlns","http://www.w3.org/2000/svg");
+  copy.setAttribute("version","1.1");
+  copy.setAttribute("font-family","Arial, sans-serif");
+  if(kind==="beta"&&viewBox.length===4&&viewBox.every(isFinite)){
+    var parent=svg.parentElement,legend=parent&&parent.querySelector(".self-experiment-legend"),items=legend?Array.prototype.slice.call(legend.querySelectorAll("span")):[];
+    var warning=parent&&parent.querySelector(".self-experiment-plot-warning"),warningLines=warning?Array.prototype.slice.call(warning.querySelectorAll("[data-svg-warning-line]")):[];
+    if(items.length||warningLines.length){
+      var ns="http://www.w3.org/2000/svg",perRow=Math.max(1,Math.floor(viewBox[2]/180)),rows=items.length?Math.ceil(items.length/perRow):0;
+      var legendHeight=items.length?30+rows*24:0,warningHeight=warningLines.length?20+warningLines.length*18:0,extra=legendHeight+warningHeight,baseY=viewBox[1]+viewBox[3];
+      copy.setAttribute("viewBox",[viewBox[0],viewBox[1],viewBox[2],viewBox[3]+extra].join(" "));
+      viewBox[3]+=extra;
+      var backdrop=document.createElementNS(ns,"rect");
+      backdrop.setAttribute("x",viewBox[0]);backdrop.setAttribute("y",baseY);backdrop.setAttribute("width",viewBox[2]);backdrop.setAttribute("height",extra);backdrop.setAttribute("fill","#ffffff");
+      copy.appendChild(backdrop);
+      items.forEach(function(item,index){
+        var swatch=item.querySelector("i"),style=String(swatch&&swatch.getAttribute("style")||""),match=style.match(/background(?:-color)?\s*:\s*([^;]+)/i),color=match?match[1].trim():"#0F52BA",col=index%perRow,row=Math.floor(index/perRow),x=18+col*(viewBox[2]/perRow),y=baseY+21+row*24;
+        var dot=document.createElementNS(ns,"circle");dot.setAttribute("cx",x);dot.setAttribute("cy",y-4);dot.setAttribute("r",5);dot.setAttribute("fill",color);copy.appendChild(dot);
+        var label=document.createElementNS(ns,"text");label.setAttribute("x",x+10);label.setAttribute("y",y);label.setAttribute("font-size","11");label.setAttribute("fill","#41515A");label.textContent=String(item.textContent||"").trim();copy.appendChild(label);
+      });
+      warningLines.forEach(function(line,index){
+        var label=document.createElementNS(ns,"text"),y=baseY+legendHeight+18+index*18;
+        label.setAttribute("x",18);label.setAttribute("y",y);label.setAttribute("font-size",index===0?"12":"11");label.setAttribute("font-weight",index===0?"700":"400");label.setAttribute("fill",index===0?"#5A390D":"#6B4918");label.textContent=String(line.textContent||"").trim();copy.appendChild(label);
+      });
+    }
+  }
+  if(!copy.getAttribute("width")&&viewBox.length===4&&isFinite(viewBox[2]))copy.setAttribute("width",viewBox[2]);
+  if(!copy.getAttribute("height")&&viewBox.length===4&&isFinite(viewBox[3]))copy.setAttribute("height",viewBox[3]);
+  return '<?xml version="1.0" encoding="UTF-8"?>\n'+new XMLSerializer().serializeToString(copy);
+}
 function downloadSelfExperimentPlots(kind){
-  var root=$("#content"),nodes=kind==="alpha"?$$(".alpha-self-mini-plot svg",root):$$(".self-experiment-main .self-experiment-plot svg",root);
+  var root=$("#content"),nodes=kind==="alpha-shannon"?$$('[data-alpha-self-metric="shannon"]',root):(kind==="alpha"?$$(".alpha-self-mini-plot svg",root):$$(".self-experiment-main .self-experiment-plot svg",root));
   nodes.forEach(function(svg,index){
-    var label=kind==="alpha"?((svg.getAttribute("aria-label")||"alpha").replace(/[^a-z0-9]+/gi,"_").toLowerCase()):"beta_self_experiment";
-    downloadTextFile(label+"_"+(index+1)+".svg",svg.outerHTML,"image/svg+xml;charset=utf-8");
+    var label=(svg.getAttribute("aria-label")||(kind.indexOf("alpha")===0?"alpha self experiment":"beta self experiment")).replace(/[^a-z0-9]+/gi,"_").replace(/^_|_$/g,"").toLowerCase();
+    var suffix=nodes.length>1?"_"+(index+1):"";
+    downloadTextFile(label+suffix+".svg",standaloneSvgMarkup(svg,kind),"image/svg+xml;charset=utf-8");
   });
 }
 function manifestFiles(){
@@ -5634,6 +5878,24 @@ function manifestFiles(){
 }
 function manifestFileById(id){
   return manifestFiles().filter(function(f){return f.id===id;})[0]||null;
+}
+function manifestLeafText(file){
+  function leaf(value){return String(value||"").split("/").pop();}
+  return [file&&file.id,file&&file.name,leaf(file&&file.path),leaf(file&&file.source_table_id),leaf(file&&file.sourceTableId),leaf(file&&file.source_table),leaf(file&&file.sourceTable),leaf(file&&file.source_file_id),leaf(file&&file.sourceFileId)].join(" ").toLowerCase();
+}
+function manifestTaxonomyRank(file){
+  function leaf(value){return String(value||"").split("/").pop().toLowerCase();}
+  var refs=[leaf(file&&file.path),leaf(file&&file.source_table_id),leaf(file&&file.sourceTableId),leaf(file&&file.source_table),leaf(file&&file.sourceTable),leaf(file&&file.source_file_id),leaf(file&&file.sourceFileId),String(file&&file.id||"").toLowerCase(),String(file&&file.name||"").toLowerCase()];
+  for(var i=0;i<refs.length;i++){
+    if(/\bspecies\b/.test(refs[i]))return "species";
+    if(/\bgenus|genera\b/.test(refs[i]))return "genus";
+    if(/\bfamily|families\b/.test(refs[i]))return "family";
+    if(/\border\b/.test(refs[i]))return "order";
+    if(/\bclass\b/.test(refs[i]))return "class";
+    if(/\bphylum|phyla\b/.test(refs[i]))return "phylum";
+    if(/\bkingdom\b/.test(refs[i]))return "kingdom";
+  }
+  return "taxon";
 }
 function imageFiles(){
   return manifestFiles().filter(function(f){
@@ -5647,7 +5909,7 @@ function figureText(f){
 function figureSmartName(f){
   var raw=[f&&f.id,f&&f.name,f&&f.path,f&&f.source_table_id,f&&f.sourceTableId,f&&f.source_table,f&&f.sourceTable,f&&f.source_file_id,f&&f.sourceFileId].join(" ").toLowerCase();
   var stem=String((f&&f.path)||(f&&f.name)||"").split("/").pop().replace(/\.[^.]+$/,"").toLowerCase();
-  var rank=/species/.test(raw)?"Species":(/genus|genera/.test(raw)?"Genus":(/family|families/.test(raw)?"Family":(/phylum|phyla/.test(raw)?"Phylum":"")));
+  var rankKey=manifestTaxonomyRank(f),rank=rankKey==="taxon"?"":taxonRankLabel(rankKey);
   var taxonomySource=/\bemu\b|emu[_-]|o3_taxonomy_emu/.test(raw)?"EMU":(/\bsilva\b|\bqiime\b|o2_taxonomy_qiime2_silva|taxa[_-]|(^|\s)(species|genus|family|phylum)-relative-abundance\b/.test(raw)?"SILVA":"");
   var rankOrTaxa=rank||"Taxa";
   var suffix=rankOrTaxa;
@@ -5657,6 +5919,7 @@ function figureSmartName(f){
   if(/heatmap|heat[_-]?map/.test(stem)&&/(emu|taxa|taxonomy|species|genus|family|phylum)/.test(raw))return [("Heatmap "+suffix).trim(),taxonomySource].filter(Boolean).join(" - ");
   if(/phylogenetic[_-]?tree|tree/.test(stem)&&rank)return ("Phylogenetic Tree "+suffix).trim();
   if(/emu.*species.*strength.*pcoa|species.*strength.*pcoa/.test(raw))return "EMU Species Strength PCoA";
+  if(/species[_-]?vector[_-]?pcoa|species.*pcoa.*vector/.test(raw))return "Species-Assigned ASV Bray-Curtis PCoA";
   if(/unweighted[_-]?unifrac.*pcoa|pcoa.*unweighted[_-]?unifrac/.test(raw))return "Unweighted UniFrac PCoA";
   if(/weighted[_-]?unifrac.*pcoa|pcoa.*weighted[_-]?unifrac/.test(raw))return "Weighted UniFrac PCoA";
   if(/bray[_-]?curtis.*pcoa|beta[_-]?pcoa|pcoa/.test(raw))return "Bray-Curtis PCoA";
@@ -5851,7 +6114,7 @@ function betaPerDispForMetric(d,metric){
 function betaStatValue(pm){
   var r2=pm&&pm.R2;
   var parts=["p="+fmtP(pm&&pm.p)];
-  if(r2!=null)parts.push("R²="+((Number(r2)||0)*100).toFixed(1)+"%");
+  if(r2!=null)parts.push("R²="+((Number(r2)||0)*100).toFixed(1)+"%"+(pm.R2Derived?" (calculated)":""));
   if(pm&&pm.F!=null)parts.push("pseudo-F="+fmtStatNumber(pm.F));
   return parts.join("; ");
 }
@@ -5929,15 +6192,18 @@ function taxonomyDiffSummaryForRank(d,rank){
   var rows=(d.taxonomyDiffStats||[]).filter(function(r){
     return rank==="taxon"||String(r.rank||"taxon").toLowerCase()===rank;
   });
-  if(!rows.length&&rank!=="taxon")rows=(d.taxonomyDiffStats||[]).slice();
+  if(!rows.length&&rank!=="taxon")rows=(d.taxonomyDiffStats||[]).filter(function(r){return String(r.rank||"taxon").toLowerCase()==="taxon";});
   if(!rows.length)return null;
-  var adjusted=rows.filter(function(r){return r.q!=null&&r.q<0.05;}).length;
-  var raw=rows.filter(function(r){return r.p!=null&&r.p<0.05;}).length;
+  var adjustedRows=rows.filter(function(r){return r.q!=null&&r.q<0.05;});
+  var rawRows=rows.filter(function(r){return r.p!=null&&r.p<0.05;}).sort(function(a,b){return a.p-b.p;});
+  var uniqueRawTaxa={},uniqueAdjustedTaxa={};
+  rawRows.forEach(function(r){uniqueRawTaxa[String(r.taxon||"").trim().toLowerCase()]=true;});
+  adjustedRows.forEach(function(r){uniqueAdjustedTaxa[String(r.taxon||"").trim().toLowerCase()]=true;});
   var strongest=rows.slice().sort(function(a,b){
     var aq=a.q!=null?a.q:(a.p!=null?a.p:1),bq=b.q!=null?b.q:(b.p!=null?b.p:1);
     return aq-bq||Math.abs(Number(b.effect)||0)-Math.abs(Number(a.effect)||0);
   })[0];
-  return {rows:rows.length,raw:raw,adjusted:adjusted,strongest:strongest};
+  return {rows:rows.length,results:rows,raw:rawRows.length,rawRows:rawRows,rawUniqueTaxa:Object.keys(uniqueRawTaxa).filter(Boolean).length,adjusted:adjustedRows.length,adjustedRows:adjustedRows,adjustedUniqueTaxa:Object.keys(uniqueAdjustedTaxa).filter(Boolean).length,adjustedAvailable:rows.some(function(r){return r.q!=null;}),strongest:strongest};
 }
 function taxonomyAldexObservationItems(d,file){
   var profile=chartTextProfile(file),diff=taxonomyDiffSummaryForRank(d,profile.rank),items=[
@@ -5955,19 +6221,20 @@ function taxonomyAldexObservationItems(d,file){
 }
 function chartTextProfile(file){
   var display=figureDisplayName(file),text=(display+" "+figureText(file)).toLowerCase();
+  var rankText=(display+" "+manifestLeafText(file)).toLowerCase();
   var topMatch=text.match(/\btop\s*([0-9]+)/);
   var method=(text.match(/\bemu\b/)&&"EMU")||
     (text.match(/\bsilva\b/)&&"SILVA")||
     (text.match(/\bqiime\b/)&&"QIIME 2")||
     "";
-  var rank=(text.match(/\bspecies\b/)&&"species")||
-    (text.match(/\bgenus|genera\b/)&&"genus")||
-    (text.match(/\bfamily|families\b/)&&"family")||
-    (text.match(/\border\b/)&&"order")||
-    (text.match(/\bclass\b/)&&"class")||
-    (text.match(/\bphylum\b/)&&"phylum")||
-    (text.match(/\bkingdom\b/)&&"kingdom")||
-    "taxon";
+  var rank=manifestTaxonomyRank(file);
+  if(rank==="taxon")rank=(rankText.match(/\bspecies\b/)&&"species")||
+    (rankText.match(/\bgenus|genera\b/)&&"genus")||
+    (rankText.match(/\bfamily|families\b/)&&"family")||
+    (rankText.match(/\border\b/)&&"order")||
+    (rankText.match(/\bclass\b/)&&"class")||
+    (rankText.match(/\bphylum\b/)&&"phylum")||
+    (rankText.match(/\bkingdom\b/)&&"kingdom")||"taxon";
   var form=text.match(/\bheatmap\b/)?"heatmap":(text.match(/\bbar|barplot|stacked|composition\b/)?"bar chart":"chart");
   var scope=text.match(/\bgroup|mean|median\b/)?"group summary":(text.match(/\bsample|stacked|barplot|bar\b/)?"sample-level":"chart-level");
   return {display:display,text:text,topN:topMatch?Number(topMatch[1]):0,rank:rank,form:form,scope:scope,method:method};
@@ -6017,7 +6284,11 @@ function taxonomyRankFile(rank,method){
   if(!rank||rank==="taxon")return null;
   var files=manifestFiles().filter(function(f){
     var text=[f.id,f.name,f.path,f.role,(f.roles||[]).join(" ")].join(" ").toLowerCase();
-    return text.indexOf("taxonomy")>=0&&text.indexOf(rank)>=0&&(/relative[_ -]?abundance|abundance/.test(text))&&(/\.(tsv|csv|txt)(?:\s|$)|\b(tsv|csv|txt)\b/.test(text));
+    var rankText=manifestLeafText(f);
+    return text.indexOf("taxonomy")>=0&&manifestTaxonomyRank(f)===rank&&(/relative[_ -]?abundance|abundance/.test(rankText))&&(/\.(tsv|csv|txt)(?:\s|$)|\b(tsv|csv|txt)\b/.test(text))&&!/aldex2|differential|status|summary|reportable|filtered/.test(rankText);
+  }).sort(function(a,b){
+    var at=manifestLeafText(a),bt=manifestLeafText(b);
+    return (/relative[_ -]?abundance/.test(bt)?1:0)-(/relative[_ -]?abundance/.test(at)?1:0)||String(a.name||a.id||"").localeCompare(String(b.name||b.id||""));
   });
   if(method){
     var methodMatch=files.filter(function(f){
@@ -6957,6 +7228,15 @@ function alphaChartObservationItems(d,file){
   return [alphaGroupMedianObservation(d,metric),alphaGroupRangeObservation(d,metric),alphaMetricScaleObservation(metric)];
 }
 function betaChartObservationItems(d,file){
+  var fileProfile=figureText(file);
+  if(/species[_ -]?vector[_ -]?pcoa|species.*pcoa.*vector/.test(fileProfile)){
+    return uniqueObservationItems([
+      "This is a separate Bray-Curtis PCoA built from SILVA species-assigned ASVs, so its PERMANOVA label applies to that species-filtered input rather than to the report's main Bray-Curtis analysis.",
+      "Taxon arrows point toward samples associated with higher values for the labelled species; longer arrows indicate a stronger fitted relationship within this displayed ordination, not causation.",
+      "A matching numeric PERMANOVA table and distance matrix for this species-filtered view were not loaded into the portal. Read the released p-value shown on the chart, but do not substitute the main Bray-Curtis statistics for it.",
+      "Use this plot to connect community position with candidate species, then confirm those candidates in the sample-level abundance tables and corrected taxon tests."
+    ]);
+  }
   var metric=betaMetricForFigure(d,file),label=metricLabel(d,"beta",metric),pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric),quality=betaDistanceMatrixQuality(d,metric),items=[];
   if(quality.available&&!quality.informative){
     var tiedValue=isFinite(quality.min)?Number(quality.min).toFixed(3):"the same value";
@@ -7117,7 +7397,9 @@ function chartObservationMarkup(kind,file,items){
     topic=/rarefaction/.test(t)?"Rarefaction":(/kruskal|wallis|test/.test(t)?"Alpha statistical context":"Sample diversity range");
   }else if(kind==="beta"){
     topic="PCoA distance";
-    disclaimer='<p class="chart-assessment-disclaimer"><b>How these observations are determined:</b> They combine overall and pairwise PERMANOVA, R², PERMDISP, and group positions on the displayed PCoA axes; pairwise p-values are FDR-adjusted when more than two groups are tested.</p>';
+    disclaimer=/species[_ -]?vector[_ -]?pcoa|species.*pcoa.*vector/.test(t)
+      ? '<p class="chart-assessment-disclaimer"><b>Statistics scope:</b> This species-filtered ordination is kept separate from the main Bray-Curtis statistics because no matching numeric source table was loaded for it.</p>'
+      : '<p class="chart-assessment-disclaimer"><b>How these observations are determined:</b> They combine overall and pairwise PERMANOVA, R², PERMDISP, and group positions on the displayed PCoA axes; pairwise p-values are FDR-adjusted when more than two groups are tested.</p>';
   }else if(kind==="functional"){
     topic=/nsti/.test(t)?"NSTI":(/aldex2|volcano/.test(t)?"ALDEx2":"PICRUSt2");
     if(!/nsti|aldex2|volcano/.test(t))disclaimer='<p class="chart-assessment-disclaimer"><b>Note — how the largest shifts are determined:</b> The heatmap first selects up to 30 features with the greatest across-sample variance after CPM normalization. Among those displayed features, the portal calculates the mean predicted abundance within each selected metadata category, then subtracts the lowest category mean from the highest. Features outside the displayed subset are not used for this observation. This ranks descriptive magnitude only; ALDEx2 p-values and adjusted p-values/FDR are evaluated separately for statistical support.</p>';
@@ -7410,9 +7692,11 @@ function readableList(list){
   return list.slice(0,-1).join(", ")+", and "+list[list.length-1];
 }
 function comparisonValuesText(d){
-  var factors=metadataFactors(d).map(function(f){return {name:f.label,values:f.values};});
-  if(factors.length===1)return readableList(factors[0].values||[]);
-  return factors.map(function(f){return f.name+": "+readableList(f.values||[]);}).join("; ");
+  var factor=defaultGroupFactor(d);
+  var values=factor.values||[];
+  if(!values.length)return "no loaded category labels";
+  if(values.length>8)return fmtNum(values.length)+" "+factor.label+" categories";
+  return readableList(values);
 }
 function methodTokens(d,a){
   var m=d.methodConfig||{};
@@ -7422,6 +7706,7 @@ function methodTokens(d,a){
     comparisonNoun:m.comparisonNoun||"categories",
     assayName:a.amplicon||a.marker||"this assay",
     sampleFileType:m.sampleFileType||"sample data",
+    rawReadsLabel:m.rawReadsLabel||"Sequencing reads",
     sampleNameMap:m.sampleNameMap||"released sample identifiers",
     analysisColumn:m.analysisColumn||"not available",
     targetLabel:m.targetLabel||a.marker||"the reported marker",
@@ -7433,12 +7718,20 @@ function methodTokens(d,a){
     trimTool:m.trimTool||"Primer trimming",
     trimToolVersion:m.trimToolVersion||m.trimTool||"Primer trimming",
     filterTool:m.filterTool||"Read filtering",
+    filterWhat:m.filterWhat||"Reads were processed with the filtering settings recorded for this run.",
+    filterSettings:m.filterSettings||"Filtering settings were not included in the released report data.",
     readLengthMinBp:m.readLengthMinBp||"not available",
     readLengthMaxBp:m.readLengthMaxBp||"not available",
     minQScore:m.minQScore||"not available",
     qcReadType:m.qcReadType||"Sequencing",
     qcTools:m.qcTools||"QC tool details were not included in the released report data.",
+    qcWhy:m.qcWhy||"QC checks whether the sequencing data are suitable for downstream analysis.",
+    featureWhat:m.featureWhat||"Reads were processed into a feature table.",
+    featureInputLabel:m.featureInputLabel||"Filtered reads",
+    featureOutputLabel:m.featureOutputLabel||"Feature table",
     reconstructionTools:m.reconstructionTools||"Feature reconstruction details were not included in the released report data.",
+    taxonomyWhat:m.taxonomyWhat||"Taxonomy was assigned to the final feature table.",
+    taxonomyInputLabel:m.taxonomyInputLabel||"Feature table",
     taxonomySettings:m.taxonomySettings||"Taxonomy settings were not included in the released report data.",
     analysisSettings:m.analysisSettings||"Analysis settings were not included in the released report data."
   },m);
@@ -7686,27 +7979,63 @@ function resultWhatNextPanel(kind,intro,cards,meta){
   var decision=resultNextDecisionMeta(meta),current=cards[0],research=cards[1],strengthen=cards[2],robustness=cards[3],validate=cards[4];
   var evidence=decision.evidence.length?'<div class="result-next-evidence">'+decision.evidence.map(function(item){return '<span>'+resultNextEvidenceIcon(item)+esc(item)+'</span>';}).join("")+'</div>':"";
   var decisionPanel='<article class="result-next-decision" data-decision-tone="'+esc(decision.tone)+'"><span class="result-next-decision-icon" aria-hidden="true">'+svgIcon(decision.icon)+'</span><div><div class="result-next-decision-top"><span class="result-next-decision-kicker">What this result means</span><span class="result-next-status">'+esc(decision.label)+'</span></div><p class="result-next-decision-statement">'+helpCommon(current.body)+'</p>'+(current.note?'<small class="result-next-decision-note">'+helpCommon(current.note)+'</small>':"")+evidence+'</div></article>';
+  var contextHtml=meta&&meta.contextHtml||"";
   var roadmap='<div class="result-next-roadmap" aria-label="Recommended research roadmap">'+resultNextStep(1,decision.stepLabels[0],research,false,decision.stepIcons[0])+resultNextStep(2,decision.stepLabels[1],strengthen,false,decision.stepIcons[1])+resultNextStep(3,decision.stepLabels[2],validate,true,decision.stepIcons[2])+'</div>';
   var recommendation='<aside class="result-next-recommendation"><span class="result-next-recommendation-icon" aria-hidden="true">'+svgIcon('<path d="M5 21V4M5 5h11l-2 4 2 4H5"/>')+'</span><div><small>Recommended next action</small><strong>'+helpCommon(resultNextRecommendation(decision))+'</strong></div></aside>';
   var more='<div class="result-next-more">'+resultNextDetail(detailLabels.strengthTitle||"Study-design notes",detailLabels.strengthSubtitle||"Replication, balance, and confounders to address",strengthen.note,"",'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V5H6.5A2.5 2.5 0 0 0 4 7.5z"/><path d="M4 7.5v12"/>')+resultNextDetail(detailLabels.robustnessTitle||"Robustness checks",detailLabels.robustnessSubtitle||"Confirm that the conclusion is not method- or sample-dependent",robustness.body,robustness.note,'<path d="M3 3v18h18"/><path d="m7 15 4-4 3 2 5-6"/>')+'</div>';
-  var section='<section class="result-next-section" id="'+esc(id)+'" aria-labelledby="'+esc(id)+'-title"><div class="result-next-section-head"><div><span class="result-next-section-kicker">Research roadmap</span><h2 id="'+esc(id)+'-title">What Next?</h2></div><p>'+esc(intro)+'</p></div>'+decisionPanel+roadmap+recommendation+more+'</section>';
+  var section='<section class="result-next-section" id="'+esc(id)+'" aria-labelledby="'+esc(id)+'-title"><div class="result-next-section-head"><div><span class="result-next-section-kicker">Research roadmap</span><h2 id="'+esc(id)+'-title">What Next?</h2></div><p>'+esc(intro)+'</p></div>'+decisionPanel+contextHtml+roadmap+recommendation+more+'</section>';
   if(embedded)return section;
   return '<div class="result-next-disclosure guided-anchor" data-result-next-disclosure><button class="result-next-toggle" type="button" data-result-next-toggle aria-expanded="false" aria-controls="'+esc(id)+'-panel"><span data-result-next-toggle-label>What Next?</span><span class="result-next-toggle-icon" aria-hidden="true">'+svgIcon('<path d="m6 9 6 6 6-6"/>')+'</span></button><div class="result-next-content" id="'+esc(id)+'-panel" hidden>'+section+'</div></div>';
 }
+function taxonomyDiffContrastLabel(row){
+  var raw=row&&row.raw||{},contrast=raw.contrast||raw.comparison||raw.pairwise_comparison||raw.pair||"";
+  return String(contrast||"Not specified").replace(/_vs_/gi," vs ").replace(/_/g," ").replace(/\s+/g," ").trim();
+}
+function taxonomyDiffPValue(value){
+  if(value==null||isNaN(value))return "not available";
+  if(Number(value)<0.0001)return "<0.0001";
+  return Number(value).toFixed(4);
+}
+function taxonomyDiffEffectMagnitude(value){
+  if(value==null||isNaN(value))return "not available";
+  return Math.abs(Number(value)).toFixed(2);
+}
+function taxonomyRawResultsContext(d,diff,rankLabel){
+  var rows=diff&&diff.rawRows||[];
+  if(!rows.length)return "";
+  var uniqueCount=diff.rawUniqueTaxa||rows.length,rankWord=rankLabel.toLowerCase();
+  var rawSummary="Before FDR correction, the table includes "+rows.length+" pairwise result"+(rows.length===1?"":"s")+" with raw p < 0.05 involving "+uniqueCount+" unique "+rankWord+"-level "+(uniqueCount===1?"taxon":"taxa")+". ";
+  if(rows.length>uniqueCount)rawSummary+="A taxon can appear more than once because each row represents a separate group comparison. ";
+  var supportSummary=diff.adjusted
+    ? diff.adjusted+" of these result"+(diff.adjusted===1?" passed":"s passed")+" FDR correction; the remaining rows are exploratory only."
+    : (diff.adjustedAvailable?"None passed FDR correction, so these are exploratory leads, not confirmed differences.":"FDR-adjusted p-values were unavailable, so statistical support cannot be determined.");
+  var title=diff.adjusted?"Pairwise taxon results":"Exploratory results before FDR correction";
+  var body=rows.map(function(row){
+    return '<div class="result-next-context-row"><strong>'+esc(taxonDisplayName(row.taxon,d))+'</strong><span>'+esc(taxonomyDiffContrastLabel(row))+'</span><span>'+esc(taxonomyDiffEffectMagnitude(row.effect))+'</span><span>'+esc(taxonomyDiffPValue(row.p))+'</span><span>'+esc(taxonomyDiffPValue(row.q))+'</span></div>';
+  }).join("");
+  var methodNote="ALDEx2 compares the difference between groups with the variation among samples within each group. Effect magnitude shows how large and consistent that difference is. High variation within a group can produce a higher p-value, so even a visually large difference will not appear in this table if its raw p-value is 0.05 or higher.";
+  return '<aside class="result-next-context" aria-label="Pairwise taxon statistical results"><div class="result-next-context-head"><b>'+esc(title)+'</b><p>'+esc(rawSummary+supportSummary)+'</p></div><div class="result-next-context-table"><div class="result-next-context-row"><b>Taxon</b><b>Group comparison</b><b>Effect magnitude</b><b>Raw p</b><b>FDR-adjusted p</b></div>'+body+'</div><p class="result-next-context-method">'+esc(methodNote)+'</p></aside>';
+}
 function taxonomyWhatNextPanel(d){
   var figs=taxonomyComparisonAllFigures(),rank=taxonomyComparisonSelectedRank(figs),rankLabel=taxonRankLabel(rank),diff=taxonomyDiffSummaryForRank(d,rank);
-  var status=diff&&diff.adjusted?"supported":"descriptive",support=taxonomySupportSummary(d),shift=strongestTaxonShift(d),design=resultStudyDesign(d);
+  var status=diff&&diff.adjusted?"supported":(!diff||!diff.adjustedAvailable?"unavailable":"descriptive"),shift=strongestTaxonShift(d),design=resultStudyDesign(d);
   var candidate=diff&&diff.strongest, candidateName=candidate&&candidate.taxon?taxonDisplayName(candidate.taxon,d):"";
-  var currentBody=support.value;
-  var currentNote=support.note;
+  var currentBody="",currentNote="";
   if(diff&&diff.adjusted){
-    currentBody+=" At "+rankLabel.toLowerCase()+" level, "+diff.adjusted+" taxon"+(diff.adjusted===1?" is":"s are")+" supported after adjustment for multiple testing.";
-    if(candidateName)currentNote+=" The top-ranked loaded candidate is "+candidateName+"; confirm that its pattern repeats across samples.";
+    currentBody=diff.adjustedUniqueTaxa+" "+rankLabel.toLowerCase()+"-level "+(diff.adjustedUniqueTaxa===1?"taxon":"taxa")+" produced "+diff.adjusted+" pairwise result"+(diff.adjusted===1?"":"s")+" supported after FDR correction.";
+    currentNote="Check that the supported direction repeats across individual samples.";
+    if(candidateName)currentNote+=" The top-ranked loaded candidate is "+candidateName+".";
+  }else if(diff&&diff.adjustedAvailable){
+    currentBody="No "+rankLabel.toLowerCase()+"-level abundance difference was supported after FDR correction.";
+    currentNote=diff.raw
+      ? "The table below shows "+diff.raw+" uncorrected pairwise result"+(diff.raw===1?"":"s")+" involving "+diff.rawUniqueTaxa+" unique "+rankLabel.toLowerCase()+"-level "+(diff.rawUniqueTaxa===1?"taxon":"taxa")+"."+(diff.raw>diff.rawUniqueTaxa?" A taxon can appear more than once because each row represents a separate group comparison.":"")+" Treat these results as leads, not confirmed differences."
+      : "No pairwise result had raw p < 0.05 in the loaded differential-abundance table.";
   }else if(diff){
-    currentBody+=" No "+rankLabel.toLowerCase()+"-level taxon remained supported after multiple-testing review.";
-    if(diff.raw)currentNote+=(diff.raw===1?"One taxon showed":""+diff.raw+" taxa showed")+" preliminary group patterns, but none remained supported after checking for multiple comparisons. Treat them as leads for follow-up, not confirmed differences.";
+    currentBody="FDR support for the "+rankLabel.toLowerCase()+"-level comparisons could not be determined.";
+    currentNote=diff.raw?"The raw-p results are listed below, but they remain exploratory until adjusted p-values are available.":"Use visible abundance patterns descriptively until adjusted taxon-level statistics are available.";
   }else{
-    currentNote+=" No matching "+rankLabel.toLowerCase()+"-level differential-abundance table was loaded, so individual taxa remain descriptive leads.";
+    currentBody="The "+rankLabel.toLowerCase()+" composition charts are available, but matching differential-abundance statistics were not loaded.";
+    currentNote="Use individual taxa as descriptive leads only; the charts cannot confirm a group difference without a matching statistical test and FDR correction.";
   }
 
   var researchBody=status==="supported"
@@ -7727,20 +8056,28 @@ function taxonomyWhatNextPanel(d){
 
   var validateBody=(diff&&diff.adjusted)
     ? "Check that each supported taxon shows the same direction of difference across several samples. Then measure the most important taxon directly—for example, with targeted qPCR."
-    : "No taxon is confirmed as different between groups. If detecting smaller effects matters, increase biological replicates (the number of samples per group) and repeat the corrected taxon-level test. The experiment may also have little or no detectable effect on microbiome composition.";
+    : (!diff
+      ? "Run or load a matching differential-abundance test with FDR correction before deciding whether any taxon differs between groups."
+      : (!diff.adjustedAvailable
+      ? "Calculate FDR-adjusted p-values for the loaded comparisons before deciding whether any taxon differs between groups. Add biological replicates if the present groups are too small to estimate variation reliably."
+      : "No taxon is confirmed as different between groups. If detecting smaller effects matters, increase biological replicates (the number of samples per group) and repeat the corrected taxon-level test. The experiment may also have little or no detectable effect on microbiome composition."));
   var validateNote="Confirm taxonomy at the most reliable available rank; species-level assignments can depend on the classifier and reference database.";
   var decisionEvidence=[fmtNum(design.total)+" samples",fmtNum(design.positive.length)+" "+groupingUnitLabel(d)];
   if(diff)decisionEvidence.push("taxon-level comparison available");
-  if(diff)decisionEvidence.push(diff.adjusted+" adjusted-support taxon leads");
+  if(diff)decisionEvidence.push(diff.adjustedAvailable?diff.adjusted+" FDR-supported pairwise results":"FDR-adjusted p-values unavailable");
   return resultWhatNextPanel("taxonomy","Use these steps to understand the result and plan follow-up work.",[
     resultNextCard("Current interpretation",currentBody,currentNote,[]),
     resultNextCard("Use the composition result",researchBody,researchNote,[]),
     resultNextCard("Check the study design",strengthBody,design.note,[{section:"pipeline",label:"Review pipeline & QC"}]),
     resultNextCard("Check robustness",robustBody,robustNote,[]),
     resultNextCard(diff&&diff.adjusted?"Confirm supported taxa":"Test the taxon leads",validateBody,validateNote,[{section:"alpha",label:"Open within-sample diversity"},{section:"beta",label:"Open between-sample diversity"}])
-  ],{tone:status,evidence:decisionEvidence,recommendation:diff&&diff.adjusted
+  ],{tone:status,evidence:decisionEvidence,contextHtml:taxonomyRawResultsContext(d,diff,rankLabel),recommendation:diff&&diff.adjusted
     ? "Check the supported taxa across individual samples, then directly measure the most important candidate."
-    : "No taxon difference is confirmed. If detecting smaller effects matters, increase biological replicates (samples per group) and repeat the corrected test. A non-significant result may also mean that the experiment has little or no detectable effect on microbiome composition."});
+    : (!diff
+      ? "Add the matching differential-abundance statistics and FDR correction before drawing a taxon-level group conclusion."
+      : (!diff.adjustedAvailable
+      ? "Load FDR-adjusted taxon results before deciding whether any group difference is statistically supported."
+      : "No taxon difference is confirmed. If detecting smaller effects matters, increase biological replicates (samples per group) and repeat the corrected test. A non-significant result may also mean that the experiment has little or no detectable effect on microbiome composition."))});
 }
 function alphaWhatNextPanel(d,opts){
   opts=opts||{};
@@ -7766,15 +8103,15 @@ function alphaWhatNextPanel(d,opts){
     if(otherAlphaResults.length)currentBody+=" Other metric results: "+readableList(otherAlphaResults)+".";
     useTitle="Use the supported diversity finding";
     useBody="Use "+supported[0].label+" when the research question concerns "+supported[0].meaning+" within each sample.";
-    validateBody="Repeat "+supported[0].label+" in a new, independent set of biological replicates. The result is more reliable if the same group pattern appears again.";
-    recommendation="Repeat the "+supported[0].label+" comparison in a new set of biological replicates using the same analysis settings.";
+    validateBody="Repeat "+supported[0].label+" using new biological replicates (independent samples in each group). The result is more reliable if the same group pattern appears again.";
+    recommendation="Repeat the "+supported[0].label+" comparison with new biological replicates using the same analysis settings.";
     tone="supported";statusLabel=supported[0].label+" supported";
   }else if(supported.length>1){
     currentBody="Several alpha-diversity metrics support a group difference: "+readableList(supported.map(function(row){return row.label;}))+". Each describes a different part of diversity within a sample.";
     useTitle="Match each metric to the question";
     useBody=supported.map(function(row){return row.label+" describes "+row.meaning;}).join("; ")+".";
-    validateBody="Repeat the supported metrics in a new, independent set of biological replicates using the same analysis settings.";
-    recommendation="Repeat "+readableList(supported.map(function(row){return row.label;}))+" in a new set of biological replicates.";
+    validateBody="Repeat the supported metrics using new biological replicates (independent samples in each group) and the same analysis settings.";
+    recommendation="Repeat "+readableList(supported.map(function(row){return row.label;}))+" with new biological replicates.";
     tone="supported";statusLabel="Multiple Alpha results supported";
   }else if(exploratory.length){
     var lead=exploratory[0];
@@ -7840,11 +8177,11 @@ function functionalWhatNextPanel(d,file,unavailable){
     currentNote="NSTI evaluates prediction support; it does not test group differences or demonstrate that a predicted function is active.";
   }else if(isDifferential){
     currentBody=adjustedCount
-      ? adjustedCount+" predicted functional feature"+(adjustedCount===1?" is":"s are")+" supported after multiple-testing review."
+      ? adjustedCount+" predicted feature-comparison result"+(adjustedCount===1?" is":"s are")+" supported after multiple-testing review."
       : (relevantDiffRows.length
         ? (hasAdjusted?"No predicted feature-comparison result remained supported after multiple-testing review.":"Matching feature-comparison results were loaded, but their support could not be fully assessed.")
         : "No matching ALDEx2 statistics were loaded, so the volcano plot remains visual only.");
-    if(rawOnlyCount)currentBody+=" "+rawOnlyCount+" exploratory lead"+(rawOnlyCount===1?" remains":"s remain")+" without adjusted support.";
+    if(rawOnlyCount)currentBody+=" "+rawOnlyCount+" additional feature-comparison result"+(rawOnlyCount===1?" remains":"s remain")+" exploratory without adjusted support.";
     currentNote="These outputs compare predicted abundance, not measured gene expression, metabolite production, or biochemical activity.";
   }else{
     currentBody=shift
@@ -7926,9 +8263,9 @@ function functionalSummaryWhatNextPanel(d,opts){
   var availableText=kindNames.length?readableList(kindNames)+" predictions are available":"Functional prediction tables are available";
   var currentBody,currentNote,tone,statusLabel,recommendation;
   if(supported.length){
-    currentBody=availableText+". "+fmtNum(diffOverview.supported)+" supported candidate"+(diffOverview.supported===1?" was":"s were")+" identified among "+fmtNum(diffOverview.uniqueFeatures)+" predicted features. Prioritize candidates that repeat across samples and fit the study question.";
+    currentBody=availableText+". FDR correction supported "+fmtNum(diffOverview.supported)+" feature-comparison result"+(diffOverview.supported===1?"":"s")+" involving "+fmtNum(diffOverview.supportedFeatures)+" unique predicted feature"+(diffOverview.supportedFeatures===1?"":"s")+". Prioritize candidates that repeat across samples and fit the study question.";
     currentNote="Prioritize only supported features that also repeat across biological samples and fit the research question.";
-    tone="supported";statusLabel=diffOverview.supported+" supported candidate"+(diffOverview.supported===1?"":"s");
+    tone="supported";statusLabel=diffOverview.supportedFeatures+" supported feature"+(diffOverview.supportedFeatures===1?"":"s");
     recommendation="Shortlist supported features that repeat across samples, then measure the relevant biological endpoint directly.";
   }else if(diffRows.length&&hasAdjusted){
     currentBody=availableText+". The loaded comparisons did not produce a supported candidate. Use the predictions to define a focused hypothesis rather than claiming a confirmed functional difference.";
@@ -7959,7 +8296,7 @@ function functionalSummaryWhatNextPanel(d,opts){
   var evidence=[fmtNum(design.total)+" samples"];
   if(kindNames.length)evidence.push(readableList(kindNames)+" available");
   if(hasNsti)evidence.push("mean NSTI="+Number(fs.nsti_mean).toFixed(3));
-  if(diffRows.length){evidence.push(fmtNum(diffOverview.uniqueFeatures)+" unique predicted features");evidence.push(fmtNum(diffOverview.results)+" feature-comparison results");evidence.push(diffOverview.supported?"adjusted-support candidates available":"no adjusted-support candidates");}
+  if(diffRows.length){evidence.push(fmtNum(diffOverview.uniqueFeatures)+" unique predicted features");evidence.push(fmtNum(diffOverview.results)+" feature-comparison results");evidence.push(diffOverview.supported?fmtNum(diffOverview.supportedFeatures)+" FDR-supported unique features":"no FDR-supported results");}
   return resultWhatNextPanel("functional","Review all predicted functional outputs together, then choose a focused endpoint for direct testing.",[
     resultNextCard("Functional interpretation",currentBody,currentNote,[]),
     resultNextCard("Define the functional question",researchBody,researchNote,[]),
@@ -7975,6 +8312,7 @@ function secTaxonomy(){
   var dek=d.kind==="fungi"?"Which fungi were detected and how their relative abundance changes across samples.":"Which bacteria were detected and how their relative abundance changes across samples.";
   var html=head("Composition","Who Is There",dek);
   html+=groupSelectorPanel("composition");
+  html+=alternateGroupingScopeNotice(d);
   if(reportTablesLoading()){
     html+=reportTablesLoadingPanel("composition");
     html+=nextBar();
@@ -8000,6 +8338,7 @@ function secAlpha(){
   var html=head("Diversity","Within Samples and Groups",
     "Diversity within individual samples and comparisons across the selected groups.");
   html+=groupSelectorPanel("alpha");
+  html+=alternateGroupingScopeNotice(d);
   if(reportTablesLoading()){
     html+=reportTablesLoadingPanel("alpha-diversity");
     html+=nextBar();
@@ -8060,9 +8399,12 @@ function betaDistanceMatrixQuality(d,metric){
 function betaNextDecisionStatus(d,metric){
   var pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric);
   if(!pm||pm.p==null)return "unavailable";
-  if(pd&&pd.p!=null&&Number(pd.p)<0.05)return "dispersion";
-  if(pm.R2!=null&&Number(pm.p)<0.05&&Number(pm.R2)>=0.10)return "supported";
-  if(pm.R2!=null&&Number(pm.p)<0.10&&Number(pm.R2)>=0.10)return "exploratory";
+  if(Number(pm.p)<0.05){
+    if(pd&&pd.p!=null&&Number(pd.p)<0.05)return "dispersion";
+    if(pm.R2!=null&&Number(pm.R2)<0.10)return "small";
+    return "supported";
+  }
+  if(Number(pm.p)<0.10)return "exploratory";
   return "unsupported";
 }
 function betaNextCard(title,body,note,actions){
@@ -8087,27 +8429,28 @@ function betaWhatNextPanel(d,opts){
     var status=quality.available&&!quality.informative?"uninformative":betaNextDecisionStatus(d,metric.id);
     return {id:metric.id,label:metricLabel(d,"beta",metric.id),pm:pm,pd:pd,quality:quality,status:status,use:betaMetricResearchUse(metric.id)};
   });
-  var supported=rows.filter(function(row){return row.status==="supported";}),exploratory=rows.filter(function(row){return row.status==="exploratory";});
+  var supported=rows.filter(function(row){return row.status==="supported";}),small=rows.filter(function(row){return row.status==="small";}),exploratory=rows.filter(function(row){return row.status==="exploratory";});
   var dispersion=rows.filter(function(row){return row.status==="dispersion";}),tested=rows.filter(function(row){return row.pm&&row.pm.p!=null;}),design=resultStudyDesign(d);
   var groupNames=readableList(design.positive.map(function(group){return group.label;}));
+  var pairwiseFollowUp=design.positive.length>2?" Use FDR-corrected pairwise PERMANOVA to identify which groups differ before investigating contributing taxa.":"";
   var currentBody,useTitle,useBody,validateBody,recommendation,tone,statusLabel;
   if(supported.length===1){
     var lead=supported[0];
     currentBody=lead.label+" provides the clearest beta-diversity result. It supports a difference in overall community composition"+(groupNames?" across "+groupNames:"")+".";
     var otherBetaResults=rows.filter(function(row){return row.id!==lead.id;}).map(function(row){
-      return row.label+" is "+({exploratory:"preliminary",dispersion:"affected by unequal within-group spread",unsupported:"not supported",unavailable:"not tested",uninformative:"not usable",supported:"supported"}[row.status]||row.status);
+      return row.label+" is "+({small:"statistically supported with a small R²",exploratory:"preliminary",dispersion:"affected by unequal within-group spread",unsupported:"not supported",unavailable:"not tested",uninformative:"not usable",supported:"supported"}[row.status]||row.status);
     });
     if(otherBetaResults.length)currentBody+=" Other distance results: "+readableList(otherBetaResults)+".";
     useTitle="Use the supported community finding";
     useBody="Use "+lead.label+" when the research question concerns "+lead.use+".";
-    validateBody="Repeat "+lead.label+" and PERMANOVA in a new, independent set of biological replicates. Then examine which taxa consistently contribute to the separation.";
+    validateBody="Repeat "+lead.label+" and PERMANOVA using new biological replicates (independent samples in each group)."+pairwiseFollowUp+" Then examine which taxa consistently contribute to the separation.";
     recommendation="Repeat the "+lead.label+" analysis in a new set of biological replicates, then investigate which taxa consistently contribute to the difference.";
     tone="supported";statusLabel=lead.label+" supported";
   }else if(supported.length>1){
     currentBody=readableList(supported.map(function(row){return row.label;}))+" all support a group difference. This means the result is not limited to one way of measuring community distance.";
     useTitle="Match each distance to the question";
     useBody=supported.map(function(row){return row.label+" describes "+row.use;}).join("; ")+".";
-    validateBody="Repeat the supported distance measures and PERMANOVA in a new, independent set of biological replicates. Then investigate which taxa consistently contribute to the difference.";
+    validateBody="Repeat the supported distance measures and PERMANOVA using new biological replicates (independent samples in each group)."+pairwiseFollowUp+" Then investigate which taxa consistently contribute to the difference.";
     recommendation="Repeat "+readableList(supported.map(function(row){return row.label;}))+" in a new set of biological replicates.";
     tone="supported";statusLabel="Multiple Beta results supported";
   }else if(dispersion.length){
@@ -8117,6 +8460,15 @@ function betaWhatNextPanel(d,opts){
     validateBody="First determine why one group is more variable—for example, outliers, subgroups, batch effects, or data quality. Then repeat PERMANOVA and the group-spread check.";
     recommendation="Review outliers and within-group variability before prioritizing the Beta-diversity pattern.";
     tone="caution";statusLabel="Group-spread warning";
+  }else if(small.length){
+    var smallLead=small[0],smallR2=smallLead.pm&&smallLead.pm.R2!=null?(Number(smallLead.pm.R2)*100).toFixed(1):"not reported";
+    currentBody=smallLead.label+" has PERMANOVA p < 0.05, but the grouping explains only "+smallR2+"% of the distance variation. The difference is statistically detectable, but its magnitude is small by the report guide.";
+    if(small.length>1)currentBody+=" The same small-effect pattern occurs for "+readableList(small.slice(1).map(function(row){return row.label;}))+".";
+    useTitle="Assess whether the small effect matters";
+    useBody="Use "+smallLead.label+" as evidence of a small whole-community association, and judge whether that magnitude is biologically relevant to the study question.";
+    validateBody="Repeat the analysis using new biological replicates (independent samples in each group)."+pairwiseFollowUp+" Check whether the effect size and direction remain stable.";
+    recommendation="Report the statistically detectable but small effect clearly, then test whether it repeats in new biological replicates.";
+    tone="supported";statusLabel="Statistically supported · small R²";
   }else if(exploratory.length){
     var preliminary=exploratory[0];
     currentBody=preliminary.label+" shows a possible whole-community difference, but the evidence is not strong enough for a firm conclusion.";
@@ -8141,27 +8493,28 @@ function betaWhatNextPanel(d,opts){
     tone="unavailable";statusLabel="Beta tests unavailable";
   }
   var robustnessBody=rows.map(function(row){
-    var labels={supported:"supported",exploratory:"preliminary",dispersion:"unequal within-group spread",unsupported:"not supported",unavailable:"test unavailable",uninformative:"no usable distance variation"};
+    var labels={supported:"supported",small:"statistically supported with a small R²",exploratory:"preliminary",dispersion:"unequal within-group spread",unsupported:"not supported",unavailable:"test unavailable",uninformative:"no usable distance variation"};
     var stats=[];
     if(row.pm&&row.pm.p!=null)stats.push("PERMANOVA p="+fmtP(row.pm.p));
-    if(row.pm&&row.pm.R2!=null)stats.push("R²="+(Number(row.pm.R2)*100).toFixed(1)+"%");
+    if(row.pm&&row.pm.R2!=null)stats.push("R²="+(Number(row.pm.R2)*100).toFixed(1)+"%"+(row.pm.R2Derived?" (calculated)":""));
     if(row.pd&&row.pd.p!=null)stats.push("PERMDISP p="+fmtP(row.pd.p));
     if(row.status==="uninformative")return row.label+": the distance matrix contains no usable sample-to-sample variation, so PCoA relationship interpretation is not meaningful"+(stats.length?" ("+stats.join("; ")+")":"");
-    return row.label+": "+labels[row.status]+(stats.length?" ("+stats.join("; ")+")":"")+".";
+    return row.label+": "+labels[row.status]+(stats.length?" ("+stats.join("; ")+")":"");
   }).join("; ")+".";
   var robustnessNote="Beta-diversity measures describe different community properties and should be matched to the biological question, not ranked as if they measured the same thing.";
   var evidence=[fmtNum(design.total)+" samples",fmtNum(design.positive.length)+" "+groupingUnitLabel(d)].concat(rows.map(function(row){
     var stats=[];
     if(row.pm&&row.pm.p!=null)stats.push("PERMANOVA p="+fmtP(row.pm.p));
-    if(row.pm&&row.pm.R2!=null)stats.push("R²="+(Number(row.pm.R2)*100).toFixed(1)+"%");
+    if(row.pm&&row.pm.R2!=null)stats.push("R²="+(Number(row.pm.R2)*100).toFixed(1)+"%"+(row.pm.R2Derived?" (calculated)":""));
     if(row.pd&&row.pd.p!=null)stats.push("PERMDISP p="+fmtP(row.pd.p));
     if(row.status==="uninformative")return row.label+" distances are tied; PCoA relationship interpretation is not meaningful"+(stats.length?" ("+stats.join("; ")+")":"");
     return row.label+(stats.length?" "+stats.join("; "):" tests unavailable");
   }));
   var interpretationNote="PCoA positions summarize whole-community relationships; they do not identify which taxa caused the pattern.";
-  var uncheckedSpread=supported.filter(function(row){return !row.pd||row.pd.p==null;});
+  var statisticallySupported=supported.concat(small);
+  var uncheckedSpread=statisticallySupported.filter(function(row){return !row.pd||row.pd.p==null;});
   if(uncheckedSpread.length)interpretationNote+=" Within-group spread was not tested for "+readableList(uncheckedSpread.map(function(row){return row.label;}))+", so confirm that the groups have similar variability before making a firm claim.";
-  if(supported.length&&dispersion.length)interpretationNote+=" "+readableList(dispersion.map(function(row){return row.label;}))+" has unequal within-group spread, which can make its separation look stronger.";
+  if(statisticallySupported.length&&dispersion.length)interpretationNote+=" "+readableList(dispersion.map(function(row){return row.label;}))+" has unequal within-group spread, which can make its separation look stronger.";
   return resultWhatNextPanel("beta","See which whole-community differences are supported across the available distance measures and what to do next.",[
     resultNextCard("Beta-diversity interpretation",currentBody,interpretationNote,[]),
     resultNextCard(useTitle,useBody,"",[]),
@@ -8179,6 +8532,7 @@ function secBeta(){
   var html=head("Diversity","Between Samples & Groups",
     "Whole-community differences across samples and selected groups.");
   html+=groupSelectorPanel("beta");
+  html+=alternateGroupingScopeNotice(d);
   if(reportTablesLoading()){
     html+=reportTablesLoadingPanel("beta-diversity");
     html+=nextBar();
@@ -8194,7 +8548,7 @@ function secBeta(){
   if(!isWhatNext){
     html+='<div id="page-details" class="guided-anchor">'+clinicalDetails("Group distance details",betaInspectionTable(d,betaState.metric))+'</div>';
   }
-  html+='<div class="guided-anchor">'+betaSelfExperimentPanel(d)+'</div>';
+  if(!isWhatNext)html+='<div class="guided-anchor">'+betaSelfExperimentPanel(d)+'</div>';
   if(!isWhatNext)html+=betaSupplementFigurePanel(d,betaState.metric,selectedBetaFig);
   html+=nextBar();
   return html;
@@ -8212,7 +8566,7 @@ function renderBetaStatsAndRead(){
   var clamp=function(v){return Math.round(Math.max(2,Math.min(98,v))*10)/10;};
   if($("#beta-stats"))$("#beta-stats").innerHTML=
     statScale("PERMANOVA p-value",pm.p.toFixed(3),{tip:TERM_TIPS.permanova,pos:clamp(pm.p*100),thresh:5,threshLabel:"0.05",left:"0 · clearer difference",right:"1 · no evidence",interp:pg.note,ref:REFS.pvalue,tone:pm.p<0.05?"good":"poor"})+
-    statScale("Variation explained (R²)",pm.R2==null?"Not reported":(pm.R2*100).toFixed(1)+"%",{tip:TERM_TIPS.r2,pos:clamp((pm.R2||0)*100),left:"0% · explains nothing",right:"100% · explains all",interp:pm.R2==null?"R² was not reported for this metric.":("About "+(pm.R2*100).toFixed(0)+"% of community variation tracks the grouping. "+r2Guide(pm.R2)),ref:REFS.adonis,tone:pm.R2>=0.10?"good":"poor"});
+    statScale("Variation explained (R²)",pm.R2==null?"Not reported":(pm.R2*100).toFixed(1)+"%"+(pm.R2Derived?" · calculated":""),{tip:TERM_TIPS.r2,pos:clamp((pm.R2||0)*100),left:"0% · explains nothing",right:"100% · explains all",interp:pm.R2==null?"R² was not reported for this metric.":("About "+(pm.R2*100).toFixed(0)+"% of community variation tracks the grouping. "+r2Guide(pm.R2)+(pm.R2Derived?" R² was calculated from pseudo-F and the one-factor PERMANOVA degrees of freedom.":"")),ref:REFS.adonis,tone:pm.R2>=0.10?"good":"poor"});
   var labels=groups.map(function(g){return g.label;}).join(", ");
   var pd=betaPerDispForMetric(d,metric);
   var body=sig
@@ -8231,6 +8585,7 @@ function secFunctional(){
   var html=head("Function","Predicted Functions",
     "Compare predicted pathways, KO and EC features, plus reference support.");
   html+=groupSelectorPanel("functional");
+  html+=alternateGroupingScopeNotice(d);
   if(reportTablesLoading()){
     html+=reportTablesLoadingPanel("functional prediction");
     html+=nextBar();
@@ -8254,7 +8609,8 @@ function secFunctional(){
     if(!functionalChartFeatureRows(d,detailKind).length){
       detailKind=["pathway","ko","ec"].filter(function(kind){return functionalChartFeatureRows(d,kind).length;})[0]||detailKind;
     }
-    html+='<div id="page-details" class="guided-anchor">'+clinicalDetails("Predicted function details",functionalInspectionTable(d,detailKind)+functionalDiffStatsPanel(d))+'</div>';
+    var functionalDetails=clinicalDetails("Predicted function details",functionalInspectionTable(d,detailKind)+functionalDiffStatsPanel(d)).replace('<details class="clinical-details">','<details data-functional-details'+(state.functionalDetailsOpen?' open':'')+' class="clinical-details">');
+    html+='<div id="page-details" class="guided-anchor">'+functionalDetails+'</div>';
     if(selectedFunctionalFig)html+=supplementFigureStack([functionalSupplementFigureForChart(selectedFunctionalFig)]);
   }
   html+=nextBar();
@@ -8457,9 +8813,9 @@ function secLearning(){
 }
 /* ---------------- SECTION: files ---------------- */
 var FILES=[
- {name:"feature-table.tsv",kind:"ASV table",what:"The core count matrix: every amplicon sequence variant (ASV) as a row, every sample as a column, filled with read counts.",why:"This is the raw material for every other view — composition, diversity and comparisons all start here.",read:"High counts = high total number of reads for that variant in that sample.",limit:"Counts depend on sequencing depth, so compare proportions rather than raw numbers across samples.",stat:"feature"},
- {name:"taxonomy.tsv",kind:"Names",what:"The name assigned to each ASV, from kingdom down to genus (and species where confident), plus a confidence score.",why:"Turns anonymous sequences into recognisable organisms you can look up and reason about.",read:"Trust genus-level calls; treat species-level and low-confidence calls with caution.",limit:"An 'unclassified' or genus-only label usually means the reference database has no closer match, not that the taxon is unknown to science."},
- {name:"rep-seqs.fasta",kind:"Sequences",what:"The actual DNA sequence for each ASV — the evidence behind every name.",why:"Lets you re-check any organism yourself, for example with NCBI BLAST.",read:"Each entry is one exact variant. Two ASVs differing by a single base are treated as different.",limit:"These are only the marker region, not full genomes, so they cannot confirm strains or gene content."},
+ {name:"feature-table.tsv",kind:"Feature table",what:"The core count matrix: every detected sequence feature as a row, every sample as a column, filled with read counts.",why:"This is the raw material for every other view — composition, diversity and comparisons all start here.",read:"High counts mean more reads assigned to that feature in that sample.",limit:"Counts depend on sequencing depth, so compare normalized or relative values rather than raw numbers across samples.",stat:"feature"},
+ {name:"taxonomy.tsv",kind:"Names",what:"The taxonomic name assigned to each sequence feature, from broad ranks to the most specific supported rank, plus confidence where available.",why:"Turns anonymous sequences into recognisable organism groups you can look up and reason about.",read:"Use the classifier confidence and assay resolution; treat highly specific or low-confidence assignments cautiously.",limit:"An 'unclassified' or higher-rank-only label usually means the marker and reference database did not support a more specific assignment."},
+ {name:"rep-seqs.fasta",kind:"Sequences",what:"The representative marker sequence for each reported feature — the sequence evidence behind its taxonomic assignment.",why:"Lets you re-check an assignment, for example with NCBI BLAST.",read:"Each entry represents one feature. Whether near-identical reads remain separate or are clustered depends on the report workflow.",limit:"These are marker-region sequences, not full genomes, so they cannot confirm strains or gene content."},
  {name:"alpha-diversity.tsv",kind:"Diversity",what:"Per-sample diversity scores from the current report, such as richness, evenness, or dominance metrics.",why:"Summarises how rich and even each sample is in comparable numbers.",read:"Higher often means more diverse, depending on the selected metric. Compare within the same body site and study.",limit:"Sensitive to read depth; values are computed after report-level filtering.",stat:"alpha"},
  {name:"distance-matrix.tsv",kind:"Beta diversity",what:"A table of how different every pair of samples is under the report's selected distance metric.",why:"Feeds the ordination and the PERMANOVA category test when available.",read:"0 means identical communities; larger numbers mean more different.",limit:"A distance alone does not say which taxa drive the difference; pair it with the composition view.",stat:"beta"},
  {name:"ordination.qza / pcoa.txt",kind:"Ordination",what:"The coordinates behind the PCoA scatter you explored.",why:"Makes whole-community similarity visible at a glance.",read:"Nearby points are similar samples; axis percentages show how much you are really seeing.",limit:"Only the first couple of axes are plotted, so some real structure is always left off-screen.",stat:"pcoa"},
@@ -8492,14 +8848,16 @@ function fileSourceStat(f){
   if(f.stat==="feature"){
     var totals=ss.sampleReadTotals||[];
     var reads=totals.reduce(function(a,x){return a+(x.total||0);},0);
-    return "Current source: "+ss.featureRows.toLocaleString()+" ASV rows x "+totals.length+" samples; "+reads.toLocaleString()+" total reads in feature_table.tsv.";
+    var featureRows=Number(ss.featureRows);
+    if(!totals.length&&!isFinite(featureRows))return "Current source: feature-table dimensions were not loaded into the portal.";
+    return "Current source: "+(isFinite(featureRows)?featureRows.toLocaleString()+" feature rows":"feature-row count unavailable")+" x "+totals.length+" samples; "+reads.toLocaleString()+" total reads in the loaded read-depth summary.";
   }
   if(f.stat==="alpha"){
     var am=defaultAlphaMetric(d),range=metricRange(d,am);
     return "Current source: "+d.samples.length+" samples; "+metricLabel(d,"alpha",am)+" range "+(range?(metricValueText(range.min,am)+"-"+metricValueText(range.max,am)):"not available")+".";
   }
   if(f.stat==="beta"){
-    var bm=defaultBetaMetric(d),pm=d.permanova&&d.permanova[bm],pd=ss.permdisp;
+    var bm=defaultBetaMetric(d),pm=d.permanova&&d.permanova[bm],pd=betaPerDispForMetric(d,bm);
     if(!pm)return "Current source: no matching PERMANOVA statistics were found for "+metricLabel(d,"beta",bm)+".";
     return "Current source: PERMANOVA: p="+fmtP(pm.p)+(pm.F!=null?"; pseudo-F="+fmtStatNumber(pm.F):"")+(pd ? "; PERMDISP: p="+fmtP(pd.p)+(pd.F!=null?"; F="+fmtStatNumber(pd.F):"")+"." : ".");
   }
@@ -8531,11 +8889,13 @@ function fileViz(name){
   var d=ds(),ss=d.sourceStats||{};
   if(name==="feature-table.tsv"){
     var totals=(ss.sampleReadTotals||[]).slice(0,3);
+    var featureRows=Number(ss.featureRows);
+    if(!totals.length&&!isFinite(featureRows))return '<svg viewBox="0 0 184 128" style="display:block;width:100%;max-width:180px;height:auto" fill="none"><rect x="24" y="28" width="136" height="62" rx="6" fill="#F7FAFC" stroke="#DDE6EF"/><text x="92" y="56" text-anchor="middle" font-size="9" fill="#14232B">Feature table</text><text x="92" y="74" text-anchor="middle" font-size="8" fill="#7C8A90">dimensions not loaded</text></svg>';
     return '<svg viewBox="0 0 184 128" style="display:block;width:100%;max-width:180px;height:auto" fill="none">'+
       '<text x="112" y="12" text-anchor="middle" font-size="8" fill="#7C8A90">samples -></text><line x1="44" y1="20" x2="176" y2="20" stroke="#B8C6D6"/><path d="M176 20 l-5 -2.6 v5.2 z" fill="#B8C6D6"/>'+
-      '<g transform="rotate(90 12 74)"><text x="12" y="74" text-anchor="middle" font-size="8" fill="#7C8A90">ASVs -></text></g><line x1="30" y1="30" x2="30" y2="120" stroke="#B8C6D6"/><path d="M30 120 l-2.6 -5 h5.2 z" fill="#B8C6D6"/>'+
-      totals.map(function(t,i){var x=45+i*43;return '<rect x="'+x+'" y="34" width="36" height="70" rx="4" fill="'+(i%2?'#FFFFFF':'#F7FAFC')+'" stroke="#DDE6EF"/><text x="'+(x+18)+'" y="58" text-anchor="middle" font-size="8" fill="#14232B">'+esc(t.sid.replace(/^SRR/,''))+'</text><text x="'+(x+18)+'" y="78" text-anchor="middle" font-size="8" fill="#071B3A">'+esc(String(t.total))+'</text><text x="'+(x+18)+'" y="94" text-anchor="middle" font-size="7" fill="#7C8A90">reads</text>';}).join("")+
-      '<text x="112" y="122" text-anchor="middle" font-size="8" fill="#7C8A90">'+ss.featureRows.toLocaleString()+' ASV rows</text></svg>';
+      '<g transform="rotate(90 12 74)"><text x="12" y="74" text-anchor="middle" font-size="8" fill="#7C8A90">features -></text></g><line x1="30" y1="30" x2="30" y2="120" stroke="#B8C6D6"/><path d="M30 120 l-2.6 -5 h5.2 z" fill="#B8C6D6"/>'+
+      totals.map(function(t,i){var x=45+i*43;return '<rect x="'+x+'" y="34" width="36" height="70" rx="4" fill="'+(i%2?'#FFFFFF':'#F7FAFC')+'" stroke="#DDE6EF"/><text x="'+(x+18)+'" y="58" text-anchor="middle" font-size="8" fill="#14232B">'+esc(String(t.sid||t.sample||"").replace(/^SRR/,''))+'</text><text x="'+(x+18)+'" y="78" text-anchor="middle" font-size="8" fill="#071B3A">'+esc(String(t.total))+'</text><text x="'+(x+18)+'" y="94" text-anchor="middle" font-size="7" fill="#7C8A90">reads</text>';}).join("")+
+      '<text x="112" y="122" text-anchor="middle" font-size="8" fill="#7C8A90">'+(isFinite(featureRows)?featureRows.toLocaleString()+" feature rows":"feature-row count unavailable")+'</text></svg>';
   }
   if(name==="alpha-diversity.tsv"){
     var rows=d.samples.slice(0,3);
@@ -8605,7 +8965,7 @@ var METRIC_GUIDE=[
   {metric:"Main composition shift",rule:"Finds the taxon with the largest difference in median relative abundance across the selected grouping category.",note:"Median is used so one extreme sample does not define a category by itself. It is descriptive unless supported by category statistics. This suggests a metadata-category hypothesis to check, not a proven category difference by itself."},
   {metric:"Category relationship",rule:"Uses PCoA centroids for the selected grouping category. The closest pair has the smallest centroid distance; the most distinct category is farthest from other centroids on average.",note:"This summarizes the ordination plot and should be interpreted with PERMANOVA and PERMDISP. If the statistical support is weak, treat apparent category separation as a visual pattern rather than a confirmed experimental difference."},
   {metric:"Within-category variability",rule:"Uses the report's primary alpha-diversity metric within each selected metadata category and finds the category with the largest spread.",note:"Higher spread means samples in that category are less consistent with each other. This can explain why a category comparison is hard to prove statistically, even when individual samples look different."},
-  {metric:"Statistical support",rule:"Green Supported: PERMANOVA p < 0.05, R² >= 10%, and no flagged PERMDISP issue; Red Not supported: the support criteria are not met, no matching test is available, or PERMDISP is flagged.",note:"If not met, the portal says no statistically supported category difference or exploratory signal. This means the current test does not prove an obvious difference between selected metadata categories, although individual samples may still look different."}
+  {metric:"Statistical support",rule:"Supported: PERMANOVA p < 0.05. A PERMDISP p < 0.05 adds a spread warning; R² describes whether the supported effect is small, moderate, or large rather than deciding significance.",note:"A missing PERMDISP result leaves within-category spread unchecked. If PERMANOVA is not significant, the portal treats visible separation as descriptive or exploratory rather than a confirmed category difference."}
  ]},
  {section:"Who is there: taxonomy",intro:"How composition and taxon-pattern statements are read.",rules:[
   {metric:"Relative abundance",rule:"Each taxon is shown as a proportion of the sample. Values sum to 100% within each sample.",note:"It is not an absolute cell count. If one taxon increases, other proportions can look smaller. Use this to describe sample composition, not to prove that the total amount of that organism increased."},
@@ -8616,7 +8976,7 @@ var METRIC_GUIDE=[
  ]},
  {section:"Within samples: alpha diversity",intro:"How diversity inside each sample is summarized.",rules:[
   {metric:"Shannon",rule:"Higher Shannon indicates greater within-sample diversity through more detected taxa, more even abundances, or both.",note:"Compare Shannon values only within the same study, sample type, and analysis workflow. Shannon is not a quality score and does not identify which taxa differ."},
-  {metric:"Observed ASVs",rule:"Counts how many distinct ASVs were detected after report-level filtering.",note:"More observed ASVs means higher richness, but it depends on read depth and filtering. Treat richness differences cautiously unless sample depth and category replication support the pattern."},
+  {metric:"Observed features",rule:"Counts how many distinct sequence features were detected after report-level filtering.",note:"More observed features means higher richness, but it depends on read depth, filtering, and the feature-building method. Treat richness differences cautiously unless sample depth and category replication support the pattern."},
   {metric:"Rarefaction",rule:"Plots detected features as sequencing depth increases. A curve that approaches a plateau suggests that additional reads would add relatively few new features; a curve still rising steeply suggests incomplete sampling.",note:"Rarefaction is a sequencing-depth adequacy check, not evidence that metadata groups differ biologically. Compare curve shape and final depth across samples before interpreting richness differences."},
   {metric:"Simpson",rule:"Higher Simpson values indicate less dominance by one or a few taxa.",note:"Use it with Shannon and observed ASVs rather than alone. If Simpson changes but other diversity metrics do not, treat the result as a dominance pattern to inspect rather than a full diversity conclusion."},
   {metric:"Sample diversity range",rule:"The summary identifies the individual samples with the highest and lowest value for the selected alpha-diversity metric and reports the full sample range.",note:"This is a descriptive sample-level observation, not evidence that metadata categories differ. Check sequencing depth and the plotted values before interpreting an unusually high or low sample."},
@@ -8626,7 +8986,7 @@ var METRIC_GUIDE=[
   {metric:"PCoA distance",rule:"Points closer together have more similar community composition under the selected distance metric.",note:"Use the plotted positions descriptively, then check PERMANOVA and PERMDISP before calling a metadata-category difference statistically supported."},
   {metric:"Displayed group pattern",rule:"The chart observations compare group centres and summarize each group's mean sample-to-centre spread on the displayed PCoA axes.",note:"These are descriptive two-dimensional positions, not pairwise significance tests. Use PERMANOVA for the overall group effect and PERMDISP for differences in within-group spread."},
   {metric:"Pairwise group screen",rule:"Each eligible group pair is tested directly with PERMANOVA on the original distance matrix; R² summarizes effect size and pairwise p-values are FDR-adjusted when more than two groups are compared.",note:"A visual gap or non-overlapping ellipse is not enough to call two groups different. The portal labels the strongest pair as supported only when its adjusted q-value is below 0.05."},
-  {metric:"PERMANOVA p-value",rule:"Green: p < 0.05 when paired with adequate R² and no flagged dispersion; Red: p >= 0.05, missing test, or caution from dispersion.",note:"A low p-value supports selected-category separation, but effect size and dispersion still matter. If the p-value is not low, the current test does not prove that the selected metadata categories differ in whole-community composition."},
+  {metric:"PERMANOVA p-value",rule:"p < 0.05 supports selected-category separation. Read R² separately for effect magnitude and PERMDISP for unequal within-category spread.",note:"A small R² can still be statistically supported but may have limited biological importance. If PERMDISP is significant, interpret the PERMANOVA result with a spread warning; if PERMANOVA is not significant, do not claim confirmed separation."},
   {metric:"R²",rule:"R² >= 30%: large effect; 10-30%: moderate effect; < 10%: small effect.",note:"R² is the share of distance variation explained by the selected grouping variable. A small R² means the selected metadata label explains little of the microbiome difference, even if individual samples look separated."},
   {metric:"PERMDISP",rule:"Green: PERMDISP p >= 0.05, so category spread is not flagged by this check; Red: PERMDISP p < 0.05 or missing when needed for a supported claim.",note:"Dispersion matters because PERMANOVA can be affected when one category is much more spread out than another. If dispersion is flagged, the apparent category difference may partly reflect unequal within-category variability rather than a clean centroid shift."}
  ]},
@@ -9146,7 +9506,7 @@ function wireReleasedChartLoadState(){
   });
 }
 function showSection(id,opts){
-  if(id==="functional"&&ds()&&ds().assay&&ds().assay.functional_prediction===false)id="welcome";
+  if(id==="functional"&&!functionalSectionAvailable())id="welcome";
   opts=opts||{};
   var sameSection=id===state.section;
   var keepY=window.scrollY||window.pageYOffset||0;
@@ -9299,6 +9659,12 @@ function wireSectionButtons(){
   });});
   $$("[data-filter-set]",$("#content")).forEach(function(b){b.addEventListener("click",function(){
     var set=b.dataset.filterSet,value=b.dataset.filterValue||"all";
+    if(set==="functional-diff"){
+      state.functionalDiffFilter=value;
+      state.functionalDetailsOpen=true;
+      showSection(state.section,{preserveScroll:true});
+      return;
+    }
     if(set==="flow"){state.flowFilter=value;state.flowQuery="";}
     if(set==="metric")state.metricFilter=value;
     if(set==="glossary")state.glossaryFilter=value;
@@ -9369,6 +9735,9 @@ function wireSectionButtons(){
   });});
   $$("[data-alpha-self-details]",$("#content")).forEach(function(details){details.addEventListener("toggle",function(){
     alphaSelfState.open=details.open;
+  });});
+  $$("[data-functional-details]",$("#content")).forEach(function(details){details.addEventListener("toggle",function(){
+    state.functionalDetailsOpen=details.open;
   });});
   $$("[data-alpha-self-sample]",$("#content")).forEach(function(input){input.addEventListener("change",function(){
     var current=alphaSelfState.selected;if(!current)current=(ds().samples||[]).map(function(s){return String(s.raw||s.id);});
@@ -9475,9 +9844,10 @@ function chatQuestionSectionIds(message){
   return ids.slice(0,4);
 }
 function chatStudyDesign(d){
+  var activeFactor=(d&&d.activeGroupFactor)||activeGroupFactor(baseDataset());
   return {
     sample_count:(d.samples||[]).length,
-    grouping_id:(d.activeGroupFactor&&d.activeGroupFactor.id)||state.groupBy||"group",
+    grouping_id:(activeFactor&&activeFactor.id)||defaultGroupFactor(baseDataset()).id,
     grouping_label:activeGroupingLabel(d),
     groups:orderedGroups(d).map(function(group){return {
       id:String(group.id),label:String(group.label||group.id),sample_count:(d.samples||[]).filter(function(sample){return sample.group===group.id;}).length
@@ -9619,7 +9989,8 @@ function chatContextSources(sectionIds){
 }
 function chatCurrentView(){
   var kind=state.section==="taxonomy"?"taxonomy":state.section,figure=["taxonomy","alpha","beta","functional"].indexOf(kind)>=0?currentReleasedFigure(kind):null;
-  return {section:chatSectionId(state.section),chart_id:figure&&figure.id||null,chart_title:figure?figureDisplayName(figure):null,metric:kind==="alpha"?alphaState.metric:(kind==="beta"?betaState.metric:(kind==="functional"?functionalKindForFigure(figure):null)),grouping_id:state.groupBy||"group"};
+  var active=activeGroupFactor(baseDataset());
+  return {section:chatSectionId(state.section),chart_id:figure&&figure.id||null,chart_title:figure?figureDisplayName(figure):null,metric:kind==="alpha"?alphaState.metric:(kind==="beta"?betaState.metric:(kind==="functional"?functionalKindForFigure(figure):null)),grouping_id:active&&active.id||defaultGroupFactor(baseDataset()).id};
 }
 function chatContextForQuestion(message){
   var d=ds(),sectionIds=chatQuestionSectionIds(message),sections={};

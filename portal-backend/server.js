@@ -516,7 +516,8 @@ async function readManifest(code) {
   if (!(await gcsObjectExists(objectName))) {
     const inferred = await inferAmpliconManifest(code);
     const withAlpha = await addInferredAlphaFiles(code, inferred);
-    return addInferredFunctionalDiffFiles(code, withAlpha);
+    const withFunctionalDiff = await addInferredFunctionalDiffFiles(code, withAlpha);
+    return addInferredTaxonomyDiffFiles(code, withFunctionalDiff);
   }
   const buffer = await gcsDownloadBuffer(objectName);
   let manifest;
@@ -527,7 +528,8 @@ async function readManifest(code) {
   }
   const withFigures = await addInferredFigureFiles(code, manifest);
   const withAlpha = await addInferredAlphaFiles(code, withFigures);
-  return addInferredFunctionalDiffFiles(code, withAlpha);
+  const withFunctionalDiff = await addInferredFunctionalDiffFiles(code, withAlpha);
+  return addInferredTaxonomyDiffFiles(code, withFunctionalDiff);
 }
 
 async function inferAmpliconManifest(code) {
@@ -1009,6 +1011,56 @@ async function addInferredFunctionalDiffFiles(code, manifest) {
       path: availablePath,
       role: "differential",
       roles: fallback.roles,
+      type: "tsv",
+      format: "tsv",
+      description: availablePath.startsWith("raw/") ? "Raw analysis statistics fallback" : "Released analysis table"
+    });
+  }
+  if (!additions.length) return manifest;
+  return {
+    ...manifest,
+    files: [...files, ...additions]
+  };
+}
+
+async function addInferredTaxonomyDiffFiles(code, manifest) {
+  const files = normalizeFiles(manifest);
+  const fallbacks = [
+    {
+      id: "taxonomy-aldex2-family",
+      name: "Taxonomy ALDEx2 family statistics",
+      rank: "family",
+      paths: ["output/o2_taxonomy_qiime2_silva/taxonomy_aldex2_family.tsv", "raw/master_group/o_stats/taxonomy_aldex2_family.tsv"]
+    },
+    {
+      id: "taxonomy-aldex2-genus",
+      name: "Taxonomy ALDEx2 genus statistics",
+      rank: "genus",
+      paths: ["output/o2_taxonomy_qiime2_silva/taxonomy_aldex2_genus.tsv", "raw/master_group/o_stats/taxonomy_aldex2_genus.tsv"]
+    },
+    {
+      id: "taxonomy-aldex2-species",
+      name: "Taxonomy ALDEx2 species statistics",
+      rank: "species",
+      paths: ["output/o2_taxonomy_qiime2_silva/taxonomy_aldex2_species.tsv", "raw/master_group/o_stats/taxonomy_aldex2_species.tsv"]
+    }
+  ];
+  const additions = [];
+  for (const fallback of fallbacks) {
+    const alreadyListed = files.some((file) => {
+      if (file.id === fallback.id) return true;
+      const text = [file.id, file.name, file.path, file.role, ...(file.roles || [])].join(" ").toLowerCase();
+      return /aldex2/.test(text) && /taxonomy|taxa|taxon/.test(text) && text.includes(fallback.rank);
+    });
+    if (alreadyListed) continue;
+    const availablePath = await firstExistingPath(code, fallback.paths);
+    if (!availablePath) continue;
+    additions.push({
+      id: fallback.id,
+      name: fallback.name,
+      path: availablePath,
+      role: "differential_abundance",
+      roles: ["differential_abundance", "differential", "taxonomy", "aldex2", fallback.rank, "stats", "table"],
       type: "tsv",
       format: "tsv",
       description: availablePath.startsWith("raw/") ? "Raw analysis statistics fallback" : "Released analysis table"
