@@ -318,6 +318,13 @@ h1 span { color: var(--lime); text-shadow: 0 0 24px rgba(212, 255, 112, .25); }
   border-color: rgba(183, 138, 255, .9);
   border-radius: 32px;
 }
+.library-mode #page-title {
+  max-width: 680px;
+  margin-inline: auto;
+  font-size: clamp(2rem, 8.2vw, 4rem);
+  line-height: .98;
+  letter-spacing: -.055em;
+}
 .library-mode .board-wrap:active { cursor: grabbing; }
 .library-mode .board-wrap::after { border-radius: 26px; }
 .library-mode #game-board, .library-mode .game-overlay { border-radius: 29px; }

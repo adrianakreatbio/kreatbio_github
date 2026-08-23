@@ -156,25 +156,28 @@
     }
 
     function update(delta, now) {
-      if (feedback && now > feedbackUntil) {
+      // Keep terminal feedback visible until its station advances or resets.
+      // Otherwise the previous objective can flash for a single frame between
+      // the success message and the next station.
+      if (feedback && now > feedbackUntil && !stationComplete && !resetAt) {
         feedback = "";
         feedbackTone = "info";
         emitHud();
       }
-      if (station === 0 && cultureStep === 2 && incubationStarted && now - incubationStarted >= 1850 && !stationComplete) {
+      if (station === 0 && cultureStep === 2 && incubationStarted && now - incubationStarted >= 3400 && !stationComplete) {
         cultureStep = 3;
         incubationStarted = 0;
-        say("Pure culture ready · collect cells with the sterile loop", COLORS.lime, 1500);
+        say("Pure culture ready · collect cells with the sterile loop", COLORS.lime, 3000);
       }
-      if (station === 0 && cultureStep === 5 && transferStarted && now - transferStarted >= 1350 && !stationComplete) {
+      if (station === 0 && cultureStep === 5 && transferStarted && now - transferStarted >= 2200 && !stationComplete) {
         completeStation("Cells released from the loop into the extraction tube");
       }
       if (station === 1 && extractionStep === 2) {
         const previousBinding = bindingProgress;
-        bindingProgress = Math.min(1, bindingProgress + delta * 1.45);
+        bindingProgress = Math.min(1, bindingProgress + delta * 0.55);
         if (previousBinding < 0.9 && bindingProgress >= 0.9) emitHud();
       }
-      if (station === 1 && magnetOn) magnetProgress = Math.min(1, magnetProgress + delta * 1.7);
+      if (station === 1 && magnetOn) magnetProgress = Math.min(1, magnetProgress + delta * 0.6);
       if (station === 2 && qcDispensing) {
         qcLevel = Math.min(1, qcLevel + delta * 0.34);
         if (qcLevel >= 0.94) finishQcDispense();
@@ -190,7 +193,7 @@
           initStation();
         }
       }
-      if (sequencing && sequencingStarted && now - sequencingStarted >= 3300 && !completed) finishGame();
+      if (sequencing && sequencingStarted && now - sequencingStarted >= 4500 && !completed) finishGame();
     }
 
     function emitHud(objectiveOverride, tone = feedback ? feedbackTone : "info") {
@@ -218,7 +221,7 @@
       return STATIONS[station].objective;
     }
 
-    function say(message, color = COLORS.cyan, duration = 1500) {
+    function say(message, color = COLORS.cyan, duration = 3000) {
       feedback = message;
       feedbackTone = color === COLORS.coral ? "error" : color === COLORS.lime ? "success" : color === COLORS.gold ? "warning" : "info";
       feedbackUntil = performance.now() + duration;
@@ -231,11 +234,11 @@
       totalMistakes += 1;
       selected = null;
       drag = null;
-      say(message, COLORS.coral, 1800);
+      say(message, COLORS.coral, 3200);
       vibrate([28, 35, 28]);
       if (risk >= 3) {
-        resetAt = performance.now() + 1150;
-        say("Sample compromised — resetting this station", COLORS.coral, 1100);
+        resetAt = performance.now() + 3400;
+        say("Sample compromised — resetting this station", COLORS.coral, 3300);
       }
     }
 
@@ -244,8 +247,8 @@
       stationComplete = true;
       selected = null;
       drag = null;
-      say(message, COLORS.lime, 1100);
-      advanceAt = performance.now() + 1050;
+      say(message, COLORS.lime, 3300);
+      advanceAt = performance.now() + 3400;
       vibrate(24);
     }
 
@@ -282,7 +285,10 @@
 
       const source = sourceAt(point);
       if (!source) return;
-      drag = { source, start: point, point };
+      const grabOffset = source.anchor
+        ? { x: point.x - source.anchor.x, y: point.y - source.anchor.y }
+        : { x: 0, y: 0 };
+      drag = { source, start: point, point, grabOffset };
       pointerId = event.pointerId;
       canvas.setPointerCapture?.(event.pointerId);
     }
@@ -300,10 +306,13 @@
       if (drag) {
         const moved = Math.hypot(point.x - drag.start.x, point.y - drag.start.y) > 12;
         if (moved) {
-          resolveDrop(drag.source, point);
+          const destination = drag.source.anchor
+            ? { x: point.x - drag.grabOffset.x, y: point.y - drag.grabOffset.y }
+            : point;
+          resolveDrop(drag.source, destination);
         } else {
           selected = drag.source;
-          say(`Selected ${drag.source.label}. Tap its destination.`, COLORS.cyan, 1600);
+          say(`Selected ${drag.source.label}. Tap its destination.`, COLORS.cyan, 2600);
         }
       }
       drag = null;
@@ -325,10 +334,10 @@
           return null;
         }
         if (cultureStep === 3 && hitRect(point, { x: 307, y: 230, w: 58, h: 178 })) {
-          return { kind: "loop", loaded: false, label: "sterile loop" };
+          return { kind: "loop", loaded: false, label: "sterile loop", anchor: { x: 336, y: 270 } };
         }
         if (cultureStep === 4 && hitRect(point, { x: 307, y: 230, w: 58, h: 178 })) {
-          return { kind: "loop", loaded: true, label: "loaded loop" };
+          return { kind: "loop", loaded: true, label: "loaded loop", anchor: { x: 336, y: 270 } };
         }
         if (cultureStep !== 0) return null;
         const colony = colonies.find(item => hitCircle(point, item));
@@ -383,19 +392,19 @@
           const colonyHit = transferColonies().some(item => hitCircle(point, { x: item[0], y: item[1], r: 18 }));
           if (colonyHit) {
             cultureStep = 4;
-            say("Cells collected · now move the loop into the tube", COLORS.lime, 1500);
+            say("Cells collected · now move the loop into the tube", COLORS.lime, 2800);
           } else if (hitCircle(point, { x: 165, y: 315, r: 112 })) {
-            say("Touch one purple colony with the loop", COLORS.gold, 1500);
+            say("Touch one purple colony with the loop", COLORS.gold, 2800);
           } else {
-            say("Move the sterile loop from its holder onto a colony", COLORS.gold, 1500);
+            say("Move the sterile loop from its holder onto a colony", COLORS.gold, 2800);
           }
         } else if (hitRect(point, { x: 422, y: 250, w: 81, h: 150 })) {
           cultureStep = 5;
           transferStarted = performance.now();
           selected = null;
-          say("Releasing cells from the loop into the tube…", COLORS.lime, 1350);
+          say("Releasing cells from the loop into the tube…", COLORS.lime, 2200);
         } else {
-          say("Place the loaded loop inside the tube liquid", COLORS.gold, 1500);
+          say("Place the loaded loop inside the tube liquid", COLORS.gold, 2800);
         }
       } else if (station === 1 && source.kind === "supernatant") {
         if (hitCircle(point, { x: 475, y: 470, r: 54 })) completeStation("Bead–DNA pellet retained for cleanup");
@@ -416,7 +425,7 @@
           magnetProgress = 0;
           emitHud();
         } else {
-          say("Place the magnet against the tube’s right wall", COLORS.gold, 1700);
+          say("Place the magnet against the tube’s right wall", COLORS.gold, 2800);
         }
       } else if (station === 3 && source.kind === "library-piece") {
         if (!hitRect(point, { x: 145, y: 210, w: 310, h: 126 })) {
@@ -454,7 +463,7 @@
       if (concentration >= 20 && concentration <= 30) {
         completeStation(`DNA normalized to ${concentration} ng/µL`);
       } else if (concentration > 30) {
-        say(`Still ${concentration} ng/µL — add more buffer`, COLORS.gold, 1600);
+        say(`Still ${concentration} ng/µL — add more buffer`, COLORS.gold, 2600);
       } else {
         addRisk("DNA over-diluted below 20 ng/µL");
         qcLevel = 0;
@@ -503,7 +512,7 @@
         selected = null;
       } else {
         selected = sourceAt(cursor);
-        if (selected) say(`Selected ${selected.label}. Move to destination + Space.`, COLORS.cyan, 1800);
+        if (selected) say(`Selected ${selected.label}. Move to destination + Space.`, COLORS.cyan, 2800);
       }
     }
 
@@ -607,7 +616,7 @@
       }
 
       if (cultureStep === 2) {
-        const growth = Math.min(1, (now - incubationStarted) / 1500);
+        const growth = Math.min(1, (now - incubationStarted) / 2600);
         const pureColonies = [[420, 273], [467, 270], [494, 312], [449, 331], [409, 337], [479, 359]];
         pureColonies.forEach((position, index) => {
           const radius = Math.max(0, growth * (10 + index % 3 * 2));
@@ -686,12 +695,12 @@
         text(cultureStep === 4 ? "CELLS ON LOOP" : "STERILE LOOP", 336, 430, 10, 950, "center");
       } else {
         ctx.fillStyle = COLORS.lime;
-        text("RELEASING CELLS", 336, 430, 10, 950, "center");
+        text(stationComplete ? "CELLS IN TUBE" : "RELEASING CELLS", 336, 430, 10, 950, "center");
       }
     }
 
     function drawCellRelease(now) {
-      const progress = Math.min(1, Math.max(0, (now - transferStarted) / 1050));
+      const progress = Math.min(1, Math.max(0, (now - transferStarted) / 1800));
       ctx.save();
       ctx.translate(462, 302);
       ctx.rotate(Math.PI);
@@ -722,15 +731,17 @@
       ctx.strokeStyle = COLORS.paper;
       ctx.lineWidth = 5;
       ctx.beginPath();
-      ctx.arc(x, y, 17, 0, Math.PI * 2);
-      ctx.moveTo(x, y + 17);
+      ctx.arc(x, y, 21, 0, Math.PI * 2);
+      ctx.moveTo(x, y + 21);
       ctx.lineTo(x, y + 92);
       ctx.stroke();
       ctx.fillStyle = COLORS.cyan;
-      roundRect(x - 10, y + 86, 20, 54, 8, true, false);
+      roundRect(x - 10, y + 86, 20, 38, 8, true, false);
       if (loaded) {
         ctx.fillStyle = COLORS.violet;
-        circle(x, y, 9, true, false);
+        ctx.strokeStyle = COLORS.lime;
+        ctx.lineWidth = 2;
+        circle(x, y, 12, true, true);
       }
       ctx.restore();
     }
@@ -866,7 +877,7 @@
       ctx.fillStyle = COLORS.ink;
       roundRect(x + 18, y + 26, width - 36, height - 52, 9, true, false);
       ctx.fillStyle = COLORS.paper;
-      text("MAGNET", x + width / 2, y + height / 2, 11, 950, "center");
+      text("MAGNET", x + width / 2, y + height / 2, 13, 950, "center");
     }
 
     function drawPipette(x, y) {
@@ -935,7 +946,7 @@
       ctx.fillStyle = COLORS.lime;
       text("TARGET", gauge.x + gauge.w * 0.69, gauge.y + 66, 10, 950, "center");
       ctx.fillStyle = COLORS.muted;
-      text("TOO DILUTE", gauge.x + gauge.w - 8, gauge.y + 66, 10, 800, "right");
+      text("TOO DILUTE", gauge.x + gauge.w - 8, gauge.y + 84, 10, 800, "right");
 
       ctx.fillStyle = qcDispensing ? COLORS.cyan : COLORS.violet;
       ctx.strokeStyle = COLORS.paper;
@@ -1075,7 +1086,7 @@
         ctx.lineWidth = 3;
         circle(point.x, point.y, 23, true, true);
       } else if (drag.source.kind === "loop") {
-        drawInoculatingLoop(point.x, point.y, drag.source.loaded);
+        drawInoculatingLoop(point.x - drag.grabOffset.x, point.y - drag.grabOffset.y, drag.source.loaded);
       } else if (drag.source.kind === "supernatant") {
         drawPipette(point.x, point.y);
       } else if (drag.source.kind === "beads") {
@@ -1180,7 +1191,8 @@
     }
 
     function text(value, x, y, size, weight, align = "left") {
-      ctx.font = `${weight} ${size}px ui-rounded, "Arial Rounded MT Bold", Inter, system-ui, sans-serif`;
+      const readableSize = size <= 12 ? size * 1.5 : size;
+      ctx.font = `${weight} ${readableSize}px ui-rounded, "Arial Rounded MT Bold", Inter, system-ui, sans-serif`;
       ctx.textAlign = align;
       ctx.textBaseline = "middle";
       ctx.fillText(value, x, y);

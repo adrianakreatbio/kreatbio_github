@@ -200,13 +200,13 @@
       title: "You cleared the dish!",
       copy: `Final score: ${score}. Your tiny culture has a huge appetite.`,
       button: "Grow again",
-      secondary: "Play Plate to Reads"
+      secondary: "Prepare sequencing library"
     } : {
       kicker: "Culture crash",
       title: `You munched ${collected} ${collected === 1 ? "base" : "bases"}`,
       copy: `Final score: ${score}. Give your little colony another chance.`,
       button: "Grow again",
-      secondary: "Play Plate to Reads"
+      secondary: "Prepare sequencing library"
     });
   }
 
@@ -317,14 +317,14 @@
     activeMode = "library";
     gameState = "idle";
     document.body.classList.add("library-mode");
-    gameCard.setAttribute("aria-label", "Plate to Reads game");
-    pageTitle.innerHTML = "<span>Plate</span> to Reads";
+    gameCard.setAttribute("aria-label", "Prepare sequencing library game");
+    pageTitle.innerHTML = "<span>Prepare</span> sequencing library";
     introCopy.textContent = "Take one clean colony through DNA extraction, QC, library preparation and sequencing.";
     scoreLabel.textContent = "Station";
     scoreElement.textContent = "1/5";
     statusElement.textContent = "Risk ○○○";
     controlCopy.innerHTML = "<span aria-hidden=\"true\">✦</span> Drag, tap, or use arrow keys + Space <span aria-hidden=\"true\">✦</span>";
-    canvas.setAttribute("aria-label", "Plate to Reads sequencing library preparation game board");
+    canvas.setAttribute("aria-label", "Prepare sequencing library game board");
     overlay.hidden = true;
     pauseButton.disabled = false;
     pauseButton.classList.remove("is-paused");
@@ -403,14 +403,19 @@
     pauseButton.classList.remove("is-paused");
     pauseButton.setAttribute("aria-label", "Pause game");
     gameState = "idle";
+    // The library renderer leaves its own canvas transform behind. Restore
+    // Base Muncher's pixel transform immediately, then repeat after the
+    // circular layout has settled on mobile.
+    resizeCanvas();
     resetGame();
+    window.requestAnimationFrame(resizeCanvas);
     statusElement.textContent = "Ready";
     showOverlay({
       kicker: "Culture ready",
       title: "Feed your tiny colony",
       copy: "Swipe, tap, or use your arrow keys. Every base makes your little colony grow faster.",
       button: "Start munching",
-      secondary: "Play Plate to Reads"
+      secondary: "Prepare sequencing library"
     });
   }
 
