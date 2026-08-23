@@ -1028,19 +1028,19 @@ async function addInferredTaxonomyDiffFiles(code, manifest) {
   const fallbacks = [
     {
       id: "taxonomy-aldex2-family",
-      name: "Taxonomy ALDEx2 family statistics",
+      name: "SILVA taxonomy ALDEx2 family statistics",
       rank: "family",
       paths: ["output/o2_taxonomy_qiime2_silva/taxonomy_aldex2_family.tsv", "raw/master_group/o_stats/taxonomy_aldex2_family.tsv"]
     },
     {
       id: "taxonomy-aldex2-genus",
-      name: "Taxonomy ALDEx2 genus statistics",
+      name: "SILVA taxonomy ALDEx2 genus statistics",
       rank: "genus",
       paths: ["output/o2_taxonomy_qiime2_silva/taxonomy_aldex2_genus.tsv", "raw/master_group/o_stats/taxonomy_aldex2_genus.tsv"]
     },
     {
       id: "taxonomy-aldex2-species",
-      name: "Taxonomy ALDEx2 species statistics",
+      name: "SILVA taxonomy ALDEx2 species statistics",
       rank: "species",
       paths: ["output/o2_taxonomy_qiime2_silva/taxonomy_aldex2_species.tsv", "raw/master_group/o_stats/taxonomy_aldex2_species.tsv"]
     }
@@ -1060,7 +1060,7 @@ async function addInferredTaxonomyDiffFiles(code, manifest) {
       name: fallback.name,
       path: availablePath,
       role: "differential_abundance",
-      roles: ["differential_abundance", "differential", "taxonomy", "aldex2", fallback.rank, "stats", "table"],
+      roles: ["differential_abundance", "differential", "taxonomy", "silva", "aldex2", fallback.rank, "stats", "table"],
       type: "tsv",
       format: "tsv",
       description: availablePath.startsWith("raw/") ? "Raw analysis statistics fallback" : "Released analysis table"
