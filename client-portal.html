@@ -913,6 +913,22 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .overall-card h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--blue)}
 .overall-card .overall-value{display:block;margin-top:7px;color:var(--navy);font-size:1.2rem;font-weight:900;line-height:1.15;overflow-wrap:anywhere}
 .overall-card p{margin-top:7px;color:var(--muted);font-size:.86rem;line-height:1.45}
+.overall-evidence-note{margin-top:14px;padding:10px 12px;border-left:3px solid #8094A8;border-radius:0 8px 8px 0;background:#F6F9FC;color:#405467;font-size:.8rem;line-height:1.45}
+.overall-evidence-note b{display:block;margin-bottom:2px;color:var(--navy);font-size:.68rem;text-transform:uppercase;letter-spacing:.07em}
+.overall-evidence-note[data-tone="supported"]{border-left-color:#247A4B;background:#F2FAF5}
+.overall-evidence-note[data-tone="warning"]{border-left-color:#B26A1C;background:#FFF9EE}
+.overall-evidence-note[data-tone="unavailable"]{border-left-color:#8A98A8;background:#F7F8FA}
+.cross-stats-panel{margin-top:18px;padding:20px 22px;border:1px solid #DCE7F1;border-radius:16px;background:#fff;box-shadow:var(--shadow-1)}
+.cross-stats-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.cross-stats-head h3{font-size:1.16rem;color:var(--navy);line-height:1.2}
+.cross-stats-head p{margin-top:5px;color:var(--muted);font-size:.86rem;line-height:1.45}
+.cross-stats-list{display:grid;gap:0;margin-top:12px}
+.cross-stats-item{display:grid;grid-template-columns:10px minmax(0,1fr);gap:11px;align-items:start;padding:12px 0;border-top:1px solid var(--line-2);color:var(--ink);font-size:.88rem;line-height:1.48}
+.cross-stats-item:first-child{border-top:0}
+.cross-stats-item i{width:8px;height:8px;margin-top:6px;border-radius:50%;background:#8094A8}
+.cross-stats-item[data-tone="supported"] i{background:#247A4B}
+.cross-stats-item[data-tone="warning"] i{background:#B26A1C}
+.cross-stats-item[data-tone="unavailable"] i{background:#8A98A8}
 .overall-chart-row{display:grid;grid-template-columns:260px minmax(0,1fr);gap:18px;align-items:center;margin-top:18px}
 .overall-donut{position:relative;width:260px;aspect-ratio:1;margin:0 auto}
 .overall-donut svg{display:block;width:100%;height:100%}
@@ -2135,14 +2151,27 @@ async function fetchReportFileText(file){
     var fallback=await apiJson("/api/files/"+encodeURIComponent(current&&current.id||"")+"/text",{timeoutMs:12000});
     return fallback.text||"";
   }
-  var res=await fetch(current.url);
-  if((res.status===401||res.status===403)&&state.token){
-    await refreshReportUrls();
-    current=manifestFileById(file.id)||current;
+  var directError=null,res=null;
+  try{
     res=await fetch(current.url);
+    if((res.status===401||res.status===403)&&state.token){
+      await refreshReportUrls();
+      current=manifestFileById(file.id)||current;
+      res=await fetch(current.url);
+    }
+    if(res.ok)return await res.text();
+    directError=new Error("Report file unavailable: "+(current.name||current.id||"file"));
+  }catch(err){
+    directError=err;
   }
-  if(!res.ok)throw new Error("Report file unavailable: "+(current.name||current.id||"file"));
-  return await res.text();
+  // A signed GCS URL can be blocked by browser/CORS policy even when the API can
+  // read the same authorized report object. Retry through the authenticated API.
+  try{
+    var apiFallback=await apiJson("/api/files/"+encodeURIComponent(current.id||"")+"/text",{timeoutMs:12000});
+    return apiFallback.text||"";
+  }catch(apiError){
+    throw directError||apiError;
+  }
 }
 function parseTableRows(text){
   var lines=String(text||"").split(/\r?\n/).filter(function(line){return line.trim()&&!/^#q2:types/i.test(line.trim());});
@@ -3355,15 +3384,33 @@ async function hydrateTaxonomyDiffStatsFromManifest(){
   var d=baseDataset();
   if(d)d.taxonomyDiffStats=[];
   var files=taxonomyDiffFiles();
-  if(!files.length||(!state.token&&!state.localExample)||!d)return;
+  if(!d)return;
+  var ranks={};
+  files.forEach(function(file){
+    var rank=taxonomyDiffRank(file)||"taxon";
+    if(!ranks[rank])ranks[rank]={files:0,loaded:0,rows:0,errors:0};
+    ranks[rank].files++;
+  });
+  d.taxonomyDiffLoad={status:files.length?"loading":"unavailable",files:files.length,loaded:0,rows:0,errors:0,ranks:ranks};
+  if(!files.length||(!state.token&&!state.localExample))return;
   var rows=[];
   for(var i=0;i<files.length;i++){
+    var fileRank=taxonomyDiffRank(files[i])||"taxon",rankLoad=ranks[fileRank];
     try{
       var res=await manifestText(files[i]);
-      rows=rows.concat(parseTaxonomyDiffText(res.text,files[i]));
-    }catch(err){}
+      var parsed=parseTaxonomyDiffText(res.text,files[i]);
+      rows=rows.concat(parsed);
+      d.taxonomyDiffLoad.loaded++;
+      rankLoad.loaded++;
+      rankLoad.rows+=parsed.length;
+    }catch(err){
+      d.taxonomyDiffLoad.errors++;
+      rankLoad.errors++;
+    }
   }
   d.taxonomyDiffStats=rows;
+  d.taxonomyDiffLoad.rows=rows.length;
+  d.taxonomyDiffLoad.status=rows.length?"loaded":(d.taxonomyDiffLoad.errors?"error":"empty");
 }
 
 /* ---------------- tooltip ---------------- */
@@ -4322,9 +4369,20 @@ function taxonomyDiffMethodStatusText(summary,rankLabel){
   }
   return method+": FDR-adjusted p-values were not available for the loaded "+rankWord+"-level results.";
 }
+function taxonomyDiffAvailability(d,rank){
+  var load=d&&d.taxonomyDiffLoad,rankLoad=load&&load.ranks&&(load.ranks[rank]||load.ranks.taxon);
+  if(state.reportHydrating&&(!load||load.status==="loading"))return "loading";
+  if(rankLoad){
+    if(rankLoad.rows>0)return "loaded";
+    if(rankLoad.errors>0)return "error";
+    if(rankLoad.loaded>0)return "empty";
+    if(rankLoad.files>0)return "loading";
+  }
+  return "unavailable";
+}
 function taxonomySupportSummary(d,rank){
   rank=rank||"taxon";
-  var rankLabel=taxonRankLabel(rank),summaries=taxonomyDiffSummariesForRank(d,rank),diff=combinedTaxonomyDiffSummary(summaries);
+  var rankLabel=taxonRankLabel(rank),summaries=taxonomyDiffSummariesForRank(d,rank),diff=combinedTaxonomyDiffSummary(summaries),availability=taxonomyDiffAvailability(d,rank);
   if(!isDefaultGroupView(d)){
     var def=d.defaultGroupFactor||defaultGroupFactor(baseDataset());
     return {
@@ -4335,11 +4393,29 @@ function taxonomySupportSummary(d,rank){
     };
   }
   if(!diff){
+    if(availability==="loading")return {
+      value:"Statistical results are loading.",
+      note:"The portal is reading the "+rankLabel.toLowerCase()+"-level differential-abundance results.",
+      tone:"poor",
+      scope:"loading"
+    };
+    if(availability==="error")return {
+      value:"Statistical results could not be opened.",
+      note:"A matching "+rankLabel.toLowerCase()+"-level statistics file exists, but the portal could not read it. Refresh the report before interpreting this section.",
+      tone:"poor",
+      scope:"error"
+    };
+    if(availability==="empty")return {
+      value:"No usable statistical rows were found.",
+      note:"The matching "+rankLabel.toLowerCase()+"-level statistics file was read but contained no usable differential-abundance results.",
+      tone:"poor",
+      scope:"empty"
+    };
     return {
       value:"Composition should be read descriptively.",
-      note:"The matching "+rankLabel.toLowerCase()+"-level differential-abundance statistics file was not loaded.",
+      note:"No matching "+rankLabel.toLowerCase()+"-level differential-abundance test was provided for this report.",
       tone:"poor",
-      scope:"missing"
+      scope:"unavailable"
     };
   }
   var detail=summaries.map(function(summary){return taxonomyDiffMethodStatusText(summary,rankLabel);}).join(" ");
@@ -4367,9 +4443,23 @@ function taxonomyResultSummaryPanel(d){
     conclusionNote="Released statistical tests apply to the pipeline's original grouping.";
     statValue="Not recalculated for "+activeGroupingLabel(d);
   }else if(!diff){
-    conclusionValue="No "+rankLabel.toLowerCase()+"-level abundance test was loaded.";
-    conclusionNote="Treat the observed composition patterns as descriptive.";
-    statValue="Statistics file not loaded";
+    if(support.scope==="loading"){
+      conclusionValue="Statistical results are loading.";
+      conclusionNote="The composition summary will update when the test is ready.";
+      statValue="Loading statistics";
+    }else if(support.scope==="error"){
+      conclusionValue="The abundance test could not be opened.";
+      conclusionNote="Refresh the report before interpreting the statistical result.";
+      statValue="Statistics file could not be read";
+    }else if(support.scope==="empty"){
+      conclusionValue="No usable "+rankLabel.toLowerCase()+"-level test rows were found.";
+      conclusionNote="Treat the observed composition patterns as descriptive.";
+      statValue="No usable statistical rows";
+    }else{
+      conclusionValue="No "+rankLabel.toLowerCase()+"-level abundance test was provided.";
+      conclusionNote="Treat the observed composition patterns as descriptive.";
+      statValue="No matching statistical test";
+    }
   }else if(diff.adjusted){
     conclusionValue="Supported "+rankLabel.toLowerCase()+"-level abundance patterns were detected.";
     conclusionNote="Prioritize candidates that repeat across biological samples.";
@@ -4644,11 +4734,11 @@ function selfExperimentNiceStep(span,targetTicks){
   else nice=10;
   return nice*power;
 }
-function selfExperimentNumericScale(values,targetTicks){
+function selfExperimentNumericScale(values,targetTicks,paddingFraction){
   values=(values||[]).map(Number).filter(function(value){return isFinite(value);});
   var min=values.length?Math.min.apply(null,values):0,max=values.length?Math.max.apply(null,values):1,span=max-min;
   if(span<=1e-12){var pad=Math.abs(min)*.1||1;min-=pad;max+=pad;span=max-min;}
-  else{min-=span*.08;max+=span*.08;}
+  else{var padding=paddingFraction==null?.08:Math.max(0,Number(paddingFraction)||0);min-=span*padding;max+=span*padding;}
   var step=selfExperimentNiceStep(max-min,(targetTicks||5)-1),niceMin=Math.floor(min/step)*step,niceMax=Math.ceil(max/step)*step;
   if(niceMin===niceMax)niceMax=niceMin+step;
   var ticks=[];
@@ -4661,15 +4751,47 @@ function selfExperimentAxisNumber(value,step){
   var rounded=Number(Number(value).toFixed(decimals));
   return String(Object.is(rounded,-0)?0:rounded);
 }
+function selfExperimentLabelPlacement(x,y,label,bounds,occupied,fontSize,radius){
+  label=String(label||"");
+  if(!label)return null;
+  fontSize=Number(fontSize)||10;radius=Number(radius)||4;
+  var width=Math.max(fontSize*.65,label.length*fontSize*.62),height=fontSize+3,gap=radius+4;
+  var candidates=[
+    {x:x+gap,y:y+fontSize*.34,anchor:"start"},
+    {x:x-gap,y:y+fontSize*.34,anchor:"end"},
+    {x:x,y:y-gap,anchor:"middle"},
+    {x:x,y:y+gap+fontSize,anchor:"middle"},
+    {x:x+gap,y:y-gap*.7,anchor:"start"},
+    {x:x-gap,y:y-gap*.7,anchor:"end"},
+    {x:x+gap,y:y+gap+fontSize*.55,anchor:"start"},
+    {x:x-gap,y:y+gap+fontSize*.55,anchor:"end"}
+  ];
+  for(var i=0;i<candidates.length;i++){
+    var candidate=candidates[i],left=candidate.anchor==="start"?candidate.x:(candidate.anchor==="end"?candidate.x-width:candidate.x-width/2),box={left:left,right:left+width,top:candidate.y-height,bottom:candidate.y+2};
+    if(box.left<bounds.left||box.right>bounds.right||box.top<bounds.top||box.bottom>bounds.bottom)continue;
+    var collision=(occupied||[]).some(function(other){return !(box.right+2<other.left||box.left-2>other.right||box.bottom+2<other.top||box.top-2>other.bottom);});
+    if(collision)continue;
+    occupied.push(box);
+    return candidate;
+  }
+  return null;
+}
 function alphaSelfMiniPlot(d,metric,result,selected,byId,sampleNumbers){
-  var w=360,h=240,p={l:56,r:24,t:34,b:54},groups={},values=[];
+  var w=420,h=260,p={l:66,r:46,t:38,b:58},groups={},values=[];
   (d.samples||[]).forEach(function(s){var id=String(s.raw||s.id),v=Number(alphaVal(s,metric));if(selected.indexOf(id)<0||!isFinite(v))return;(groups[s.group]||(groups[s.group]=[])).push({id:id,value:v});values.push(v);});
-  var keys=Object.keys(groups),groupLabels=keys.map(function(key){var groupObj=(d.groups||[]).filter(function(g){return g.id===key;})[0];return String(groupObj?groupObj.label:key);}),rotateGroupLabels=keys.length>4||groupLabels.some(function(label){return label.length>10;}),scale=selfExperimentNumericScale(values,5);
-  if(rotateGroupLabels){h=262;p.b=76;}
-  var sx=function(i){return keys.length===1?(p.l+w-p.r)/2:p.l+i*(w-p.l-p.r)/(keys.length-1);},sy=function(v){return h-p.b-(v-scale.min)/(scale.max-scale.min)*(h-p.t-p.b);};
+  var keys=Object.keys(groups),groupLabels=keys.map(function(key){var groupObj=(d.groups||[]).filter(function(g){return g.id===key;})[0];return String(groupObj?groupObj.label:key);}),rotateGroupLabels=keys.length>4||groupLabels.some(function(label){return label.length>10;}),scale=selfExperimentNumericScale(values,5,.14);
+  if(rotateGroupLabels){h=284;p.b=82;}
+  var plotLeft=p.l+30,plotRight=w-p.r-30,sx=function(i){return keys.length===1?(plotLeft+plotRight)/2:plotLeft+i*(plotRight-plotLeft)/(keys.length-1);},sy=function(v){return h-p.b-(v-scale.min)/(scale.max-scale.min)*(h-p.t-p.b);};
   var body=scale.ticks.map(function(value){var y=sy(value);return '<line x1="'+p.l+'" y1="'+y.toFixed(1)+'" x2="'+(w-p.r)+'" y2="'+y.toFixed(1)+'" stroke="#E2EAF2"/><line x1="'+(p.l-4)+'" y1="'+y.toFixed(1)+'" x2="'+p.l+'" y2="'+y.toFixed(1)+'" stroke="#8094A8"/><text x="'+(p.l-7)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="8" fill="#526779">'+esc(selfExperimentAxisNumber(value,scale.step))+'</text>';}).join("");
-  body+='<line x1="'+p.l+'" y1="'+p.t+'" x2="'+p.l+'" y2="'+(h-p.b)+'" stroke="#8094A8"/><line x1="'+p.l+'" y1="'+(h-p.b)+'" x2="'+(w-p.r)+'" y2="'+(h-p.b)+'" stroke="#8094A8"/>';
-  keys.forEach(function(key,gi){var vals=groups[key].map(function(x){return x.value;}).sort(function(a,b){return a-b;}),med=median(vals),q=function(prob){if(vals.length<2)return null;var pos=(vals.length-1)*prob,lo=Math.floor(pos),hi=Math.ceil(pos);return vals[lo]+(vals[hi]-vals[lo])*(pos-lo);},q1=q(.25),q3=q(.75),min=vals[0],max=vals[vals.length-1],x=sx(gi),color=groupColor(Math.max(0,(d.groups||[]).findIndex(function(g){return g.id===key;})));if(q1!=null&&q3!=null){var boxTop=sy(q3),boxBottom=sy(q1),boxHeight=Math.max(2,boxBottom-boxTop),minYPos=sy(min),maxYPos=sy(max);body+='<line x1="'+x.toFixed(1)+'" y1="'+maxYPos.toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+minYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-7)+'" y1="'+maxYPos.toFixed(1)+'" x2="'+(x+7)+'" y2="'+maxYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-7)+'" y1="'+minYPos.toFixed(1)+'" x2="'+(x+7)+'" y2="'+minYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><rect x="'+(x-15)+'" y="'+boxTop.toFixed(1)+'" width="30" height="'+boxHeight.toFixed(1)+'" fill="'+color+'" opacity=".3" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-15)+'" y1="'+sy(med).toFixed(1)+'" x2="'+(x+15)+'" y2="'+sy(med).toFixed(1)+'" stroke="'+color+'" stroke-width="1.5"/>';};groups[key].forEach(function(item,ii){var jitter=(ii-(groups[key].length-1)/2)*6,px=x+jitter,py=sy(item.value),num=sampleNumbers[item.id]||"";body+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="3" fill="'+color+'"><title>'+esc(num+'. '+(byId[item.id]?sampleLabel(byId[item.id]):item.id))+'</title></circle><text x="'+(x+20).toFixed(1)+'" y="'+(py+3).toFixed(1)+'" font-size="8" fill="#071B3A">'+esc(num)+'</text>';});var groupLabel=groupLabels[gi],labelY=h-p.b+16,labelTransform=rotateGroupLabels?' transform="rotate(-35 '+x.toFixed(1)+' '+labelY+')" text-anchor="end"':' text-anchor="middle"';body+='<line x1="'+x.toFixed(1)+'" y1="'+(h-p.b)+'" x2="'+x.toFixed(1)+'" y2="'+(h-p.b+4)+'" stroke="#8094A8"/><text x="'+x.toFixed(1)+'" y="'+labelY+'"'+labelTransform+' font-size="9" fill="#51327E"><title>'+esc(groupLabel)+'</title>'+esc(groupLabel.length>18?groupLabel.slice(0,17)+'…':groupLabel)+'</text>';});
+  body+='<rect x="'+p.l+'" y="'+p.t+'" width="'+(w-p.l-p.r)+'" height="'+(h-p.t-p.b)+'" fill="none" stroke="#AAB9C8"/>';
+  var pointLayouts={},occupiedLabels=[],labelBounds={left:p.l+3,right:w-p.r-3,top:p.t+3,bottom:h-p.b-3};
+  keys.forEach(function(key,gi){var groupItems=groups[key],x=sx(gi),jitterLimit=Math.min(18,Math.max(10,(plotRight-plotLeft)/Math.max(2,keys.length)*.18));pointLayouts[key]=groupItems.map(function(item,ii){var jitter=groupItems.length===1?0:-jitterLimit+(2*jitterLimit*ii/(groupItems.length-1)),px=x+jitter,py=sy(item.value);occupiedLabels.push({left:px-3,right:px+3,top:py-3,bottom:py+3});return {item:item,px:px,py:py};});});
+  keys.forEach(function(key,gi){
+    var vals=groups[key].map(function(item){return item.value;}).sort(function(a,b){return a-b;}),med=median(vals),q=function(prob){if(vals.length<2)return null;var pos=(vals.length-1)*prob,lo=Math.floor(pos),hi=Math.ceil(pos);return vals[lo]+(vals[hi]-vals[lo])*(pos-lo);},q1=q(.25),q3=q(.75),min=vals[0],max=vals[vals.length-1],x=sx(gi),color=groupColor(Math.max(0,(d.groups||[]).findIndex(function(g){return g.id===key;})));
+    if(q1!=null&&q3!=null){var boxTop=sy(q3),boxBottom=sy(q1),boxHeight=Math.max(2,boxBottom-boxTop),minYPos=sy(min),maxYPos=sy(max);body+='<line x1="'+x.toFixed(1)+'" y1="'+maxYPos.toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+minYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-7)+'" y1="'+maxYPos.toFixed(1)+'" x2="'+(x+7)+'" y2="'+maxYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-7)+'" y1="'+minYPos.toFixed(1)+'" x2="'+(x+7)+'" y2="'+minYPos.toFixed(1)+'" stroke="'+color+'" stroke-width="1.2"/><rect x="'+(x-15)+'" y="'+boxTop.toFixed(1)+'" width="30" height="'+boxHeight.toFixed(1)+'" fill="'+color+'" opacity=".3" stroke="'+color+'" stroke-width="1.2"/><line x1="'+(x-15)+'" y1="'+sy(med).toFixed(1)+'" x2="'+(x+15)+'" y2="'+sy(med).toFixed(1)+'" stroke="'+color+'" stroke-width="1.5"/>';}
+    pointLayouts[key].forEach(function(layout){var item=layout.item,px=layout.px,py=layout.py,num=sampleNumbers[item.id]||"",placement=selfExperimentLabelPlacement(px,py,num,labelBounds,occupiedLabels,8,3);body+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="3" fill="'+color+'"><title>'+esc(num+'. '+(byId[item.id]?sampleLabel(byId[item.id]):item.id))+'</title></circle>';if(placement)body+='<text x="'+placement.x.toFixed(1)+'" y="'+placement.y.toFixed(1)+'" text-anchor="'+placement.anchor+'" font-size="8" fill="#071B3A">'+esc(num)+'</text>';});
+    var groupLabel=groupLabels[gi],labelY=h-p.b+16,labelTransform=rotateGroupLabels?' transform="rotate(-35 '+x.toFixed(1)+' '+labelY+')" text-anchor="end"':' text-anchor="middle"';body+='<line x1="'+x.toFixed(1)+'" y1="'+(h-p.b)+'" x2="'+x.toFixed(1)+'" y2="'+(h-p.b+4)+'" stroke="#8094A8"/><text x="'+x.toFixed(1)+'" y="'+labelY+'"'+labelTransform+' font-size="9" fill="#51327E"><title>'+esc(groupLabel)+'</title>'+esc(groupLabel.length>18?groupLabel.slice(0,17)+'…':groupLabel)+'</text>';
+  });
   body+='<text x="'+((p.l+w-p.r)/2)+'" y="'+(h-5)+'" text-anchor="middle" font-size="9" fill="#526779">'+esc(activeGroupingLabel(d))+'</text><text x="13" y="'+((p.t+h-p.b)/2)+'" transform="rotate(-90 13 '+((p.t+h-p.b)/2)+')" text-anchor="middle" font-size="9" fill="#526779">'+esc(metricLabel(d,"alpha",metric))+'</text>';
   return '<div class="alpha-self-mini-plot"><svg data-alpha-self-metric="'+esc(metric)+'" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(metricLabel(d,"alpha",metric))+' retained sample distribution">'+body+'<text x="8" y="16" font-size="10" fill="#705F85">Box = IQR · line = median · whiskers = min/max</text></svg></div>';
 }
@@ -5193,14 +5315,16 @@ function betaSelfExperimentPanel(d){
   return clinicalDetails("Self-experiment",body).replace('<details class="clinical-details">','<details data-beta-self-details'+(betaSelfState.open?' open':'')+' class="clinical-details">');
 }
 function betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers,matrixIssue){
-  var w=680,h=350,p={l:68,r:34,t:28,b:62},pts=stats.pcoa.points,xScale=selfExperimentNumericScale(pts.map(function(pt){return pt.x;}),6),yScale=selfExperimentNumericScale(pts.map(function(pt){return pt.y;}),6);
+  var w=720,h=390,p={l:82,r:58,t:42,b:72},pts=stats.pcoa.points,xScale=selfExperimentNumericScale(pts.map(function(pt){return pt.x;}),6,.14),yScale=selfExperimentNumericScale(pts.map(function(pt){return pt.y;}),6,.14);
   var sx=function(x){return p.l+(x-xScale.min)/(xScale.max-xScale.min)*(w-p.l-p.r);},sy=function(y){return h-p.b-(y-yScale.min)/(yScale.max-yScale.min)*(h-p.t-p.b);};
   var axes=xScale.ticks.map(function(value){var x=sx(value);return '<line x1="'+x.toFixed(1)+'" y1="'+p.t+'" x2="'+x.toFixed(1)+'" y2="'+(h-p.b)+'" stroke="#E2EAF2"/><line x1="'+x.toFixed(1)+'" y1="'+(h-p.b)+'" x2="'+x.toFixed(1)+'" y2="'+(h-p.b+5)+'" stroke="#8094A8"/><text x="'+x.toFixed(1)+'" y="'+(h-p.b+18)+'" text-anchor="middle" font-size="10" fill="#526779">'+esc(selfExperimentAxisNumber(value,xScale.step))+'</text>';}).join("");
   axes+=yScale.ticks.map(function(value){var y=sy(value);return '<line x1="'+p.l+'" y1="'+y.toFixed(1)+'" x2="'+(w-p.r)+'" y2="'+y.toFixed(1)+'" stroke="#E2EAF2"/><line x1="'+(p.l-5)+'" y1="'+y.toFixed(1)+'" x2="'+p.l+'" y2="'+y.toFixed(1)+'" stroke="#8094A8"/><text x="'+(p.l-9)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="10" fill="#526779">'+esc(selfExperimentAxisNumber(value,yScale.step))+'</text>';}).join("");
-  axes+='<line x1="'+p.l+'" y1="'+p.t+'" x2="'+p.l+'" y2="'+(h-p.b)+'" stroke="#8094A8"/><line x1="'+p.l+'" y1="'+(h-p.b)+'" x2="'+(w-p.r)+'" y2="'+(h-p.b)+'" stroke="#8094A8"/>';
+  axes+='<rect x="'+p.l+'" y="'+p.t+'" width="'+(w-p.l-p.r)+'" height="'+(h-p.t-p.b)+'" fill="none" stroke="#8094A8"/>';
   if(xScale.min<0&&xScale.max>0){var zeroX=sx(0);axes+='<line x1="'+zeroX.toFixed(1)+'" y1="'+p.t+'" x2="'+zeroX.toFixed(1)+'" y2="'+(h-p.b)+'" stroke="#AAB9C8" stroke-dasharray="4 4"/>';}
   if(yScale.min<0&&yScale.max>0){var zeroY=sy(0);axes+='<line x1="'+p.l+'" y1="'+zeroY.toFixed(1)+'" x2="'+(w-p.r)+'" y2="'+zeroY.toFixed(1)+'" stroke="#AAB9C8" stroke-dasharray="4 4"/>';}
-  var body=pts.map(function(pt,index){var s=byId[pt.id],gi=(d.groups||[]).findIndex(function(g){return s&&g.id===s.group;}),number=sampleNumbers&&sampleNumbers[pt.id]!=null?sampleNumbers[pt.id]:index+1,x=sx(pt.x),y=sy(pt.y);return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="7" fill="'+groupColor(Math.max(0,gi))+'"><title>'+esc(number+'. '+(s?sampleLabel(s):pt.id))+'</title></circle><text x="'+(x+9).toFixed(1)+'" y="'+(y+4).toFixed(1)+'" font-size="11" font-weight="800" fill="#071B3A">'+number+'</text>';}).join("");
+  var plottedPoints=pts.map(function(pt,index){var s=byId[pt.id],x=sx(pt.x),y=sy(pt.y);return {pt:pt,s:s,x:x,y:y,number:sampleNumbers&&sampleNumbers[pt.id]!=null?sampleNumbers[pt.id]:index+1,gi:(d.groups||[]).findIndex(function(g){return s&&g.id===s.group;})};});
+  var occupiedLabels=plottedPoints.map(function(point){return {left:point.x-7,right:point.x+7,top:point.y-7,bottom:point.y+7};}),labelBounds={left:p.l+4,right:w-p.r-4,top:p.t+4,bottom:h-p.b-4},body="";
+  plottedPoints.forEach(function(point){var placement=selfExperimentLabelPlacement(point.x,point.y,point.number,labelBounds,occupiedLabels,11,7);body+='<circle cx="'+point.x.toFixed(1)+'" cy="'+point.y.toFixed(1)+'" r="7" fill="'+groupColor(Math.max(0,point.gi))+'"><title>'+esc(point.number+'. '+(point.s?sampleLabel(point.s):point.pt.id))+'</title></circle>';if(placement)body+='<text x="'+placement.x.toFixed(1)+'" y="'+placement.y.toFixed(1)+'" text-anchor="'+placement.anchor+'" font-size="11" font-weight="800" fill="#071B3A">'+point.number+'</text>';});
   var legend=(d.groups||[]).filter(function(g){return pts.some(function(pt){var s=byId[pt.id];return s&&s.group===g.id;});}).map(function(g,i){return '<span><i style="background:'+groupColor((d.groups||[]).indexOf(g))+'"></i>'+esc(g.label)+'</span>';}).join("");
   var warning=matrixIssue?'<div class="self-experiment-plot-warning"><strong data-svg-warning-line>Warning — uninformative distance matrix</strong><span data-svg-warning-line>Every retained sample pair has the same '+esc(metricLabel(d,"beta",metric))+' distance ('+esc(Number(matrixIssue.value).toFixed(3))+').</span><span data-svg-warning-line>Point positions, separation and overlap are arbitrary and should not be interpreted.</span></div>':"";
   return '<div class="self-experiment-plot"><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Exploratory '+esc(metricLabel(d,"beta",metric))+' PCoA">'+axes+body+'<text x="'+((p.l+w-p.r)/2)+'" y="'+(h-8)+'" text-anchor="middle" font-size="11" fill="#526779">PCoA 1 ('+(stats.pcoa.pc1*100).toFixed(1)+'%)</text><text x="16" y="'+((p.t+h-p.b)/2)+'" transform="rotate(-90 16 '+((p.t+h-p.b)/2)+')" text-anchor="middle" font-size="11" fill="#526779">PCoA 2 ('+(stats.pcoa.pc2*100).toFixed(1)+'%)</text></svg><div class="self-experiment-legend">'+legend+'</div>'+warning+'<div class="beta-self-download"><button type="button" class="keyviz-download" data-self-experiment-download="beta">Download SVG</button></div></div>';
@@ -5656,6 +5780,107 @@ function compositionRowsForStart(d){
   if(rest>0.001)rows.push({taxon:"Others",mean:rest});
   return rows;
 }
+function overallEvidenceNote(label,text,tone){
+  return '<div class="overall-evidence-note" data-tone="'+esc(tone||"descriptive")+'"><b>'+esc(label)+'</b><span>'+esc(text)+'</span></div>';
+}
+function overallTaxonomyStatState(d){
+  var rank=loadedTaxonRank(d),rankWord=taxonRankLabel(rank).toLowerCase()+"-level",summaries=taxonomyDiffSummariesForRank(d,rank),diff=combinedTaxonomyDiffSummary(summaries),availability=taxonomyDiffAvailability(d,rank);
+  if(!isDefaultGroupView(d))return {status:"unavailable",rank:rank,raw:0,text:"The loaded abundance statistics apply to the pipeline grouping, not the selected alternative grouping."};
+  if(diff&&diff.adjusted)return {status:"supported",rank:rank,raw:diff.raw||0,adjusted:diff.adjusted,text:fmtNum(diff.adjusted)+" FDR-supported pairwise result"+(diff.adjusted===1?"":"s")+"."};
+  if(diff&&diff.adjustedAvailable)return {status:"unsupported",rank:rank,raw:diff.raw||0,adjusted:0,text:diff.raw?(diff.raw===1?"One uncorrected "+rankWord+" result is exploratory; it did not pass FDR correction.":fmtNum(diff.raw)+" uncorrected "+rankWord+" results are exploratory; none passed FDR correction."):"No "+rankWord+" result passed FDR correction."};
+  if(diff)return {status:"unavailable",rank:rank,raw:diff.raw||0,text:"FDR support cannot be assessed because adjusted p-values were not available."};
+  if(availability==="loading")return {status:"unavailable",rank:rank,raw:0,text:"The abundance statistics are still loading."};
+  if(availability==="error")return {status:"unavailable",rank:rank,raw:0,text:"Statistical support cannot be assessed because the abundance test could not be opened."};
+  return {status:"unavailable",rank:rank,raw:0,text:"Statistical support cannot be assessed because the matching abundance test was not loaded."};
+}
+function overallAlphaStatState(d){
+  if(!isDefaultGroupView(d))return {status:"unavailable",supported:[],tested:[],text:"The loaded alpha-diversity statistics apply to the pipeline grouping, not the selected alternative grouping."};
+  var rows=alphaStatsForActiveGrouping(d),tested=[],supported=[],exploratory=[];
+  rows.forEach(function(row){
+    var decision=row.q!=null?Number(row.q):(row.p!=null?Number(row.p):null);
+    if(decision==null||!isFinite(decision))return;
+    var metric=normalizeAlphaMetricName(row.metric||row.metricLabel),label=metricLabel(d,"alpha",metric)||row.metricLabel||row.metric||"Alpha diversity";
+    if(tested.indexOf(label)<0)tested.push(label);
+    if(decision<.05&&supported.indexOf(label)<0)supported.push(label);
+    else if(decision<.10&&exploratory.indexOf(label)<0)exploratory.push(label);
+  });
+  if(supported.length)return {status:"supported",supported:supported,tested:tested,text:readableList(supported)+" "+(supported.length===1?"has":"have")+" statistical support."};
+  if(exploratory.length)return {status:"exploratory",supported:[],tested:tested,exploratory:exploratory,text:readableList(exploratory)+" "+(exploratory.length===1?"is":"are")+" exploratory; no tested alpha-diversity metric is statistically supported."};
+  if(tested.length)return {status:"unsupported",supported:[],tested:tested,text:"No tested alpha-diversity metric has statistical support."};
+  return {status:"unavailable",supported:[],tested:[],text:"Statistical support cannot be assessed because a matching alpha-diversity group test was not loaded."};
+}
+function overallBetaStatState(d){
+  var metric=defaultBetaMetric(d),label=metricLabel(d,"beta",metric),pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric),status=betaNextDecisionStatus(d,metric);
+  if(!isDefaultGroupView(d))return {status:"unavailable",metric:metric,label:label,pm:null,pd:null,text:"The loaded beta-diversity statistics apply to the pipeline grouping, not the selected alternative grouping."};
+  if(!pm||pm.p==null)return {status:"unavailable",metric:metric,label:label,pm:pm,pd:pd,text:"Statistical support cannot be assessed because the matching PERMANOVA result was not loaded."};
+  if(status==="dispersion")return {status:"warning",metric:metric,label:label,pm:pm,pd:pd,text:"PERMANOVA is statistically supported, but PERMDISP flags unequal within-group spread."};
+  if(status==="supported"||status==="small")return {status:"supported",metric:metric,label:label,pm:pm,pd:pd,text:"PERMANOVA supports an overall "+groupingLabelForSentence(d)+" association."};
+  if(status==="exploratory")return {status:"exploratory",metric:metric,label:label,pm:pm,pd:pd,text:"The PERMANOVA result is exploratory and does not provide statistical support."};
+  return {status:"unsupported",metric:metric,label:label,pm:pm,pd:pd,text:"PERMANOVA does not provide statistical support for an overall "+groupingLabelForSentence(d)+" association."};
+}
+function overallFunctionalStatState(d){
+  if(!functionalSectionAvailable()||!functionalResultDataAvailable(d))return {status:"absent",text:""};
+  if(!isDefaultGroupView(d))return {status:"unavailable",text:"The loaded functional statistics apply to the pipeline grouping, not the selected alternative grouping."};
+  var diff=functionalDiffSummary(d);
+  if(diff.sig)return {status:"supported",text:fmtNum(diff.sig)+" predicted-function comparison"+(diff.sig===1?" is":"s are")+" FDR-supported."};
+  if(diff.count&&diff.adjustedAvailable)return {status:"unsupported",text:"Visible predicted-function differences are exploratory because none passed FDR correction."};
+  if(diff.count)return {status:"unavailable",text:"FDR support cannot be assessed because adjusted p-values were not available for the loaded functional comparisons."};
+  return {status:"unavailable",text:"Statistical support cannot be assessed because matching differential-function statistics were not loaded."};
+}
+function overallRelationshipEvidence(d){
+  var beta=overallBetaStatState(d),parts=[];
+  if(beta.pm&&beta.pm.p!=null){
+    parts.push((Number(beta.pm.p)<.05?"Overall PERMANOVA supports":"Overall PERMANOVA does not support")+" a group association (p="+fmtP(beta.pm.p)+(beta.pm.R2!=null?"; R²="+(Number(beta.pm.R2)*100).toFixed(1)+"%":"")+").");
+    var supportedPairs=betaPairwiseGroupStats(d,beta.metric).filter(function(row){return row.q!=null&&Number(row.q)<.05;});
+    if(supportedPairs.length){
+      var pair=supportedPairs[0];
+      parts.push("FDR-supported pairwise result: "+pair.a.label+" vs "+pair.b.label+" (q="+fmtP(pair.q)+").");
+    }else parts.push("Closest and farthest group-centre relationships remain descriptive; no FDR-supported pairwise result was found.");
+  }else parts.push(beta.text+" The displayed closest and farthest group-centre relationships remain descriptive.");
+  return {text:parts.join(" "),tone:beta.status==="supported"?"supported":(beta.status==="warning"?"warning":(beta.status==="unavailable"?"unavailable":"descriptive"))};
+}
+function overallConfidenceEvidence(d){
+  var beta=overallBetaStatState(d),parts=[];
+  if(beta.pm){
+    if(beta.pm.p!=null)parts.push("PERMANOVA p="+fmtP(beta.pm.p));
+    if(beta.pm.R2!=null)parts.push("R²="+(Number(beta.pm.R2)*100).toFixed(1)+"%"+(beta.pm.R2Derived?" (calculated)":""));
+  }
+  if(beta.pd&&beta.pd.p!=null)parts.push("PERMDISP p="+fmtP(beta.pd.p));
+  return {text:parts.length?parts.join(" · ")+".":beta.text,tone:beta.status==="supported"?"supported":(beta.status==="warning"?"warning":(beta.status==="unavailable"?"unavailable":"descriptive"))};
+}
+function overallCrossStatsItems(d){
+  var taxonomy=overallTaxonomyStatState(d),alpha=overallAlphaStatState(d),beta=overallBetaStatState(d),functional=overallFunctionalStatState(d),items=[];
+  function add(text,tone){if(text&&!items.some(function(item){return item.text===text;}))items.push({text:text,tone:tone||"descriptive"});}
+  if(!isDefaultGroupView(d)){
+    add("Statistical support cannot be combined for "+activeGroupingLabel(d)+" because the loaded tests apply to the pipeline grouping.","unavailable");
+    return items;
+  }
+  var betaSupported=beta.status==="supported"||beta.status==="warning";
+  if(beta.status==="warning")add("Warning: "+beta.label+" PERMANOVA is statistically supported, but unequal within-group spread may affect its interpretation.","warning");
+  if(betaSupported&&alpha.status==="supported")add("Beta diversity supports a difference in community composition, and "+readableList(alpha.supported)+" supports a difference in within-sample diversity.","supported");
+  else if(betaSupported&&(alpha.status==="unsupported"||alpha.status==="exploratory"))add("Beta diversity supports a difference in community composition. Alpha diversity does not show a statistically supported difference for the tested metrics.","descriptive");
+  else if((beta.status==="unsupported"||beta.status==="exploratory")&&alpha.status==="supported")add(readableList(alpha.supported)+" supports a difference in within-sample diversity. The selected beta-diversity test does not support overall community separation.","descriptive");
+  if(betaSupported&&taxonomy.status==="supported")add("The overall community difference and corrected taxon-level results are both statistically supported.","supported");
+  else if(betaSupported&&taxonomy.status==="unsupported")add("Beta diversity supports an overall community difference, but no individual displayed taxon passed FDR correction.","descriptive");
+  else if((beta.status==="unsupported"||beta.status==="exploratory")&&taxonomy.status==="supported")add("The corrected taxon-level test supports specific abundance differences. The selected beta-diversity test does not support overall community separation.","descriptive");
+  var assessedDiversity=[{name:"alpha",result:alpha},{name:"beta",result:beta}].filter(function(entry){return entry.result.status!=="unavailable";}),supportedDiversity=assessedDiversity.some(function(entry){return entry.result.status==="supported"||entry.result.status==="warning";});
+  if(assessedDiversity.length&&!supportedDiversity){
+    var diversityName=assessedDiversity.length===2?"alpha- and beta-diversity":assessedDiversity[0].name+"-diversity";
+    add("Visible "+diversityName+" patterns are exploratory; the available group-level tests do not support them statistically.","descriptive");
+  }
+  if(taxonomy.status==="unsupported"&&items.length<3)add(taxonomy.text,"descriptive");
+  if(functional.status==="unsupported")add(functional.text,"descriptive");
+  else if(functional.status==="unavailable"&&items.length<2)add(functional.text,"unavailable");
+  if(!items.length){
+    var missing=[taxonomy,alpha,beta].filter(function(result){return result.status==="unavailable";});
+    add(missing.length?"Cross-analysis statistical interpretation is limited because matching tests were not loaded for all result types.":"No additional cross-analysis warning is required for the loaded results.",missing.length?"unavailable":"supported");
+  }
+  return items.slice(0,3);
+}
+function overallCrossStatsPanel(d){
+  var items=overallCrossStatsItems(d);
+  return '<section class="cross-stats-panel guided-anchor" aria-labelledby="cross-stats-title"><div class="cross-stats-head"><div><h3 id="cross-stats-title">How the results fit together</h3><p>Statistical context across abundance, alpha diversity, beta diversity, and functional prediction.</p></div></div><div class="cross-stats-list">'+items.map(function(item){return '<div class="cross-stats-item" data-tone="'+esc(item.tone)+'"><i aria-hidden="true"></i><span>'+esc(item.text)+'</span></div>';}).join("")+'</div></section>';
+}
 function keyFindingDonut(rows,d){
   var total=rows.reduce(function(a,x){return a+x.mean;},0),colors=keyFindingColors(),circ=2*Math.PI*48,offset=0;
   if(!total)return '<div class="keyviz-donut-wrap"><svg class="keyviz-donut" viewBox="0 0 140 140"><circle class="keyviz-donut-bg" cx="70" cy="70" r="48"/></svg><div class="keyviz-donut-center"><b>NA</b><span>No named taxa</span></div></div>';
@@ -5681,10 +5906,11 @@ function overallDonutCard(d){
     return '<div class="overall-legend-row" data-keyviz-slice="'+i+'" tabindex="0" style="--swatch:'+colors[i%colors.length]+'"><i></i><b>'+esc(label)+'</b><span>'+esc(fmtPct(r.mean,1))+'</span></div>';
   }).join("");
   return '<div class="overall-card"><h3>Dominant microbes</h3><span class="overall-value">'+esc(taxonDisplayName(top.taxon,d))+' · '+esc(fmtPct(top.mean,1))+'</span><p>Mean relative abundance across all samples; unassigned reads are excluded.</p>'+
-    '<div class="overall-chart-row"><div class="overall-donut"><svg viewBox="0 0 180 180" role="img" aria-label="Dominant named taxa donut"><circle class="keyviz-donut-bg" cx="90" cy="90" r="62"/>'+segs+'</svg><div class="overall-donut-center"><b>'+esc(fmtPct(top.mean,1))+'</b><span>top share</span></div></div><div class="overall-legend">'+legend+'</div></div></div>';
+    '<div class="overall-chart-row"><div class="overall-donut"><svg viewBox="0 0 180 180" role="img" aria-label="Dominant named taxa donut"><circle class="keyviz-donut-bg" cx="90" cy="90" r="62"/>'+segs+'</svg><div class="overall-donut-center"><b>'+esc(fmtPct(top.mean,1))+'</b><span>top share</span></div></div><div class="overall-legend">'+legend+'</div></div>'+overallEvidenceNote("Statistical context","Descriptive only. High overall abundance does not show that groups differ statistically.","descriptive")+'</div>';
 }
 function overallRelationshipCard(d){
   var metric=defaultBetaMetric(d),pattern=betaGroupPattern(d,metric),pairs=betaDistancePairs(d,metric),closest=pattern.closest,far=pattern.furthest||pattern.mostDistinct;
+  var evidence=overallRelationshipEvidence(d);
   var maxDist=pairs.length?Math.max.apply(null,pairs.map(function(p){return p.distance;})):0;
   var closestText=closest?(closest.a.label+" + "+closest.b.label):"Not available";
   var farText=far&&far.a?(far.a.label+" + "+far.b.label):(pattern.mostDistinct?pattern.mostDistinct.group:"Not available");
@@ -5695,17 +5921,17 @@ function overallRelationshipCard(d){
     '<div class="relationship-strip">'+
       '<div class="relationship-line"><span class="relationship-node">Closest pair</span><div class="relationship-track"><i style="--w:'+closestWidth.toFixed(1)+'%"></i></div><span class="relationship-node">'+esc(closestText)+'</span></div>'+
       '<div class="relationship-line far"><span class="relationship-node">Most separated</span><div class="relationship-track"><i style="--w:'+farWidth.toFixed(1)+'%"></i></div><span class="relationship-node">'+esc(farText)+'</span></div>'+
-    '</div></div>';
+    '</div>'+overallEvidenceNote("Statistical context",evidence.text,evidence.tone)+'</div>';
 }
 function overallConfidenceCard(d){
-  var conf=confidenceSummary(d),band=confidenceVisualBand(conf);
+  var conf=confidenceSummary(d),band=confidenceVisualBand(conf),evidence=overallConfidenceEvidence(d);
   return '<div class="overall-card"><h3>Confidence</h3><span class="overall-value">'+esc(band.label)+'</span>'+
     '<div class="confidence-meter"><span class="confidence-marker" style="--pos:'+band.pos+'%"></span></div>'+
     '<div class="confidence-guide">'+
       '<span><b>Visual only:</b> statistics do not support a reliable group difference.</span>'+
       '<span><b>Needs follow-up:</b> possible signal, but not strong enough for a firm conclusion.</span>'+
       '<span><b>Statistically supported:</b> evidence supports a group-level pattern.</span>'+
-    '</div></div>';
+    '</div>'+overallEvidenceNote("Statistics used",evidence.text,evidence.tone)+'</div>';
 }
 function overallVariabilityCard(d){
   var metric=defaultAlphaMetric(d),label=metricLabel(d,"alpha",metric),vars=alphaVariabilityByGroup(d,metric),max=vars.length?Math.max.apply(null,vars.map(function(v){return v.spread;})):0,top=vars[0]||null;
@@ -5715,7 +5941,7 @@ function overallVariabilityCard(d){
   }).join("");
   var value=top?top.group+" varies the most":"Variability not available";
   var note=top?"Bars show within-group standard deviation for "+label+" (the square root of the mean squared difference from that group’s mean); the widest spread indicates the least consistency among samples in that group.":"No "+label+" spread could be calculated for the current grouping.";
-  return '<div class="overall-card"><h3>Variability</h3><span class="overall-value">'+esc(value)+'</span><p>'+esc(note)+'</p><div class="variability-chart"><div class="variability-axis"><span>More consistent</span><span>More variable</span></div>'+rows+'</div></div>';
+  return '<div class="overall-card"><h3>Variability</h3><span class="overall-value">'+esc(value)+'</span><p>'+esc(note)+'</p><div class="variability-chart"><div class="variability-axis"><span>More consistent</span><span>More variable</span></div>'+rows+'</div>'+overallEvidenceNote("Statistical context","Descriptive only. These bars do not test whether group variability differs significantly and do not identify outliers.","descriptive")+'</div>';
 }
 function overallWhatMattersCard(d){
   var rows=clientSummaryRows(d).slice(0,4);
@@ -7252,7 +7478,7 @@ function taxonomyAllObservationPanel(d){
 function taxonomyAllObservationInner(d){
   var items=taxonomyAllObservationItems(d);
   var hasAssessment=taxonomySpeciesBarEntries(d).length>0;
-  var disclaimer=hasAssessment?'<p class="taxonomy-pattern-disclaimer"><b>Pairwise group assessment is exploratory.</b> Clear separation means the displayed sample ranges do not overlap; overlap means their observed abundance ranges intersect. Neither result replaces the ALDEx2 test.</p>':"";
+  var disclaimer=hasAssessment?'<p class="taxonomy-pattern-disclaimer"><b>Pairwise group assessment is exploratory.</b> For each taxon, we look for a consistent pattern: samples in one group remain higher while samples in another remain lower. Use the ALDEx2 result—not this visual screen—to determine statistical support.</p>':"";
   return '<div class="chart-observations-head"><h4>Key observations</h4><button class="chart-observations-help" type="button" data-metric-guide-topic="Group-pattern assessment" aria-label="Open group-pattern assessment rules" title="Group-pattern assessment rules">?</button></div><ol>'+items.map(function(x){return '<li>'+helpCommon(x)+'</li>';}).join("")+'</ol>'+disclaimer;
 }
 function taxonomyRankChartSection(rank,groupType){
@@ -7722,6 +7948,7 @@ function secOverall(){
     '<div id="overall-confidence" class="guided-anchor">'+overallConfidenceCard(d)+'</div>'+
     '<div id="overall-variability" class="guided-anchor">'+overallVariabilityCard(d)+'</div>'+
     '</div>';
+  html+=overallCrossStatsPanel(d);
   html+=nextBar();
   return html;
 }
@@ -8137,7 +8364,7 @@ function taxonomyRawResultsContext(d,diffOrSummaries,rankLabel){
 }
 function taxonomyWhatNextPanel(d){
   var figs=taxonomyComparisonAllFigures(),rank=taxonomyComparisonSelectedRank(figs),rankLabel=taxonRankLabel(rank);
-  var summaries=taxonomyDiffSummariesForRank(d,rank),diff=combinedTaxonomyDiffSummary(summaries),defaultView=isDefaultGroupView(d);
+  var summaries=taxonomyDiffSummariesForRank(d,rank),diff=combinedTaxonomyDiffSummary(summaries),defaultView=isDefaultGroupView(d),availability=taxonomyDiffAvailability(d,rank);
   var status=!defaultView?"unavailable":(diff&&diff.adjusted?"supported":(!diff||!diff.adjustedAvailable?"unavailable":"descriptive")),shift=strongestTaxonShift(d),design=resultStudyDesign(d);
   var currentBody="",currentNote="";
   if(!defaultView){
@@ -8154,8 +8381,17 @@ function taxonomyWhatNextPanel(d){
   }else if(diff){
     currentBody="FDR support for the "+rankLabel.toLowerCase()+"-level comparisons could not be determined.";
     currentNote=summaries.map(function(summary){return taxonomyDiffMethodStatusText(summary,rankLabel);}).join(" ")+" Use visible abundance patterns descriptively until adjusted taxon-level statistics are available.";
+  }else if(availability==="loading"){
+    currentBody="The "+rankLabel.toLowerCase()+"-level statistical results are still loading.";
+    currentNote="Wait for the report to finish loading before interpreting statistical support.";
+  }else if(availability==="error"){
+    currentBody="A matching "+rankLabel.toLowerCase()+"-level statistics file exists, but the portal could not read it.";
+    currentNote="Refresh the report before interpreting this section; do not treat the temporary loading failure as evidence of no difference.";
+  }else if(availability==="empty"){
+    currentBody="The matching "+rankLabel.toLowerCase()+"-level statistics file contained no usable results.";
+    currentNote="Use individual taxa as descriptive leads only; the available file cannot support a group-level conclusion.";
   }else{
-    currentBody="The "+rankLabel.toLowerCase()+" composition charts are available, but matching differential-abundance statistics were not loaded.";
+    currentBody="No matching "+rankLabel.toLowerCase()+"-level differential-abundance test was provided for this report.";
     currentNote="Use individual taxa as descriptive leads only; the charts cannot confirm a group difference without a matching statistical test and FDR correction.";
   }
 
@@ -8180,7 +8416,11 @@ function taxonomyWhatNextPanel(d){
     : (diff&&diff.adjusted)
     ? "Check that each supported taxon shows the same direction of difference across several samples. Then measure the most important taxon directly—for example, with targeted qPCR."
     : (!diff
-      ? "Run or load a matching differential-abundance test with FDR correction before deciding whether any taxon differs between groups."
+      ? (availability==="loading"
+        ? "Wait for the statistical results to finish loading before planning validation."
+        : (availability==="error"
+          ? "Refresh the report so the existing statistics file can be read before planning validation."
+          : "Run or provide a matching differential-abundance test with FDR correction before deciding whether any taxon differs between groups."))
       : (!diff.adjustedAvailable
       ? "Calculate FDR-adjusted p-values for the loaded comparisons before deciding whether any taxon differs between groups. Add biological replicates if the present groups are too small to estimate variation reliably."
       : "No taxon is confirmed as different between groups. If detecting smaller effects matters, increase biological replicates (the number of samples per group) and repeat the corrected taxon-level test. The experiment may also have little or no detectable effect on microbiome composition."));
