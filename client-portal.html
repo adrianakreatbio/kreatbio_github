@@ -3517,7 +3517,7 @@ var TERM_TIPS={
   shannon:"Shannon is an alpha-diversity score that increases when a sample has more taxa and more even abundances.",
   simpson:"Simpson reflects dominance/evenness; higher values usually mean the sample is less dominated by one or a few taxa.",
   asv:"ASV means Amplicon Sequence Variant: an exact DNA sequence variant detected after denoising.",
-  pcoa:"PCoA projects many pairwise sample distances onto a 2D plot so similar samples sit closer together.",
+  pcoa:"PCoA projects the distances between every pair of samples onto a 2D plot so similar samples sit closer together.",
   permanova:"PERMANOVA tests whether groups differ in whole-community composition more than expected by chance.",
   permdisp:"PERMDISP checks whether groups differ in spread; this matters because spread can affect PERMANOVA.",
   r2:"R² is the percent of community variation explained by the group labels.",
@@ -4362,10 +4362,15 @@ function taxonomyPatternSummary(d,file){
 function taxonomyDiffMethodStatusText(summary,rankLabel){
   var method=summary.method||"Taxonomy",rankWord=String(rankLabel||"taxon").toLowerCase();
   if(summary.adjusted){
-    return method+": "+summary.adjusted+" FDR-supported "+rankWord+"-level pairwise result"+(summary.adjusted===1?"":"s")+" involving "+summary.adjustedUniqueTaxa+" unique "+(summary.adjustedUniqueTaxa===1?"taxon":"taxa")+".";
+    return method+": "+summary.adjusted+" FDR-supported "+rankWord+"-level taxon comparison"+(summary.adjusted===1?"":"s")+" between groups, involving "+summary.adjustedUniqueTaxa+" unique "+(summary.adjustedUniqueTaxa===1?"taxon":"taxa")+".";
   }
   if(summary.adjustedAvailable){
-    return method+": no FDR-supported "+rankWord+"-level results"+(summary.raw?"; "+summary.raw+" uncorrected pairwise lead"+(summary.raw===1?"":"s")+" involving "+summary.rawUniqueTaxa+" unique "+(summary.rawUniqueTaxa===1?"taxon":"taxa")+".":" and no pairwise result with raw p < 0.05.");
+    if(summary.raw){
+      var taxaWord=rankWord==="taxon"?"taxa":taxonRankPlural(rankWord),comparisonText=summary.raw===1?"one "+rankWord+"-level comparison":fmtNum(summary.raw)+" "+rankWord+"-level comparisons";
+      var taxaText=summary.rawUniqueTaxa===1?"one "+rankWord:fmtNum(summary.rawUniqueTaxa)+" "+taxaWord;
+      return method+" found "+comparisonText+" involving "+taxaText+" with "+(summary.raw===1?"a raw p-value":"raw p-values")+" below 0.05. After accounting for the many "+taxaWord+" and group comparisons tested (FDR correction), none remained statistically supported.";
+    }
+    return method+" found no "+rankWord+"-level comparison with a raw p-value below 0.05 or statistical support after FDR correction.";
   }
   return method+": FDR-adjusted p-values were not available for the loaded "+rankWord+"-level results.";
 }
@@ -4429,7 +4434,7 @@ function taxonomySupportSummary(d,rank){
   }
   return {
     value:"No FDR-supported "+rankLabel.toLowerCase()+"-level abundance pattern was observed.",
-    note:detail+" Treat uncorrected results as exploratory leads only.",
+    note:detail+(diff.raw?" These are exploratory observations, not confirmed "+groupingLabelForSentence(d)+" differences.":""),
     tone:"poor",
     scope:"loaded"
   };
@@ -4463,10 +4468,12 @@ function taxonomyResultSummaryPanel(d){
   }else if(diff.adjusted){
     conclusionValue="Supported "+rankLabel.toLowerCase()+"-level abundance patterns were detected.";
     conclusionNote="Prioritize candidates that repeat across biological samples.";
-    statValue=diff.adjusted+" FDR-supported pairwise result"+(diff.adjusted===1?"":"s");
+    statValue=diff.adjusted+" FDR-supported taxon comparison"+(diff.adjusted===1?"":"s")+" between groups";
   }else{
     conclusionValue="No FDR-supported "+rankLabel.toLowerCase()+"-level abundance pattern was detected.";
-    conclusionNote=diff.raw?diff.raw+" uncorrected pairwise result"+(diff.raw===1?" remains":"s remain")+" exploratory.":"No raw-p lead was found in the loaded test.";
+    conclusionNote=diff.raw
+      ? (diff.raw===1?"One comparison had a raw p-value below 0.05, but it did not pass FDR correction.":fmtNum(diff.raw)+" comparisons had raw p-values below 0.05, but none passed FDR correction.")
+      : "No comparison had a raw p-value below 0.05 or passed FDR correction.";
     statValue="No FDR-supported "+rankLabel.toLowerCase()+" results";
   }
   var hasShift=shift&&shift.taxon&&shift.taxon!=="None"&&shift.range>0;
@@ -4474,7 +4481,7 @@ function taxonomyResultSummaryPanel(d){
     return g.label+" "+fmtPct(taxonMedianByGroup(d,shift.taxon,g.id),1);
   }).join(" · "):"";
   var statLines=['<span>'+esc(support.note)+'</span>'];
-  if(hasShift)statLines.push('<span class="takeaway-stat-caveat">Exploratory observation, not a confirmed '+esc(groupingLevelTerm(d))+' effect.</span>');
+  if(hasShift&&(!diff||diff.adjusted||!diff.raw))statLines.push('<span class="takeaway-stat-caveat">Exploratory observation, not a confirmed '+esc(groupingLevelTerm(d))+' effect.</span>');
   var evidence=[
     {label:"Main conclusion",value:conclusionValue,detailHtml:'<span>'+esc(conclusionNote)+'</span>',tone:support.tone,icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>'},
     {label:"Exploratory observation",value:hasShift?taxonDisplayName(shift.taxon,d):"No clear named taxon",detailHtml:hasShift?('<span class="takeaway-card-detail-label">Largest observed median difference</span><span class="takeaway-group-medians">'+esc(groupMedianText)+'</span>'):'<span>No abundance-based taxon shift was identified.</span>',divider:true,icon:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/>'},
@@ -5066,14 +5073,14 @@ function functionalDiffStatsPanel(d){
   var rows=rankedFunctionalDiffRows(d,8,active),kindName=function(kind){return kind==="pathway"?"Pathway":functionalKindLabel(kind);};
   var overview='<div class="functional-diff-summary">'+loadedKinds.map(function(kind){
     var summary=functionalDiffOverview(allRows.filter(function(row){return functionalDiffKindId(row)===kind;}));
-    return '<article><b>'+esc(kindName(kind))+'</b><span>'+esc(fmtNum(summary.results)+" comparisons · "+fmtNum(summary.raw)+" uncorrected p < 0.05 · "+fmtNum(summary.supported)+" FDR-supported")+'</span></article>';
+    return '<article><b>'+esc(kindName(kind))+'</b><span>'+esc(fmtNum(summary.results)+" comparisons · "+fmtNum(summary.raw)+" with raw p-values below 0.05 · "+fmtNum(summary.supported)+" FDR-supported")+'</span></article>';
   }).join("")+'</div>';
   var filters=[{id:"all",label:"All"}].concat(loadedKinds.map(function(kind){return {id:kind,label:kindName(kind)};}));
   var filterHtml=loadedKinds.length>1?filterChips("functional-diff","Show results",filters,active):"";
   var body=rows.map(function(r){
     var adjustedSupport=r.q!=null&&Number(r.q)<0.05;
     var rawLead=!adjustedSupport&&r.p!=null&&Number(r.p)<0.05;
-    var support=r.q==null?(rawLead?"Exploratory — FDR unavailable":"FDR unavailable"):(adjustedSupport?"FDR-supported":(rawLead?"Exploratory — uncorrected p only":"Not supported"));
+    var support=r.q==null?(rawLead?"Exploratory — FDR unavailable":"FDR unavailable"):(adjustedSupport?"FDR-supported":(rawLead?"Exploratory — raw p-value only":"Not supported"));
     var contrast=[r.groupA,r.groupB].filter(Boolean).join(" vs ")||"Not specified";
     return '<div class="inspection-row" style="--cols:minmax(105px,.45fr) minmax(240px,1.2fr) minmax(165px,.75fr) minmax(115px,.5fr) minmax(135px,.58fr) minmax(135px,.58fr) minmax(190px,.85fr)">'+
       '<b>'+esc(r.kind)+'</b>'+
@@ -5090,9 +5097,9 @@ function functionalDiffStatsPanel(d){
     : "The effect sign follows the contrast coding in the loaded differential-statistics file. Larger absolute effects indicate stronger separation, but statistical support depends on the adjusted p-value.";
   var shownLabel=active==="all"?"all loaded function types":kindName(active);
   return '<div class="pattern-panel"><h3>Differential Function Statistics</h3>'+
-    '<p class="table-caption">'+helpCommon((isWelch?"ALDEx2 expected Welch tests":"ALDEx2 differential tests")+" of predicted functional abundance. Each row represents one feature in one pairwise group comparison; Benjamini-Hochberg correction is applied within the loaded comparison. The table shows up to eight "+shownLabel+" results, prioritizing FDR-supported rows, then uncorrected p-value leads, then unsupported rows.")+'</p>'+overview+filterHtml+
+    '<p class="table-caption">'+helpCommon((isWelch?"ALDEx2 expected Welch tests":"ALDEx2 differential tests")+" of predicted functional abundance. Each row tests one predicted feature between two groups; Benjamini-Hochberg correction is applied within the loaded comparison. The table shows up to eight "+shownLabel+" results, prioritizing FDR-supported rows, then results with raw p-values below 0.05, then unsupported rows.")+'</p>'+overview+filterHtml+
     '<div class="inspection-table">'+
-      '<div class="inspection-row" style="--cols:minmax(105px,.45fr) minmax(240px,1.2fr) minmax(165px,.75fr) minmax(115px,.5fr) minmax(135px,.58fr) minmax(135px,.58fr) minmax(190px,.85fr)"><b>Type</b><b>Feature</b><b>Comparison</b><b>Effect (second − first)</b><b>'+(isWelch?'Uncorrected Welch p':'Uncorrected p')+'</b><b>FDR-adjusted p</b><b>Conclusion</b></div>'+body+'</div><p class="functional-diff-method-note">'+helpCommon(methodNote)+'</p></div>';
+      '<div class="inspection-row" style="--cols:minmax(105px,.45fr) minmax(240px,1.2fr) minmax(165px,.75fr) minmax(115px,.5fr) minmax(135px,.58fr) minmax(135px,.58fr) minmax(190px,.85fr)"><b>Type</b><b>Feature</b><b>Comparison</b><b>Effect (second − first)</b><b>'+(isWelch?'Raw Welch p-value':'Raw p-value')+'</b><b>FDR-adjusted p</b><b>Conclusion</b></div>'+body+'</div><p class="functional-diff-method-note">'+helpCommon(methodNote)+'</p></div>';
 }
 function compositionHelpCallout(d,file){
   var s=taxonomyPatternSummary(d,file);
@@ -5301,14 +5308,14 @@ function betaSelfExperimentPanel(d){
   var sampleNumbers={};all.forEach(function(id,index){sampleNumbers[id]=index+1;});
   var checks=all.map(function(id){var s=byId[id],label=s?sampleLabel(s):id,group=s?(d.groups||[]).filter(function(g){return g.id===s.group;})[0]:null;return '<label class="self-experiment-sample"><input type="checkbox" data-beta-self-sample="'+esc(id)+'"'+(selected.indexOf(id)>=0?' checked':'')+'><span class="self-experiment-sample-number">'+sampleNumbers[id]+'</span><span>'+esc(label)+'</span><small>'+esc(group?group.label:(s&&s.group||"Unknown group"))+'</small></label>';}).join("");
   var significance=matrixIssue
-    ? 'not interpretable · identical pairwise distances'
+    ? 'not interpretable · identical sample-to-sample distances'
     : stats&&stats.permdisp&&stats.permdisp.p<0.05
     ? 'group separation is affected by unequal spread'
     : (stats&&stats.permanova.p!=null?(stats.permanova.p<0.05?'supported group difference':(stats.permanova.p<0.10?'exploratory signal':'no supported group difference')):'not estimable');
   var countText=stats?Object.keys(stats.counts).map(function(key){var g=(d.groups||[]).filter(function(x){return x.id===key;})[0];return (g?g.label:key)+' n='+stats.counts[key];}).join(' · '):'';
   var minGroupN=stats?Math.min.apply(null,Object.keys(stats.counts).map(function(key){return stats.counts[key];})):0;
   var dispersionNote=!matrixIssue&&stats&&!stats.permdisp?(minGroupN<2?'PERMDISP is unavailable because each retained group needs at least two samples.':'PERMDISP could not be estimated because distances to the group centroids have no usable within-group variation for the F-statistic.'):'';
-  var matrixNote=matrixIssue?'All pairwise distances are identical, so these statistics cannot support a biological interpretation.':'';
+  var matrixNote=matrixIssue?'All sample-to-sample distances are identical, so these statistics cannot support a biological interpretation.':'';
   var statHtml=stats?'<div class="self-experiment-stats"><b>Exploratory recalculation</b><span>PERMANOVA p<strong>'+(stats.permanova.p==null?'Not estimable':stats.permanova.p.toFixed(3))+'</strong></span><span>PERMANOVA R²<strong>'+(stats.permanova.R2*100).toFixed(1)+'%</strong></span><span>Pseudo-F<strong>'+(stats.permanova.F==null?'Not estimable':stats.permanova.F.toFixed(3))+'</strong></span><span>PERMDISP p / F<strong>'+(stats.permdisp?stats.permdisp.p.toFixed(3)+' / '+stats.permdisp.F.toFixed(3):'Not estimable')+'</strong></span><span>PCoA 1 / PCoA 2<strong>'+(stats.pcoa.pc1*100).toFixed(1)+'% / '+(stats.pcoa.pc2*100).toFixed(1)+'%</strong></span><span>Interpretation<strong>'+esc(significance)+'</strong></span><span>Retained groups<strong>'+esc(countText)+'</strong></span>'+(matrixNote?'<small class="self-experiment-note">'+esc(matrixNote)+'</small>':'')+(dispersionNote?'<small class="self-experiment-note">'+esc(dispersionNote)+'</small>':'')+'</div>':'<p class="table-caption">Select at least two groups with enough samples to recalculate statistics.</p>';
   var plot=stats?betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers,matrixIssue):'<div class="self-experiment-empty">No recalculable PCoA for this selection.</div>';
   var body='<div class="self-experiment-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to test how the result changes. The statistic cards are calculated outputs and cannot be edited directly.</small></div>'+checks+'</div><div class="self-experiment-intro"><label>Distance metric <select data-beta-self-metric>'+options+'</select></label><button type="button" class="btn secondary" data-beta-self-reset>Reset to all samples</button></div><div class="self-experiment-main">'+plot+statHtml+'</div><p class="table-caption">Exploratory only: sample removal should be justified by independent quality or biological evidence.</p></div>';
@@ -5786,14 +5793,14 @@ function overallEvidenceNote(label,text,tone){
 function overallTaxonomyStatState(d){
   var rank=loadedTaxonRank(d),rankWord=taxonRankLabel(rank).toLowerCase()+"-level",summaries=taxonomyDiffSummariesForRank(d,rank),diff=combinedTaxonomyDiffSummary(summaries),availability=taxonomyDiffAvailability(d,rank);
   if(!isDefaultGroupView(d))return {status:"unavailable",rank:rank,raw:0,text:"The loaded abundance statistics apply to the pipeline grouping, not the selected alternative grouping."};
-  if(diff&&diff.adjusted)return {status:"supported",rank:rank,raw:diff.raw||0,adjusted:diff.adjusted,text:fmtNum(diff.adjusted)+" FDR-supported pairwise result"+(diff.adjusted===1?"":"s")+"."};
+  if(diff&&diff.adjusted)return {status:"supported",rank:rank,raw:diff.raw||0,adjusted:diff.adjusted,text:fmtNum(diff.adjusted)+" FDR-supported taxon comparison"+(diff.adjusted===1?"":"s")+" between groups."};
   if(diff&&diff.adjustedAvailable){
     var rawText="No "+rankWord+" result passed FDR correction.";
     if(diff.raw===1&&diff.rawRows&&diff.rawRows[0]){
       var rawRow=diff.rawRows[0],contrast=taxonomyDiffContrastLabel(rawRow),rawParts=[];
       if(contrast==="Not specified")contrast="";
-      if(rawRow.p!=null)rawParts.push("raw p="+fmtP(rawRow.p));
-      if(rawRow.q!=null)rawParts.push("FDR-adjusted p="+fmtP(rawRow.q));
+      if(rawRow.p!=null)rawParts.push("raw p-value="+fmtP(rawRow.p));
+      if(rawRow.q!=null)rawParts.push("FDR-adjusted p-value="+fmtP(rawRow.q));
       rawText=contrast
         ? "For "+taxonDisplayName(rawRow.taxon,d)+", the "+contrast+" comparison had "+rawParts.join(" and ")+". It is exploratory, not statistically supported."
         : taxonDisplayName(rawRow.taxon,d)+" had "+rawParts.join(" and ")+" in the loaded comparison. It is exploratory, not statistically supported.";
@@ -5848,8 +5855,8 @@ function overallRelationshipEvidence(d){
     var supportedPairs=betaPairwiseGroupStats(d,beta.metric).filter(function(row){return row.q!=null&&Number(row.q)<.05;});
     if(supportedPairs.length){
       var pair=supportedPairs[0];
-      parts.push("FDR-supported pairwise result: "+pair.a.label+" vs "+pair.b.label+" (q="+fmtP(pair.q)+").");
-    }else parts.push("Closest and farthest group-centre relationships remain descriptive; no FDR-supported pairwise result was found.");
+      parts.push("FDR-supported direct group comparison: "+pair.a.label+" vs "+pair.b.label+" (adjusted p="+fmtP(pair.q)+").");
+    }else parts.push("Closest and farthest group-centre relationships remain descriptive; no direct group comparison passed FDR correction.");
   }else parts.push(beta.text+" The displayed closest and farthest group-centre relationships remain descriptive.");
   return {text:parts.join(" "),tone:beta.status==="supported"?"supported":(beta.status==="warning"?"warning":(beta.status==="unavailable"?"unavailable":"descriptive"))};
 }
@@ -6568,7 +6575,7 @@ function taxonomyAldexObservationItems(d,file){
     "This is a differential-abundance screen for taxa, not a relative-abundance composition chart."
   ];
   if(diff){
-    items.push("Matching "+chartRankDescription(profile)+" statistics: "+diff.rows+" rows; "+diff.raw+" raw p-values < 0.05; "+diff.adjusted+" adjusted p-values < 0.05.");
+    items.push("Matching "+chartRankDescription(profile)+" statistics: "+diff.rows+" tested comparisons; "+diff.raw+" had raw p-values below 0.05, and "+diff.adjusted+" passed FDR correction.");
     if(diff.strongest)items.push("Most statistically prioritized taxon in the loaded table: "+taxonDisplayName(diff.strongest.taxon,d)+(diff.strongest.q!=null?" with adjusted p="+fmtP(diff.strongest.q):(diff.strongest.p!=null?" with p="+fmtP(diff.strongest.p):""))+".");
   }else{
     items.push("No matching taxonomy ALDEx2 statistics table was loaded, so use the volcano plot visually only.");
@@ -7465,7 +7472,7 @@ function taxonomyDatabaseGroupPatternObservation(entry){
       var pairText=pairs.map(function(pair){
         return pair.high.label+" vs "+pair.low.label+": "+(pair.clear?"clear separation":"overlap")+" (medians "+fmtPct(pair.high.median,1)+" vs "+fmtPct(pair.low.median,1)+")";
       });
-      return entry.method+" pairwise pattern for "+candidate.name+": "+pairText.join("; ");
+      return entry.method+" group comparison for "+candidate.name+": "+pairText.join("; ");
     }
   }
   return "";
@@ -7491,7 +7498,7 @@ function taxonomyAllObservationPanel(d){
 function taxonomyAllObservationInner(d){
   var items=taxonomyAllObservationItems(d);
   var hasAssessment=taxonomySpeciesBarEntries(d).length>0;
-  var disclaimer=hasAssessment?'<p class="taxonomy-pattern-disclaimer"><b>Pairwise group assessment is exploratory.</b> For each taxon, we look for a consistent pattern: samples in one group remain higher while samples in another remain lower. Use the ALDEx2 result—not this visual screen—to determine statistical support.</p>':"";
+  var disclaimer=hasAssessment?'<p class="taxonomy-pattern-disclaimer"><b>This group-by-group visual assessment is descriptive.</b> For each taxon, we look for a consistent pattern: samples in one group remain higher while samples in another remain lower. Use the ALDEx2 result—not this visual screen—to determine statistical support.</p>':"";
   return '<div class="chart-observations-head"><h4>Key observations</h4><button class="chart-observations-help" type="button" data-metric-guide-topic="Group-pattern assessment" aria-label="Open group-pattern assessment rules" title="Group-pattern assessment rules">?</button></div><ol>'+items.map(function(x){return '<li>'+helpCommon(x)+'</li>';}).join("")+'</ol>'+disclaimer;
 }
 function taxonomyRankChartSection(rank,groupType){
@@ -7547,10 +7554,10 @@ function alphaGroupRangeObservation(d,metric){
   if(!pairs.length)return "At least two groups with sample-level values are required to compare observed ranges.";
   var clearPairs=pairs.filter(function(pair){return pair.clear;}),overlapCount=pairs.length-clearPairs.length;
   var rangeNote=" Range overlap is determined by comparing each group's lowest and highest observed sample values.";
-  if(!clearPairs.length)return "All "+fmtNum(pairs.length)+" pairwise group ranges overlap in the displayed samples."+rangeNote;
-  if(!overlapCount)return "All "+fmtNum(pairs.length)+" pairwise group ranges are clearly separated in the displayed samples."+rangeNote;
+  if(!clearPairs.length)return "The displayed ranges overlap in all "+fmtNum(pairs.length)+" two-group comparisons."+rangeNote;
+  if(!overlapCount)return "The displayed ranges are separated in all "+fmtNum(pairs.length)+" two-group comparisons."+rangeNote;
   var examples=clearPairs.slice(0,3).map(function(pair){return pair.a.label+" vs "+pair.b.label;});
-  return overlapCount+" of "+pairs.length+" pairwise group ranges overlap; clear separation is observed for "+readableList(examples)+"."+rangeNote;
+  return "The displayed ranges overlap in "+overlapCount+" of "+pairs.length+" two-group comparisons; separated ranges are observed for "+readableList(examples)+"."+rangeNote;
 }
 function alphaMetricScaleObservation(metric){
   if(metric==="shannon")return "How to read Shannon: 0 represents one detected feature; higher values reflect greater richness, evenness, or both. There is no universal high threshold; for S observed features, the mathematical maximum is ln(S).";
@@ -7598,7 +7605,7 @@ function betaChartObservationItems(d,file){
   var metric=betaMetricForFigure(d,file),label=metricLabel(d,"beta",metric),pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric),quality=betaDistanceMatrixQuality(d,metric),items=[];
   if(quality.available&&!quality.informative){
     var tiedValue=isFinite(quality.min)?Number(quality.min).toFixed(3):"the same value";
-    items.push("Distance check: all "+quality.count+" pairwise "+label+" distances are tied at "+tiedValue+", so this analysis contains no usable sample-to-sample distance variation.");
+    items.push("Distance check: all "+quality.count+" sample-to-sample "+label+" distances are tied at "+tiedValue+", so this analysis contains no usable distance variation.");
     items.push("Plot interpretation: the displayed positions and ellipses are an arbitrary projection of tied distances. Do not interpret closest groups, separation, or within-group spread from this PCoA.");
     if(pm&&pm.p!=null){
       items.push("Group test: PERMANOVA does not support a group difference (p="+fmtP(pm.p)+(pm.R2!=null?"; R²="+(Number(pm.R2)*100).toFixed(1)+"%":"")+"). With a constant distance matrix, this result cannot distinguish the groups.");
@@ -7670,13 +7677,13 @@ function betaChartObservationItems(d,file){
     var sampleCount=candidate.a.n===candidate.b.n
       ? "n="+candidate.a.n+" per group"
       : candidate.a.label+" n="+candidate.a.n+"; "+candidate.b.label+" n="+candidate.b.n;
-    var correction=pairwise.length>1?"; FDR-adjusted q="+fmtP(candidate.q):"";
+    var correction=pairwise.length>1?"; FDR-adjusted p-value="+fmtP(candidate.q):"";
     if(candidate.q<0.05){
-      items.push("Pairwise group screen: "+pairLabel+" form the strongest tested contrast, and their direct comparison is statistically supported (pairwise PERMANOVA p="+fmtP(candidate.p)+correction+"; R²="+(candidate.R2*100).toFixed(1)+"%; "+sampleCount+").");
+      items.push("Direct group comparison: "+pairLabel+" form the strongest tested contrast, and their comparison is statistically supported (PERMANOVA p-value for this comparison="+fmtP(candidate.p)+correction+"; R²="+(candidate.R2*100).toFixed(1)+"%; "+sampleCount+").");
     }else if(candidate.p<0.10){
-      items.push("Pairwise group screen: "+pairLabel+" form the strongest tested contrast, but the result remains exploratory and is not statistically supported (pairwise PERMANOVA p="+fmtP(candidate.p)+correction+"; R²="+(candidate.R2*100).toFixed(1)+"%; "+sampleCount+").");
+      items.push("Direct group comparison: "+pairLabel+" form the strongest tested contrast, but the result remains exploratory and is not statistically supported (PERMANOVA p-value for this comparison="+fmtP(candidate.p)+correction+"; R²="+(candidate.R2*100).toFixed(1)+"%; "+sampleCount+").");
     }else{
-      items.push("Pairwise group screen: "+pairLabel+" form the strongest tested contrast, but their direct comparison is not statistically supported (pairwise PERMANOVA p="+fmtP(candidate.p)+correction+"; R²="+(candidate.R2*100).toFixed(1)+"%; "+sampleCount+"). Treat any apparent separation as a visual lead only.");
+      items.push("Direct group comparison: "+pairLabel+" form the strongest tested contrast, but their comparison is not statistically supported (PERMANOVA p-value for this comparison="+fmtP(candidate.p)+correction+"; R²="+(candidate.R2*100).toFixed(1)+"%; "+sampleCount+"). Treat any apparent separation as a visual observation only.");
     }
   }
   return uniqueObservationItems(items);
@@ -7695,14 +7702,14 @@ function functionalChartObservationItems(d,file){
       return aq-bq||Math.abs(Number(b.effect)||0)-Math.abs(Number(a.effect)||0);
     })[0];
     var items=[];
-    if(fdiffs.length)items.push("Matching ALDEx2 Welch tests: "+fdiffs.map(function(x){return functionalKindLabel(x.kind)+" "+fmtNum(x.summary.uniqueFeatures)+" unique features and "+fmtNum(x.summary.results)+" feature-comparison results; "+fmtNum(x.summary.raw)+" raw p-values < 0.05 and "+fmtNum(x.summary.adjusted)+" Benjamini-Hochberg-adjusted p-values < 0.05";}).join("; ")+".");
+    if(fdiffs.length)items.push("Matching ALDEx2 Welch tests: "+fdiffs.map(function(x){return functionalKindLabel(x.kind)+" "+fmtNum(x.summary.uniqueFeatures)+" unique features and "+fmtNum(x.summary.results)+" feature-comparison results; "+fmtNum(x.summary.raw)+" had raw p-values below 0.05, and "+fmtNum(x.summary.adjusted)+" remained supported after Benjamini-Hochberg correction";}).join("; ")+".");
     var leadingName=leading&&functionalFeatureName(leading.feature,"");
     if(leading&&leadingName){
-      var decisionLabel=leading.q!=null?("adjusted p="+fmtP(leading.q)):(leading.p!=null?("raw p="+fmtP(leading.p)):"p-value not reported");
+      var decisionLabel=leading.q!=null?("adjusted p-value="+fmtP(leading.q)):(leading.p!=null?("raw p-value="+fmtP(leading.p)):"p-value not reported");
       items.push((supported.length?"Top supported feature: ":"Top-ranked loaded feature: ")+functionalFeatureDisplay(leading.feature,leadingName)+" ("+functionalKindLabel(String(leading.kind||"").toLowerCase())+(leading.effect!=null?", effect="+fmtStatNumber(leading.effect):"")+", "+decisionLabel+").");
     }
     if(diffRows.some(function(r){return /(^|\/)raw\//.test(String(r.sourcePath||"").toLowerCase());}))items.push("The portal loaded these ALDEx2 results from the report's raw analysis folder and used them to hydrate this interpretation.");
-    if(fdiffs.length)items.push("Each result is one predicted feature in one pairwise group comparison. Benjamini-Hochberg-adjusted p-values are the priority; a raw Welch p-value below 0.05 without adjusted support is exploratory.");
+    if(fdiffs.length)items.push("Each result tests one predicted feature between two groups. Benjamini-Hochberg-adjusted p-values are the priority; a raw Welch p-value below 0.05 without adjusted support is exploratory.");
     items.push("These tests compare predicted functional abundance, not measured gene expression or biochemical activity.");
     return uniqueObservationItems(items);
   }
@@ -7729,7 +7736,7 @@ function functionalChartObservationItems(d,file){
     items.push("No ranked "+functionalKindLabel(fkind)+" shift was available for this chart.");
   }
   var kindDiff=functionalDiffSummaryForKind(d,fkind);
-  if(kindDiff)items.push("ALDEx2 Welch context for "+functionalKindLabel(fkind)+": "+fmtNum(kindDiff.uniqueFeatures)+" unique features produced "+fmtNum(kindDiff.results)+" feature-comparison results"+(kindDiff.contrasts?" across "+fmtNum(kindDiff.contrasts)+" pairwise group comparisons":"")+"; "+fmtNum(kindDiff.raw)+" raw p-values < 0.05 and "+fmtNum(kindDiff.adjusted)+" Benjamini-Hochberg-adjusted p-values < 0.05.");
+  if(kindDiff)items.push("ALDEx2 Welch context for "+functionalKindLabel(fkind)+": "+fmtNum(kindDiff.uniqueFeatures)+" unique features produced "+fmtNum(kindDiff.results)+" feature-comparison results"+(kindDiff.contrasts?" across "+fmtNum(kindDiff.contrasts)+" two-group comparisons":"")+"; "+fmtNum(kindDiff.raw)+" had raw p-values below 0.05, and "+fmtNum(kindDiff.adjusted)+" remained supported after Benjamini-Hochberg correction.");
   return uniqueObservationItems(items);
 }
 function chartObservationItems(kind,file){
@@ -7757,7 +7764,7 @@ function chartObservationMarkup(kind,file,items){
     topic="PCoA distance";
     disclaimer=/species[_ -]?vector[_ -]?pcoa|species.*pcoa.*vector/.test(t)
       ? '<p class="chart-assessment-disclaimer"><b>Statistics scope:</b> This species-filtered ordination is kept separate from the main Bray-Curtis statistics because no matching numeric source table was loaded for it.</p>'
-      : '<p class="chart-assessment-disclaimer"><b>How these observations are determined:</b> They combine overall and pairwise PERMANOVA, R², PERMDISP, and group positions on the displayed PCoA axes; pairwise p-values are FDR-adjusted when more than two groups are tested.</p>';
+      : '<p class="chart-assessment-disclaimer"><b>How these observations are determined:</b> They combine overall PERMANOVA, direct tests between group pairs, R², PERMDISP, and group positions on the displayed PCoA axes; p-values from direct group comparisons are FDR-adjusted when more than two groups are tested.</p>';
   }else if(kind==="functional"){
     topic=/nsti/.test(t)?"NSTI":(/aldex2|volcano/.test(t)?"ALDEx2":"PICRUSt2");
     if(!/nsti|aldex2|volcano/.test(t))disclaimer='<p class="chart-assessment-disclaimer"><b>Note — how the largest shifts are determined:</b> The heatmap first selects up to 30 features with the greatest across-sample variance after CPM normalization. Among those displayed features, the portal calculates the mean predicted abundance within each selected metadata category, then subtracts the lowest category mean from the highest. Features outside the displayed subset are not used for this observation. This ranks descriptive magnitude only; ALDEx2 p-values and adjusted p-values/FDR are evaluated separately for statistical support.</p>';
@@ -8367,13 +8374,13 @@ function taxonomyRawResultsContext(d,diffOrSummaries,rankLabel){
   var multiple=summaries.length>1;
   var rawSummary=summaries.map(function(summary){return taxonomyDiffMethodStatusText(summary,rankLabel);}).join(" ")+" ";
   if(summaries.some(function(summary){return summary.raw>summary.rawUniqueTaxa;}))rawSummary+="A taxon can appear more than once because each row represents a separate group comparison. ";
-  var title=diff.adjusted?"Pairwise taxon results":"Exploratory results before FDR correction";
+  var title=diff.adjusted?"Taxon comparisons between groups":"Exploratory results before FDR correction";
   var body=rows.map(function(row){
     var taxon=(multiple?(String(row.method||"Taxonomy")+" · "):"")+taxonDisplayName(row.taxon,d);
     return '<div class="result-next-context-row"><strong>'+esc(taxon)+'</strong><span>'+esc(taxonomyDiffContrastLabel(row))+'</span><span>'+esc(taxonomyDiffEffectMagnitude(row.effect))+'</span><span>'+esc(taxonomyDiffPValue(row.p))+'</span><span>'+esc(taxonomyDiffPValue(row.q))+'</span></div>';
   }).join("");
   var methodNote="ALDEx2 compares the difference between groups with the variation among samples within each group. Effect magnitude shows how large and consistent that difference is. High variation within a group can produce a higher p-value, so even a visually large difference will not appear in this table if its raw p-value is 0.05 or higher.";
-  return '<aside class="result-next-context" aria-label="Pairwise taxon statistical results"><div class="result-next-context-head"><b>'+esc(title)+'</b><p>'+esc(rawSummary)+'</p></div><div class="result-next-context-table"><div class="result-next-context-row"><b>'+(multiple?'Method · taxon':'Taxon')+'</b><b>Group comparison</b><b>Effect magnitude</b><b>Raw p</b><b>FDR-adjusted p</b></div>'+body+'</div><p class="result-next-context-method">'+esc(methodNote)+'</p></aside>';
+  return '<aside class="result-next-context" aria-label="Taxon comparisons between groups"><div class="result-next-context-head"><b>'+esc(title)+'</b><p>'+esc(rawSummary)+'</p></div><div class="result-next-context-table"><div class="result-next-context-row"><b>'+(multiple?'Method · taxon':'Taxon')+'</b><b>Group comparison</b><b>Effect magnitude</b><b>Raw p-value</b><b>FDR-adjusted p-value</b></div>'+body+'</div><p class="result-next-context-method">'+esc(methodNote)+'</p></aside>';
 }
 function taxonomyWhatNextPanel(d){
   var figs=taxonomyComparisonAllFigures(),rank=taxonomyComparisonSelectedRank(figs),rankLabel=taxonRankLabel(rank);
@@ -8390,7 +8397,7 @@ function taxonomyWhatNextPanel(d){
     currentNote="Check that every supported direction repeats across individual samples."+(candidates.length?" Top-ranked loaded candidates: "+readableList(candidates)+".":"");
   }else if(diff&&diff.adjustedAvailable){
     currentBody="No "+rankLabel.toLowerCase()+"-level abundance difference was supported after FDR correction.";
-    currentNote=summaries.map(function(summary){return taxonomyDiffMethodStatusText(summary,rankLabel);}).join(" ")+" Treat uncorrected results as leads, not confirmed differences.";
+    currentNote=summaries.map(function(summary){return taxonomyDiffMethodStatusText(summary,rankLabel);}).join(" ")+(diff.raw?" These are exploratory observations, not confirmed differences.":"");
   }else if(diff){
     currentBody="FDR support for the "+rankLabel.toLowerCase()+"-level comparisons could not be determined.";
     currentNote=summaries.map(function(summary){return taxonomyDiffMethodStatusText(summary,rankLabel);}).join(" ")+" Use visible abundance patterns descriptively until adjusted taxon-level statistics are available.";
@@ -8440,7 +8447,7 @@ function taxonomyWhatNextPanel(d){
   var validateNote="Confirm taxonomy at the most reliable available rank; species-level assignments can depend on the classifier and reference database.";
   var decisionEvidence=[fmtNum(design.total)+" samples",fmtNum(design.positive.length)+" "+groupingUnitLabel(d)];
   summaries.forEach(function(summary){
-    decisionEvidence.push(summary.method+": "+summary.rows+" tested results; "+summary.raw+" raw-p leads; "+summary.adjusted+" FDR-supported");
+    decisionEvidence.push(summary.method+": "+summary.rows+" tested results; "+summary.raw+" with raw p-values below 0.05; "+summary.adjusted+" FDR-supported");
   });
   return resultWhatNextPanel("taxonomy","Use these steps to understand the result and plan follow-up work.",[
     resultNextCard("Current interpretation",currentBody,currentNote,[]),
@@ -8811,7 +8818,7 @@ function betaWhatNextPanel(d,opts){
   var supported=rows.filter(function(row){return row.status==="supported";}),small=rows.filter(function(row){return row.status==="small";}),exploratory=rows.filter(function(row){return row.status==="exploratory";});
   var dispersion=rows.filter(function(row){return row.status==="dispersion";}),tested=rows.filter(function(row){return row.pm&&row.pm.p!=null;}),design=resultStudyDesign(d);
   var groupNames=readableList(design.positive.map(function(group){return group.label;}));
-  var pairwiseFollowUp=design.positive.length>2?" Use FDR-corrected pairwise PERMANOVA to identify which groups differ before investigating contributing taxa.":"";
+  var pairwiseFollowUp=design.positive.length>2?" Use FDR-adjusted PERMANOVA comparisons between group pairs to identify which groups differ before investigating contributing taxa.":"";
   var currentBody,useTitle,useBody,validateBody,recommendation,tone,statusLabel;
   if(supported.length===1){
     var lead=supported[0];
@@ -9007,7 +9014,7 @@ function plotFlowGroups(){
     {input:["o4_diversity/pcoa_coordinates.tsv"],support:["o4_diversity/beta_braycurtis_distance.tsv","o4_diversity/permanova.tsv","o4_diversity/permdisp.tsv","input_data/metadata.tsv"],tool:"QIIME 2 Bray-Curtis/PCoA output + vegan statistics + Python plotting",method:"Bray-Curtis distance, PCoA, PERMANOVA and PERMDISP",note:"QIIME 2 Bray-Curtis PCoA coordinates are plotted by group; PERMANOVA and PERMDISP results come from vegan::adonis2 and vegan::betadisper.",outputs:["o6_figures/beta_pcoa.png (+ o4_diversity copy)"]},
     {input:["o4_diversity/unweighted_unifrac_pcoa_coordinates.tsv"],support:["o4_diversity/unweighted_unifrac_distance.tsv","raw/master_group/o_phylogeny/tree.nwk","input_data/metadata.tsv"],tool:"QIIME 2 unweighted UniFrac/PCoA output + Python plotting",method:"Unweighted UniFrac ordination",note:"Presence/absence-based phylogenetic distances are ordinated using PCoA.",outputs:["o6_figures/beta_unweighted_unifrac_pcoa.png (+ o4_diversity copy)"]},
     {input:["o4_diversity/weighted_unifrac_pcoa_coordinates.tsv"],support:["o4_diversity/weighted_unifrac_distance.tsv","raw/master_group/o_phylogeny/tree.nwk","input_data/metadata.tsv"],tool:"QIIME 2 weighted UniFrac/PCoA output + Python plotting",method:"Weighted UniFrac ordination",note:"Abundance-weighted phylogenetic distances are ordinated using PCoA.",outputs:["o6_figures/beta_weighted_unifrac_pcoa.png (+ o4_diversity copy)"]},
-    {input:["raw/master_group/o_stats/functional_aldex2_ec.tsv","raw/master_group/o_stats/functional_aldex2_ko.tsv","raw/master_group/o_stats/functional_aldex2_pathway.tsv"],support:["o5_functional_prediction_picrust2/ec_abundance.tsv","o5_functional_prediction_picrust2/ko_abundance.tsv","o5_functional_prediction_picrust2/pathway_abundance.tsv","input_data/metadata.tsv"],tool:"ALDEx2 results + volcano plotting",method:"Differential predicted function",note:"Released pairwise ALDEx2 results for predicted EC, KO and MetaCyc pathway abundances are combined into volcano summaries; they describe predicted potential, not measured function.",outputs:["o6_figures/functional_aldex2_volcano.png"]},
+    {input:["raw/master_group/o_stats/functional_aldex2_ec.tsv","raw/master_group/o_stats/functional_aldex2_ko.tsv","raw/master_group/o_stats/functional_aldex2_pathway.tsv"],support:["o5_functional_prediction_picrust2/ec_abundance.tsv","o5_functional_prediction_picrust2/ko_abundance.tsv","o5_functional_prediction_picrust2/pathway_abundance.tsv","input_data/metadata.tsv"],tool:"ALDEx2 results + volcano plotting",method:"Differential predicted function",note:"Released ALDEx2 comparisons between group pairs for predicted EC, KO and MetaCyc pathway abundances are combined into volcano summaries; they describe predicted potential, not measured function.",outputs:["o6_figures/functional_aldex2_volcano.png"]},
     {input:["o5_functional_prediction_picrust2/nsti_per_sample.tsv"],support:["o5_functional_prediction_picrust2/marker_nsti.tsv","input_data/metadata.tsv"],tool:"PICRUSt2 NSTI output + seaborn boxplot",method:"Prediction reference support",note:"Per-sample abundance-weighted NSTI values are grouped for plotting; marker-level NSTI records provide the underlying reference-genome context.",outputs:["o6_figures/functional_nsti_boxplot.png"]},
     {input:["o5_functional_prediction_picrust2/ec_abundance.tsv"],support:["input_data/metadata.tsv"],tool:"PICRUSt2 predicted EC output + seaborn heatmap",method:"Predicted enzyme functions",note:"Top predicted EC features are selected from per-sample abundance output and shown as a heatmap; values are predictions, not measurements.",outputs:["o6_figures/functional_top_ec_heatmap.png"]},
     {input:["o5_functional_prediction_picrust2/ko_abundance.tsv"],support:["input_data/metadata.tsv"],tool:"PICRUSt2 predicted KO output + seaborn heatmap",method:"Predicted KEGG orthologs",note:"Top predicted KO features are selected from per-sample abundance output and shown as a heatmap; values are predictions, not measurements.",outputs:["o6_figures/functional_top_ko_heatmap.png"]},
@@ -9020,9 +9027,9 @@ function plotFlowGroups(){
     {input:["o2_taxonomy_qiime2_silva/family_relative_abundance.tsv"],support:["input_data/metadata.tsv"],tool:"QIIME 2/SILVA relative-abundance output + Python / seaborn",method:"SILVA family composition",note:"Released SILVA family-level relative abundance is plotted as sample and heatmap views.",outputs:["o6_figures/taxa_barplot_family_top20.png","o6_figures/taxa_heatmap_family_top20.png"]},
     {input:["o2_taxonomy_qiime2_silva/genus_relative_abundance.tsv"],support:["input_data/metadata.tsv"],tool:"QIIME 2/SILVA relative-abundance output + Python / seaborn",method:"SILVA genus composition",note:"Released SILVA genus-level relative abundance is plotted as sample and heatmap views.",outputs:["o6_figures/taxa_barplot_genus_top20.png","o6_figures/taxa_heatmap_genus_top20.png"]},
     {input:["o2_taxonomy_qiime2_silva/species_relative_abundance.tsv"],support:["input_data/metadata.tsv"],tool:"QIIME 2/SILVA relative-abundance output + Python / seaborn",method:"SILVA species composition",note:"Released SILVA species-level relative abundance is plotted as sample and heatmap views.",outputs:["o6_figures/taxa_barplot_species_top20.png","o6_figures/taxa_heatmap_species_top20.png"]},
-    {input:["raw/master_group/o_stats/emu_aldex2_family.tsv"],support:["raw/master_group/o_emu/emu_family_abundance.tsv","input_data/metadata.tsv"],tool:"ALDEx2 results + volcano plotting",method:"EMU family differential abundance",note:"Released pairwise ALDEx2 results, computed from EMU estimated counts aggregated to family level, are plotted as a volcano summary.",outputs:["o6_figures/emu_aldex2_volcano_family.png"]},
-    {input:["raw/master_group/o_stats/emu_aldex2_genus.tsv"],support:["raw/master_group/o_emu/emu_genus_abundance.tsv","input_data/metadata.tsv"],tool:"ALDEx2 results + volcano plotting",method:"EMU genus differential abundance",note:"Released pairwise ALDEx2 results, computed from EMU estimated counts aggregated to genus level, are plotted as a volcano summary.",outputs:["o6_figures/emu_aldex2_volcano_genus.png"]},
-    {input:["raw/master_group/o_stats/emu_aldex2_species.tsv"],support:["raw/master_group/o_emu/emu_species_abundance.tsv","input_data/metadata.tsv"],tool:"ALDEx2 results + volcano plotting",method:"EMU species differential abundance",note:"Released pairwise ALDEx2 results, computed from EMU estimated counts at species level, are plotted as a volcano summary.",outputs:["o6_figures/emu_aldex2_volcano_species.png"]}
+    {input:["raw/master_group/o_stats/emu_aldex2_family.tsv"],support:["raw/master_group/o_emu/emu_family_abundance.tsv","input_data/metadata.tsv"],tool:"ALDEx2 results + volcano plotting",method:"EMU family differential abundance",note:"Released ALDEx2 comparisons between group pairs, computed from EMU estimated counts aggregated to family level, are plotted as a volcano summary.",outputs:["o6_figures/emu_aldex2_volcano_family.png"]},
+    {input:["raw/master_group/o_stats/emu_aldex2_genus.tsv"],support:["raw/master_group/o_emu/emu_genus_abundance.tsv","input_data/metadata.tsv"],tool:"ALDEx2 results + volcano plotting",method:"EMU genus differential abundance",note:"Released ALDEx2 comparisons between group pairs, computed from EMU estimated counts aggregated to genus level, are plotted as a volcano summary.",outputs:["o6_figures/emu_aldex2_volcano_genus.png"]},
+    {input:["raw/master_group/o_stats/emu_aldex2_species.tsv"],support:["raw/master_group/o_emu/emu_species_abundance.tsv","input_data/metadata.tsv"],tool:"ALDEx2 results + volcano plotting",method:"EMU species differential abundance",note:"Released ALDEx2 comparisons between group pairs, computed from EMU estimated counts at species level, are plotted as a volcano summary.",outputs:["o6_figures/emu_aldex2_volcano_species.png"]}
   ].map(function(g){
     g.input=(g.input||[]).map(function(x){return /^raw\/|^input_data\/|^Default/.test(x)?x:OUT+x;});
     g.support=(g.support||[]).map(function(x){return /^raw\/|^input_data\//.test(x)?x:OUT+x;});
@@ -9205,7 +9212,7 @@ var FILES=[
  {name:"ordination.qza / pcoa.txt",kind:"Ordination",what:"The coordinates behind the PCoA scatter you explored.",why:"Makes whole-community similarity visible at a glance.",read:"Nearby points are similar samples; axis percentages show how much you are really seeing.",limit:"Only the first couple of axes are plotted, so some real structure is always left off-screen.",stat:"pcoa"},
  {name:"taxa-barplot.qzv",kind:"Figure",what:"An interactive stacked-bar figure of composition across available taxonomic levels.",why:"The shareable, at-a-glance version of 'who is there'.",read:"Switch levels to move from broad ranks to more specific ranks when the report supports them.",limit:"It shows proportions, so a booming taxon makes everything else look smaller."},
  {name:"functional_summary.tsv",kind:"PICRUSt2",what:"A compact summary of predicted functional outputs available for this report.",why:"Shows whether function prediction has enough output to support the functional view.",read:"Use pathway and EC counts with NSTI; lower NSTI is generally better-supported.",limit:"Predicted function is hypothesis-generating and not measured gene activity.",stat:"functional"},
- {name:"functional_aldex2_*.tsv",kind:"Differential function stats",what:"ALDEx2 Welch-test results for predicted KO, pathway, or EC abundance in each pairwise metadata-category comparison.",why:"Adds one feature-comparison result per row, including the expected Welch p-value, Benjamini-Hochberg-adjusted p-value, and effect estimate.",read:"Prioritize feature-comparison results with adjusted p-values below 0.05, then check effect size, sample consistency, and biological relevance.",limit:"These are still marker-gene-based function predictions. They need per-sample predicted functional abundance, replicated metadata categories, and confirmation by direct methods for strong claims.",stat:"functionalDiff"}
+ {name:"functional_aldex2_*.tsv",kind:"Differential function stats",what:"ALDEx2 Welch-test results for predicted KO, pathway, or EC abundance in each comparison between two metadata categories.",why:"Adds one feature-comparison result per row, including the expected Welch p-value, Benjamini-Hochberg-adjusted p-value, and effect estimate.",read:"Prioritize feature-comparison results with adjusted p-values below 0.05, then check effect size, sample consistency, and biological relevance.",limit:"These are still marker-gene-based function predictions. They need per-sample predicted functional abundance, replicated metadata categories, and confirmation by direct methods for strong claims.",stat:"functionalDiff"}
 ];
 var FILEVIZ={
  'feature-table.tsv':'<svg viewBox="0 0 184 128" style="display:block;width:100%;max-width:180px;height:auto" fill="none"><text x="110" y="10" text-anchor="middle" font-size="8" fill="#7C8A90">samples →</text><line x1="44" y1="18" x2="176" y2="18" stroke="#B8C6D6"/><path d="M176 18 l-5 -2.6 v5.2 z" fill="#B8C6D6"/><g transform="rotate(90 12 73)"><text x="12" y="73" text-anchor="middle" font-size="8" fill="#7C8A90">ASVs →</text></g><line x1="30" y1="28" x2="30" y2="120" stroke="#B8C6D6"/><path d="M30 120 l-2.6 -5 h5.2 z" fill="#B8C6D6"/><rect x="42.0" y="26.0" width="31.5" height="29.3" rx="2" fill="#F7FAFC" stroke="#DDE6EF"/><text x="57" y="44" text-anchor="middle" font-size="8" fill="#14232B">42</text><rect x="75.5" y="26.0" width="31.5" height="29.3" rx="2" fill="#FFFFFF" stroke="#DDE6EF"/><text x="91" y="44" text-anchor="middle" font-size="8" fill="#14232B">0</text><rect x="109.0" y="26.0" width="31.5" height="29.3" rx="2" fill="#F7FAFC" stroke="#DDE6EF"/><text x="124" y="44" text-anchor="middle" font-size="8" fill="#14232B">7</text><rect x="142.5" y="26.0" width="31.5" height="29.3" rx="2" fill="#FFFFFF" stroke="#DDE6EF"/><text x="158" y="44" text-anchor="middle" font-size="8" fill="#14232B">13</text><rect x="42.0" y="57.3" width="31.5" height="29.3" rx="2" fill="#FFFFFF" stroke="#DDE6EF"/><text x="57" y="76" text-anchor="middle" font-size="8" fill="#14232B">5</text><rect x="75.5" y="57.3" width="31.5" height="29.3" rx="2" fill="#F7FAFC" stroke="#DDE6EF"/><text x="91" y="76" text-anchor="middle" font-size="8" fill="#14232B">88</text><rect x="109.0" y="57.3" width="31.5" height="29.3" rx="2" fill="#FFFFFF" stroke="#DDE6EF"/><text x="124" y="76" text-anchor="middle" font-size="8" fill="#14232B">2</text><rect x="142.5" y="57.3" width="31.5" height="29.3" rx="2" fill="#F7FAFC" stroke="#DDE6EF"/><text x="158" y="76" text-anchor="middle" font-size="8" fill="#14232B">0</text><rect x="42.0" y="88.7" width="31.5" height="29.3" rx="2" fill="#F7FAFC" stroke="#DDE6EF"/><text x="57" y="107" text-anchor="middle" font-size="8" fill="#14232B">0</text><rect x="75.5" y="88.7" width="31.5" height="29.3" rx="2" fill="#FFFFFF" stroke="#DDE6EF"/><text x="91" y="107" text-anchor="middle" font-size="8" fill="#14232B">9</text><rect x="109.0" y="88.7" width="31.5" height="29.3" rx="2" fill="#F7FAFC" stroke="#DDE6EF"/><text x="124" y="107" text-anchor="middle" font-size="8" fill="#14232B">31</text><rect x="142.5" y="88.7" width="31.5" height="29.3" rx="2" fill="#FFFFFF" stroke="#DDE6EF"/><text x="158" y="107" text-anchor="middle" font-size="8" fill="#14232B">6</text></svg>',
@@ -9256,7 +9263,7 @@ function fileSourceStat(f){
   }
   if(f.stat==="functionalDiff"){
     var diff=functionalDiffSummary(d);
-    return diff.count?("Current source: "+diff.testLabel+" evaluated "+fmtNum(diff.uniqueFeatures)+" unique predicted features in "+fmtNum(diff.count)+" feature-comparison results"+(diff.contrasts?" across "+fmtNum(diff.contrasts)+" pairwise group comparisons":"")+"; "+fmtNum(diff.sig)+" pass the Benjamini-Hochberg-adjusted p-value threshold."+(diff.rawOnly?" "+fmtNum(diff.rawOnly)+" raw-p result"+(diff.rawOnly===1?" remains":"s remain")+" exploratory without adjusted support.":"")):"Current source: no ALDEx2 functional differential-statistics file was found in the loaded manifest.";
+    return diff.count?("Current source: "+diff.testLabel+" evaluated "+fmtNum(diff.uniqueFeatures)+" unique predicted features in "+fmtNum(diff.count)+" feature-comparison results"+(diff.contrasts?" across "+fmtNum(diff.contrasts)+" two-group comparisons":"")+"; "+fmtNum(diff.sig)+" pass the Benjamini-Hochberg-adjusted p-value threshold."+(diff.rawOnly?" "+fmtNum(diff.rawOnly)+" result"+(diff.rawOnly===1?" has a":"s have")+" raw p-value"+(diff.rawOnly===1?"":"s")+" below 0.05 but remain"+(diff.rawOnly===1?"s":"")+" exploratory without adjusted support.":"")):"Current source: no ALDEx2 functional differential-statistics file was found in the loaded manifest.";
   }
   return "";
 }
@@ -9355,7 +9362,7 @@ var METRIC_GUIDE=[
   {metric:"Relative abundance",rule:"Each taxon is shown as a proportion of the sample. Values sum to 100% within each sample.",note:"It is not an absolute cell count. If one taxon increases, other proportions can look smaller. Use this to describe sample composition, not to prove that the total amount of that organism increased."},
   {metric:"Presence / absence",rule:"A sample is counted present when that taxon is at least 1%. A category-level presence call needs repetition across samples, not just a high mean.",note:"The taxonomy table shows n/total samples above 1% for each selected category. A repeated presence pattern can support a category hypothesis, but a single positive sample should be treated as sample-specific."},
   {metric:"Sample-level pattern",rule:"Taxa are prioritized by high-vs-low sample contrast, IQR, median separation, and presence-rate difference.",note:"The table shows which exact samples are high. A one-sample spike is flagged as not a category pattern even if its abundance is high. This helps separate a possible category signal from an individual outlier."},
-  {metric:"Group-pattern assessment",rule:"1. Include taxa that reach at least 5% in one sample; 2. Require at least a 5 percentage-point median difference between the highest- and lowest-median groups before highlighting a taxon; 3. Compare every group pair using the observed sample ranges; 4. Clear separation means the lowest value in the higher-median group is above the highest value in the lower-median group; 5. Overlap means the two ranges intersect or touch; 6. Complete group separation requires every pairwise comparison to be clear.",note:"The portal lists pairwise medians and labels each comparison as clear separation or overlap. A taxon is not highlighted when its highest- and lowest-median groups overlap. Exact equality counts as overlap. This is a descriptive assessment of the loaded samples, not a statistical significance test; small groups and individual observations can strongly affect the ranges."},
+  {metric:"Group-pattern assessment",rule:"1. Include taxa that reach at least 5% in one sample; 2. Require at least a 5 percentage-point median difference between the highest- and lowest-median groups before highlighting a taxon; 3. Compare every group pair using the observed sample ranges; 4. Clear separation means the lowest value in the higher-median group is above the highest value in the lower-median group; 5. Overlap means the two ranges intersect or touch; 6. Complete group separation requires separated ranges in every two-group comparison.",note:"The portal lists group medians and labels each two-group comparison as separated or overlapping. A taxon is not highlighted when its highest- and lowest-median groups overlap. Exact equality counts as overlap. This is a descriptive assessment of the loaded samples, not a statistical significance test; small groups and individual observations can strongly affect the ranges."},
   {metric:"Unassigned",rule:"Reads were detected but the released summary tables do not provide a confident lineage for this bucket.",note:"Do not infer whether it is bacterial, host, or another off-target sequence without source lineage evidence. This bucket should not be used as evidence for a specific organism or category difference."}
  ]},
  {section:"Within samples: alpha diversity",intro:"How diversity inside each sample is summarized.",rules:[
@@ -9368,8 +9375,8 @@ var METRIC_GUIDE=[
  ]},
  {section:"Between samples: beta diversity",intro:"How whole-community similarity and selected-category separation are judged.",rules:[
   {metric:"PCoA distance",rule:"Points closer together have more similar community composition under the selected distance metric.",note:"Use the plotted positions descriptively, then check PERMANOVA and PERMDISP before calling a metadata-category difference statistically supported."},
-  {metric:"Displayed group pattern",rule:"The chart observations compare group centres and summarize each group's mean sample-to-centre spread on the displayed PCoA axes.",note:"These are descriptive two-dimensional positions, not pairwise significance tests. Use PERMANOVA for the overall group effect and PERMDISP for differences in within-group spread."},
-  {metric:"Pairwise group screen",rule:"Each eligible group pair is tested directly with PERMANOVA on the original distance matrix; R² summarizes effect size and pairwise p-values are FDR-adjusted when more than two groups are compared.",note:"A visual gap or non-overlapping ellipse is not enough to call two groups different. The portal labels the strongest pair as supported only when its adjusted q-value is below 0.05."},
+  {metric:"Displayed group pattern",rule:"The chart observations compare group centres and summarize each group's mean sample-to-centre spread on the displayed PCoA axes.",note:"These are descriptive two-dimensional positions, not statistical tests between two groups. Use PERMANOVA for the overall group effect and PERMDISP for differences in within-group spread."},
+  {metric:"Direct group comparison",rule:"Each eligible group pair is tested directly with PERMANOVA on the original distance matrix; R² summarizes effect size and the p-values are FDR-adjusted when more than two groups are compared.",note:"A visual gap or non-overlapping ellipse is not enough to call two groups different. The portal labels the strongest comparison as supported only when its FDR-adjusted p-value is below 0.05."},
   {metric:"PERMANOVA p-value",rule:"p < 0.05 supports selected-category separation. Read R² separately for effect magnitude and PERMDISP for unequal within-category spread.",note:"A small R² can still be statistically supported but may have limited biological importance. If PERMDISP is significant, interpret the PERMANOVA result with a spread warning; if PERMANOVA is not significant, do not claim confirmed separation."},
   {metric:"R²",rule:"R² >= 30%: large effect; 10-30%: moderate effect; < 10%: small effect.",note:"R² is the share of distance variation explained by the selected grouping variable. A small R² means the selected metadata label explains little of the microbiome difference, even if individual samples look separated."},
   {metric:"PERMDISP",rule:"Green: PERMDISP p >= 0.05, so category spread is not flagged by this check; Red: PERMDISP p < 0.05 or missing when needed for a supported claim.",note:"Dispersion matters because PERMANOVA can be affected when one category is much more spread out than another. If dispersion is flagged, the apparent category difference may partly reflect unequal within-category variability rather than a clean centroid shift."}
@@ -9378,7 +9385,7 @@ var METRIC_GUIDE=[
  {metric:"NSTI",rule:"Green: mean NSTI < 0.10, good reference support; Red: mean NSTI >= 0.10, weak/moderate support, or NSTI missing.",note:"Lower NSTI means the observed organisms have closer reference genomes for prediction. If NSTI support is weak, do not treat predicted function differences as strong experimental evidence."},
  {metric:"Pathway features",rule:"Number of predicted pathway-level functions available in the report.",note:"More features means more predicted output to explore, not necessarily stronger biology. Use pathway changes to prioritize follow-up hypotheses, not to claim measured pathway activity."},
  {metric:"EC features",rule:"Number of predicted enzyme-function features available in the report.",note:"EC predictions are hypotheses and should be confirmed with direct methods when important. A predicted enzyme-function difference does not prove that the enzyme is active in the samples."},
-  {metric:"ALDEx2 differential functions",rule:"For each predicted feature and pairwise group comparison, the portal reads the ALDEx2 expected Welch p-value and its Benjamini-Hochberg-adjusted p-value. Green: adjusted p < 0.05. A raw p < 0.05 without adjusted support is exploratory.",note:"Each table row is a feature-comparison result, so the result count can exceed the number of unique predicted features. ALDEx2 needs per-sample predicted function abundance, replicated metadata categories, and direct confirmation before strong claims."}
+  {metric:"ALDEx2 differential functions",rule:"For each predicted feature tested between two groups, the portal reads the ALDEx2 expected Welch p-value and its Benjamini-Hochberg-adjusted p-value. Green indicates an adjusted p-value below 0.05. A raw p-value below 0.05 without adjusted support is exploratory.",note:"Each table row is a feature-comparison result, so the result count can exceed the number of unique predicted features. ALDEx2 needs per-sample predicted function abundance, replicated metadata categories, and direct confirmation before strong claims."}
  ]}
 ];
 function secMetrics(){
@@ -9502,7 +9509,7 @@ var TERMS=[
  {t:"Observed ASVs",tag:"Diversity",d:"The number of distinct ASVs detected in a sample after report-level filtering."},
  {t:"Read depth",tag:"QC",d:"How many sequence reads were obtained for a sample. Low depth can make diversity and detection estimates less stable."},
  {t:"Faith PD",tag:"Diversity",d:"Phylogenetic Diversity — richness that accounts for how related the taxa are. Needs a tree, so it is a 16S metric."},
- {t:"Beta diversity",tag:"Diversity",d:"How different whole communities are from each other, summarised as pairwise distances."},
+ {t:"Beta diversity",tag:"Diversity",d:"How different whole communities are from each other, summarized as distances between samples."},
  {t:"Bray–Curtis",tag:"Diversity",d:"A common distance that compares samples by shared taxa and their abundances."},
  {t:"UniFrac",tag:"Diversity",d:"A distance that also uses the evolutionary tree; 'weighted' includes abundance. Needs a phylogeny."},
  {t:"PCoA",tag:"Visualisation",d:"Principal Coordinates Analysis — projects complex distances onto a 2D map so similar samples sit together."},
@@ -9607,7 +9614,7 @@ var GLOSSARY_DEFINITIONS={
   "Beta diversity":"Beta diversity compares whole communities between samples. It asks whether two samples look similar or different when all detected organisms are considered together.",
   "Bray–Curtis":"Bray-Curtis is a distance measure based on shared taxa and their abundances. Samples with similar composition have smaller distances, while samples with different dominant organisms have larger distances.",
   "UniFrac":"UniFrac is a distance measure that also uses evolutionary relationships between organisms. It can show differences that depend not only on abundance, but also on how related the detected microbes are.",
-  "PCoA":"PCoA is a map that turns many pairwise sample distances into a two-dimensional view. Points close together have more similar overall communities, but the plot is still a simplification of higher-dimensional data.",
+  "PCoA":"PCoA is a map that turns the distances between every pair of samples into a two-dimensional view. Points close together have more similar overall communities, but the plot is still a simplification of higher-dimensional data.",
   "PERMANOVA":"PERMANOVA is a statistical test for whether predefined groups differ in overall community composition. It supports a group-level interpretation only when the p-value, effect size, plot, and dispersion check make sense together.",
   "PERMDISP":"PERMDISP checks whether groups have different amounts of spread. This matters because a group can look different either because its center is shifted or because its samples are simply more variable.",
   "p-value":"A p-value is a measure of how surprising the observed pattern would be under a no-difference assumption. It is not the size of the effect and should be read together with the chart and effect size.",
