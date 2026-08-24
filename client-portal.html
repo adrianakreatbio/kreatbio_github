@@ -5787,7 +5787,21 @@ function overallTaxonomyStatState(d){
   var rank=loadedTaxonRank(d),rankWord=taxonRankLabel(rank).toLowerCase()+"-level",summaries=taxonomyDiffSummariesForRank(d,rank),diff=combinedTaxonomyDiffSummary(summaries),availability=taxonomyDiffAvailability(d,rank);
   if(!isDefaultGroupView(d))return {status:"unavailable",rank:rank,raw:0,text:"The loaded abundance statistics apply to the pipeline grouping, not the selected alternative grouping."};
   if(diff&&diff.adjusted)return {status:"supported",rank:rank,raw:diff.raw||0,adjusted:diff.adjusted,text:fmtNum(diff.adjusted)+" FDR-supported pairwise result"+(diff.adjusted===1?"":"s")+"."};
-  if(diff&&diff.adjustedAvailable)return {status:"unsupported",rank:rank,raw:diff.raw||0,adjusted:0,text:diff.raw?(diff.raw===1?"One uncorrected "+rankWord+" result is exploratory; it did not pass FDR correction.":fmtNum(diff.raw)+" uncorrected "+rankWord+" results are exploratory; none passed FDR correction."):"No "+rankWord+" result passed FDR correction."};
+  if(diff&&diff.adjustedAvailable){
+    var rawText="No "+rankWord+" result passed FDR correction.";
+    if(diff.raw===1&&diff.rawRows&&diff.rawRows[0]){
+      var rawRow=diff.rawRows[0],contrast=taxonomyDiffContrastLabel(rawRow),rawParts=[];
+      if(contrast==="Not specified")contrast="";
+      if(rawRow.p!=null)rawParts.push("raw p="+fmtP(rawRow.p));
+      if(rawRow.q!=null)rawParts.push("FDR-adjusted p="+fmtP(rawRow.q));
+      rawText=contrast
+        ? "For "+taxonDisplayName(rawRow.taxon,d)+", the "+contrast+" comparison had "+rawParts.join(" and ")+". It is exploratory, not statistically supported."
+        : taxonDisplayName(rawRow.taxon,d)+" had "+rawParts.join(" and ")+" in the loaded comparison. It is exploratory, not statistically supported.";
+    }else if(diff.raw>1){
+      rawText=fmtNum(diff.raw)+" "+rankWord+" comparisons had raw p-values below 0.05, involving "+fmtNum(diff.rawUniqueTaxa)+" "+(diff.rawUniqueTaxa===1?"taxon":"taxa")+"; none passed FDR correction. They are exploratory, not statistically supported.";
+    }
+    return {status:"unsupported",rank:rank,raw:diff.raw||0,adjusted:0,text:rawText};
+  }
   if(diff)return {status:"unavailable",rank:rank,raw:diff.raw||0,text:"FDR support cannot be assessed because adjusted p-values were not available."};
   if(availability==="loading")return {status:"unavailable",rank:rank,raw:0,text:"The abundance statistics are still loading."};
   if(availability==="error")return {status:"unavailable",rank:rank,raw:0,text:"Statistical support cannot be assessed because the abundance test could not be opened."};
@@ -5857,19 +5871,18 @@ function overallCrossStatsItems(d){
   }
   var betaSupported=beta.status==="supported"||beta.status==="warning";
   if(beta.status==="warning")add("Warning: "+beta.label+" PERMANOVA is statistically supported, but unequal within-group spread may affect its interpretation.","warning");
-  if(betaSupported&&alpha.status==="supported")add("Beta diversity supports a difference in community composition, and "+readableList(alpha.supported)+" supports a difference in within-sample diversity.","supported");
-  else if(betaSupported&&(alpha.status==="unsupported"||alpha.status==="exploratory"))add("Beta diversity supports a difference in community composition. Alpha diversity does not show a statistically supported difference for the tested metrics.","descriptive");
-  else if((beta.status==="unsupported"||beta.status==="exploratory")&&alpha.status==="supported")add(readableList(alpha.supported)+" supports a difference in within-sample diversity. The selected beta-diversity test does not support overall community separation.","descriptive");
+  if(betaSupported&&alpha.status==="supported")add("Beta diversity supports a difference in community composition, and "+readableList(alpha.supported)+" supports a difference in within-sample diversity. Both tests support group differences, but they describe different aspects of diversity.","supported");
+  else if(betaSupported&&(alpha.status==="unsupported"||alpha.status==="exploratory"))add("Beta diversity supports a difference in community composition. Alpha diversity does not show a statistically supported difference for the tested metrics. These results are not contradictory because the analyses measure different aspects of diversity.","descriptive");
+  else if((beta.status==="unsupported"||beta.status==="exploratory")&&alpha.status==="supported")add(readableList(alpha.supported)+" supports a difference in within-sample diversity. The selected beta-diversity test does not support overall community separation. These results are not contradictory because the analyses measure different aspects of diversity.","descriptive");
   if(betaSupported&&taxonomy.status==="supported")add("The overall community difference and corrected taxon-level results are both statistically supported.","supported");
   else if(betaSupported&&taxonomy.status==="unsupported")add("Beta diversity supports an overall community difference, but no individual displayed taxon passed FDR correction.","descriptive");
   else if((beta.status==="unsupported"||beta.status==="exploratory")&&taxonomy.status==="supported")add("The corrected taxon-level test supports specific abundance differences. The selected beta-diversity test does not support overall community separation.","descriptive");
   var assessedDiversity=[{name:"alpha",result:alpha},{name:"beta",result:beta}].filter(function(entry){return entry.result.status!=="unavailable";}),supportedDiversity=assessedDiversity.some(function(entry){return entry.result.status==="supported"||entry.result.status==="warning";});
   if(assessedDiversity.length&&!supportedDiversity){
     var diversityName=assessedDiversity.length===2?"alpha- and beta-diversity":assessedDiversity[0].name+"-diversity";
-    add("Visible "+diversityName+" patterns are exploratory; the available group-level tests do not support them statistically.","descriptive");
+    add("Visible "+diversityName+" patterns are exploratory; the available group-level tests do not support them statistically. They should not be reported as confirmed group differences.","descriptive");
   }
-  if(taxonomy.status==="unsupported"&&items.length<3)add(taxonomy.text,"descriptive");
-  if(functional.status==="unsupported")add(functional.text,"descriptive");
+  if(functional.status==="unsupported")add(functional.text+" They should not be treated as confirmed functional differences between groups.","descriptive");
   else if(functional.status==="unavailable"&&items.length<2)add(functional.text,"unavailable");
   if(!items.length){
     var missing=[taxonomy,alpha,beta].filter(function(result){return result.status==="unavailable";});
