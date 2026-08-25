@@ -963,6 +963,13 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .variability-score{display:inline-flex;min-width:58px;justify-content:flex-end;color:var(--navy);font-family:var(--mono);font-size:.76rem;font-weight:800}
 .confidence-meter{margin-top:16px;border:1px solid var(--line);border-radius:999px;height:18px;background:linear-gradient(90deg,#C0455B 0 34%,#B26A1C 34% 67%,#247A4B 67% 100%);position:relative}
 .confidence-marker{position:absolute;top:50%;left:var(--pos,18%);width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--navy);transform:translate(-50%,-50%);box-shadow:0 8px 18px -12px rgba(7,27,58,.8)}
+.confidence-current{margin-top:14px;padding:11px 13px;border-radius:8px;background:#F6F9FC;color:var(--ink);font-size:.86rem;line-height:1.45}
+.confidence-current b{color:var(--navy)}
+.confidence-scale-details{margin-top:12px;border-top:1px solid var(--line-2)}
+.confidence-scale-details summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0 2px;list-style:none;cursor:pointer;color:var(--navy);font-size:.78rem;font-weight:800}
+.confidence-scale-details summary::-webkit-details-marker{display:none}
+.confidence-scale-details summary::after{content:"+";font-size:1rem}
+.confidence-scale-details[open] summary::after{content:"−"}
 .confidence-guide{display:grid;gap:7px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line-2)}
 .confidence-guide span{display:block;color:var(--muted);font-size:.8rem;line-height:1.4}
 .confidence-guide b{color:var(--navy)}
@@ -5677,10 +5684,12 @@ function clientSummaryPanel(d){
       return '<div class="client-summary-item"><span class="summary-kicker">'+esc(x.label)+'</span><p><strong>'+esc(x.value)+':</strong> '+helpCommon(x.note)+'</p></div>';
     }).join("")+'</div></div></div>';
 }
-function confidenceVisualBand(conf){
-  if(conf.tone==="supported")return {label:"Highly trusted",pos:84,tone:"good"};
-  if(conf.tone==="exploratory")return {label:"Follow-up only",pos:50,tone:"warn"};
-  return {label:"Descriptive",pos:18,tone:"poor"};
+function confidenceVisualBand(result){
+  if(result.status==="supported")return {label:"Statistically supported",pos:84,tone:"good"};
+  if(result.status==="warning")return {label:"Supported with spread caution",pos:64,tone:"warn"};
+  if(result.status==="exploratory")return {label:"Exploratory",pos:50,tone:"warn"};
+  if(result.status==="unavailable")return {label:"Statistics unavailable",pos:18,tone:"poor"};
+  return {label:"Not statistically supported",pos:18,tone:"poor"};
 }
 function welcomeInsightChips(d){
   var conf=confidenceSummary(d),beta=betaGroupPattern(d,defaultBetaMetric(d)),alpha=alphaVariabilityByGroup(d,defaultAlphaMetric(d))[0],shift=strongestTaxonShift(d);
@@ -5944,14 +5953,24 @@ function overallRelationshipCard(d){
     '</div>'+overallEvidenceNote("Statistical context",evidence.text,evidence.tone)+'</div>';
 }
 function overallConfidenceCard(d){
-  var conf=confidenceSummary(d),band=confidenceVisualBand(conf),evidence=overallConfidenceEvidence(d);
+  var beta=overallBetaStatState(d),band=confidenceVisualBand(beta),evidence=overallConfidenceEvidence(d),currentText;
+  if(beta.status==="supported"){
+    currentText="PERMANOVA supports an overall "+groupingLabelForSentence(d)+" difference.";
+    currentText+=beta.pm&&beta.pm.R2!=null?" R² describes the magnitude of that supported association.":" R² was unavailable, so the effect magnitude cannot be summarized.";
+    currentText+=beta.pd&&beta.pd.p!=null?" PERMDISP does not flag unequal within-group spread.":" A matching PERMDISP result was unavailable, so within-group spread was not assessed.";
+  }
+  else if(beta.status==="warning")currentText="PERMANOVA supports an overall "+groupingLabelForSentence(d)+" difference, but PERMDISP flags unequal within-group spread. Interpret the group separation with caution.";
+  else if(beta.status==="exploratory")currentText="PERMANOVA does not meet the statistical-support threshold. Treat visible group separation as exploratory.";
+  else if(beta.status==="unsupported")currentText="PERMANOVA does not support a reliable "+groupingLabelForSentence(d)+" difference. The displayed group positions remain descriptive.";
+  else currentText="Statistical support cannot be assessed because the matching PERMANOVA result is unavailable for this grouping.";
   return '<div class="overall-card"><h3>Confidence</h3><span class="overall-value">'+esc(band.label)+'</span>'+
     '<div class="confidence-meter"><span class="confidence-marker" style="--pos:'+band.pos+'%"></span></div>'+
-    '<div class="confidence-guide">'+
-      '<span><b>Visual only:</b> statistics do not support a reliable group difference.</span>'+
-      '<span><b>Needs follow-up:</b> possible signal, but not strong enough for a firm conclusion.</span>'+
-      '<span><b>Statistically supported:</b> evidence supports a group-level pattern.</span>'+
-    '</div>'+overallEvidenceNote("Statistics used",evidence.text,evidence.tone)+'</div>';
+    '<p class="confidence-current"><b>Current interpretation:</b> '+esc(currentText)+'</p>'+
+    '<details class="confidence-scale-details"><summary>How to read this scale</summary><div class="confidence-guide">'+
+      '<span><b>Not statistically supported:</b> the group test does not support a reliable difference.</span>'+
+      '<span><b>Exploratory:</b> the statistical threshold is not met; visible patterns remain descriptive.</span>'+
+      '<span><b>Statistically supported:</b> the group test supports an overall difference.</span>'+
+    '</div></details>'+overallEvidenceNote("Statistics used",evidence.text,evidence.tone)+'</div>';
 }
 function overallVariabilityCard(d){
   var metric=defaultAlphaMetric(d),label=metricLabel(d,"alpha",metric),vars=alphaVariabilityByGroup(d,metric),max=vars.length?Math.max.apply(null,vars.map(function(v){return v.spread;})):0,top=vars[0]||null;
