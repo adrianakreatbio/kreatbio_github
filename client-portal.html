@@ -1913,7 +1913,7 @@ var DATASETS={};
 var ASSAYS={};
 var ASSAY_ORDER=[];
 var ASSAY_REGISTRY={
-  "11":{id:"ont16sfl",label:"ONT 16S full-length",kingdom:"Bacteria",marker:"16S rRNA gene",region:"Full-length",platform:"Oxford Nanopore",taxonomy_methods:["silva","emu"],has_emu:true,functional_prediction:true},
+  "11":{id:"ont16sfl",label:"ONT 16S full-length",kingdom:"Bacteria",marker:"16S rRNA gene",region:"Full-length",platform:"Oxford Nanopore",taxonomy_methods:["emu","silva"],has_emu:true,functional_prediction:true},
   "12":{id:"illu16sv34",label:"Illumina 16S V3–V4",kingdom:"Bacteria",marker:"16S rRNA gene",region:"V3–V4",platform:"Illumina",taxonomy_methods:["silva"],has_emu:false,functional_prediction:true},
   "13":{id:"illu16sv45",label:"Illumina 16S V4–V5",kingdom:"Bacteria",marker:"16S rRNA gene",region:"V4–V5",platform:"Illumina",taxonomy_methods:["silva"],has_emu:false,functional_prediction:true},
   "14":{id:"illuits1fungi",label:"Illumina ITS1 fungi",kingdom:"Fungi",marker:"ITS1",region:"ITS1",platform:"Illumina",taxonomy_methods:["silva"],has_emu:false,functional_prediction:false}
@@ -2265,9 +2265,12 @@ function groupObjectsFromSamples(samples){
 }
 function emptyReportDataset(report){
   var assay=report.assay||{},taxonomyMethods=(assay.taxonomy_methods||[]).map(function(method){return String(method||"").toUpperCase();});
+  var taxonomyLabel=String(assay.id||"").toLowerCase()==="ont16sfl"
+    ? "EMU (primary) / SILVA (comparison) taxonomy"
+    : (taxonomyMethods.length?taxonomyMethods.join(" / ")+" taxonomy":"Taxonomy reference database");
   return {
     kind:String(assay.kingdom||"").toLowerCase()==="fungi"?"fungi":"bacteria",
-    refdb:taxonomyMethods.length?taxonomyMethods.join(" / ")+" taxonomy":"Taxonomy reference database",
+    refdb:taxonomyLabel,
     reportCode:report.code||exampleReportCode(),
     site:report.title||"Amplicon microbiome report",
     assay:report.assay||null,
@@ -2444,7 +2447,9 @@ function methodConfigFromRelease(methodsText,params,versions,assay){
   var classifierPath=String(params.qiime_classifier_qza||"");
   var classifierName=classifierPath.split(/[\\/]/).pop()||"the configured classifier";
   var taxonomyDatabase=String(params.taxonomy_database||"SILVA");
-  var taxonomyDatabaseLabel=taxonomyDatabase+(silvaVersion?" "+silvaVersion:"")+(isOnt?" / EMU "+emuVersion:"");
+  var taxonomyDatabaseLabel=isOnt
+    ? "EMU "+emuVersion+" (primary) / SILVA "+silvaVersion+" (comparison)"
+    : taxonomyDatabase+(silvaVersion?" "+silvaVersion:"");
   var illuminaFilterSettings="fastp"+(fastpVersion?" "+fastpVersion:"")+" used quality threshold "+(params.fastp_qual||"the configured value")+" and maximum unqualified bases "+(params.fastp_unqual_pct||"the configured percentage")+"%. DADA2 used forward/reverse truncation lengths "+(params.dada2_trunc_len_f||"configured")+"/"+(params.dada2_trunc_len_r||"configured")+" bp and maximum expected errors "+(params.dada2_max_ee_f||"configured")+"/"+(params.dada2_max_ee_r||"configured")+".";
   var ontRange=minLen!=null&&maxLen!=null?minLen+" to "+maxLen+" bp":"the configured length range";
   var ontQuality=minQ!=null?" with minimum Q-score "+minQ:"";
@@ -2477,12 +2482,14 @@ function methodConfigFromRelease(methodsText,params,versions,assay){
     featureInputLabel:isOnt?"Filtered reads":"Quality-filtered paired reads",
     featureOutputLabel:isOnt?"Feature table":"ASV feature table",
     reconstructionTools:isOnt?("VSEARCH"+(vsearchVersion?" "+vsearchVersion:"")+" screened chimeras; FOI NanoPulse performed de novo feature inference; cohort representatives were clustered at 99% identity."):("QIIME 2"+(qiimeVersion?" "+qiimeVersion:"")+" DADA2 paired-end processing used the thresholds recorded in the parameter snapshot"+(params.asv_min_length?" and retained ASVs at least "+params.asv_min_length+" bp long":"")+"."),
-    taxonomyOutputs:isOnt?["QIIME 2 SILVA "+silvaVersion,"EMU "+emuVersion]:["QIIME 2 SILVA "+silvaVersion],
+    taxonomyOutputs:isOnt?["EMU "+emuVersion+" (primary)","QIIME 2 SILVA "+silvaVersion+" (comparison)"]:["QIIME 2 SILVA "+silvaVersion],
     taxonomyDatabaseLabel:taxonomyDatabaseLabel,
-    taxonomyNote:"QIIME 2"+(qiimeVersion?" "+qiimeVersion:"")+" used "+classifierName+(isOnt?"; EMU used "+(params.emu_database_name||"the configured EMU database")+" "+emuVersion:"."),
-    taxonomyWhat:isOnt?"Taxonomy was assigned from the final feature table, and EMU read-level species profiling was summarized separately.":"Taxonomy was assigned to the final ASV feature table using the region-specific classifier recorded for this run.",
+    taxonomyNote:isOnt
+      ? "EMU used "+(params.emu_database_name||"the configured EMU database")+" "+emuVersion+" for the primary ONT composition result; QIIME 2"+(qiimeVersion?" "+qiimeVersion:"")+" used "+classifierName+" for the SILVA comparison."
+      : "QIIME 2"+(qiimeVersion?" "+qiimeVersion:"")+" used "+classifierName+".",
+    taxonomyWhat:isOnt?"EMU read-level profiling provides the primary ONT composition result. QIIME 2/SILVA assignments from the final feature table are retained as a comparison and for feature-linked outputs.":"Taxonomy was assigned to the final ASV feature table using the region-specific classifier recorded for this run.",
     taxonomyInputLabel:isOnt?"Feature table":"ASV feature table",
-    taxonomySettings:isOnt?("QIIME 2 assigned taxonomy with the SILVA "+silvaVersion+" full-length classifier. EMU reportable tables used minimum relative abundance "+(params.emu_report_min_rel_abundance||"0.005")+" and minimum estimated reads "+(params.emu_report_min_reads||"10")+"."):("QIIME 2 assigned taxonomy with "+classifierName+" against "+taxonomyDatabase+" "+silvaVersion+"."),
+    taxonomySettings:isOnt?("EMU is the primary ONT composition source; its reportable tables used minimum relative abundance "+(params.emu_report_min_rel_abundance||"0.005")+" and minimum estimated reads "+(params.emu_report_min_reads||"10")+". QIIME 2/SILVA "+silvaVersion+" is retained as a comparison and for feature-linked taxonomy."):("QIIME 2 assigned taxonomy with "+classifierName+" against "+taxonomyDatabase+" "+silvaVersion+"."),
     functionTool:isFungi?"Not applicable":"PICRUSt2"+(picrustVersion?" "+picrustVersion:""),
     analysisSettings:"Alpha diversity used "+methodAlphaMetricText(text)+". Beta diversity used "+betaMetrics+" with PCoA, PERMANOVA, and PERMDISP where those outputs are present."+(isFungi?" Functional prediction is not provided for ITS1 fungal data.":" PICRUSt2 predicted "+functionOutputs+" outputs from a "+picrustClusterLabel+" clustered input; ALDEx2"+(aldexVersion?" "+aldexVersion:"")+" tested differential taxonomy and functions where released statistics are available."),
     functionSettings:isFungi?"Functional prediction is not applicable to this ITS1 fungal assay.":"PICRUSt2"+(picrustVersion?" "+picrustVersion:"")+" used "+picrustClusterLabel+" clustered representative sequences with max NSTI "+(params.picrust2_max_nsti||"2.0")+".",
@@ -2920,14 +2927,21 @@ function parseFunctionalAbundanceByGroup(text,d){
   });
 }
 async function hydrateTaxonomyIntoDataset(d){
-  var file=manifestFileMatching([/genus/,/relative[_ -]?abundance/,/taxonomy|o2_taxonomy/,/\.tsv|tsv/])||
+  var preferred=primaryTaxonomyDatabase(d),file=null;
+  if(preferred==="EMU"){
+    file=taxonomyRankFile("genus","EMU")||taxonomyRankFile("species","EMU")||taxonomyRankFile("family","EMU");
+  }
+  file=file||manifestFileMatching([/genus/,/relative[_ -]?abundance/,/taxonomy|o2_taxonomy/,/\.tsv|tsv/])||
     manifestFileMatching([/species/,/relative[_ -]?abundance/,/taxonomy|o2_taxonomy/,/\.tsv|tsv/])||
     manifestFileMatching([/family/,/relative[_ -]?abundance/,/taxonomy|o2_taxonomy/,/\.tsv|tsv/]);
   if(!file)return;
-  var rank=/species/.test(fileText(file))?"species":(/family/.test(fileText(file))?"family":"genus");
+  var rank=manifestTaxonomyRank(file);
+  if(["species","genus","family"].indexOf(rank)<0)rank="genus";
   var parsed=parseTaxonomyAbundanceText(await loadFileText(file),rank,d);
   if(!parsed)return;
   Object.assign(d,parsed,{reportCode:d.reportCode,site:d.site,methodSources:d.methodSources});
+  d.taxonomySource=taxonomyMethodFromFile(file);
+  d.taxonomySourceFile=file.name||file.path||file.id||"";
   d.genera=parsed.taxa||parsed.genera||[];
 }
 async function openReportCode(code){
@@ -3753,6 +3767,40 @@ function taxonList(d){
 function taxonLevelLabel(d){
   return (d&&d.taxonLevel)||((d&&Array.isArray(d.genera))?"Genus":"Taxon");
 }
+function taxonomyDatabaseName(d){
+  var source=String(d&&d.taxonomySource||"").toUpperCase();
+  if(source==="QIIME 2")source="SILVA";
+  if(source==="EMU"||source==="SILVA"||source==="UNITE")return source;
+  if(/\bEMU\b/i.test(String(d&&d.inspectionSource||"")))return "EMU";
+  return "";
+}
+function isOnt16sReport(d){
+  var assay=d&&d.assay||{},method=d&&d.methodConfig||{};
+  return String(assay.id||"").toLowerCase()==="ont16sfl"||/nanopore|\bont\b/i.test(String(assay.platform||"")+" "+String(method.sampleFileType||"")+" "+String(method.assayNote||""));
+}
+function primaryTaxonomyDatabase(d){
+  if(isOnt16sReport(d))return "EMU";
+  return taxonomyDatabaseName(d);
+}
+function hasMultipleTaxonomyDatabases(d){
+  var methods=(d&&d.assay&&d.assay.taxonomy_methods||[]).map(function(method){return String(method||"").toUpperCase();});
+  var unique=methods.filter(function(method,index){return method&&methods.indexOf(method)===index;});
+  if(unique.length>1)return true;
+  var configured=String(d&&d.methodConfig&&d.methodConfig.taxonomyDatabaseLabel||d&&d.refdb||"");
+  return /\bEMU\b/i.test(configured)&&/\bSILVA\b/i.test(configured);
+}
+function taxonomyDatabaseContext(d){
+  return hasMultipleTaxonomyDatabases(d)?taxonomyDatabaseName(d):"";
+}
+function taxonomySourceTableText(d){
+  var source=taxonomyDatabaseContext(d),rank=String(taxonLevelLabel(d)||"taxon").toLowerCase();
+  return source?source+" "+rank+" relative-abundance table":"";
+}
+function taxonomyDatabaseRoleLabel(d,method){
+  method=String(method||"Taxonomy").toUpperCase();
+  if(!hasMultipleTaxonomyDatabases(d))return method;
+  return method===(primaryTaxonomyDatabase(d)||"").toUpperCase()?method+" (primary)":method+" (comparison)";
+}
 function metadataObjectValue(object,key){
   if(!object||!key)return "";
   if(object[key]!=null&&String(object[key]).trim()!=="")return object[key];
@@ -4373,7 +4421,7 @@ function taxonomyDiffMethodStatusText(summary,rankLabel){
     if(summary.raw){
       var taxaWord=rankWord==="taxon"?"taxa":taxonRankPlural(rankWord),comparisonText=summary.raw===1?"one "+rankWord+"-level comparison":fmtNum(summary.raw)+" "+rankWord+"-level comparisons";
       var taxaText=summary.rawUniqueTaxa===1?"one "+rankWord:fmtNum(summary.rawUniqueTaxa)+" "+taxaWord;
-      return method+" found "+comparisonText+" involving "+taxaText+" with "+(summary.raw===1?"a raw p-value":"raw p-values")+" below 0.05. After accounting for the many "+taxaWord+" and group comparisons tested (FDR correction), none remained statistically supported.";
+      return method+" found "+comparisonText+" involving "+taxaText+" with "+(summary.raw===1?"a raw p-value":"raw p-values")+" below 0.05. After FDR correction in the loaded ALDEx2 results, none remained statistically supported.";
     }
     return method+" found no "+rankWord+"-level comparison with a raw p-value below 0.05 or statistical support after FDR correction.";
   }
@@ -4392,7 +4440,7 @@ function taxonomyDiffAvailability(d,rank){
 }
 function taxonomySupportSummary(d,rank){
   rank=rank||"taxon";
-  var rankLabel=taxonRankLabel(rank),summaries=taxonomyDiffSummariesForRank(d,rank),diff=combinedTaxonomyDiffSummary(summaries),availability=taxonomyDiffAvailability(d,rank);
+  var rankLabel=taxonRankLabel(rank),summaries=primaryTaxonomyDiffSummaries(d,rank),diff=combinedTaxonomyDiffSummary(summaries),availability=taxonomyDiffAvailability(d,rank);
   if(!isDefaultGroupView(d)){
     var def=d.defaultGroupFactor||defaultGroupFactor(baseDataset());
     return {
@@ -4446,7 +4494,8 @@ function taxonomySupportSummary(d,rank){
 }
 function taxonomyResultSummaryPanel(d){
   var rank=taxonomyComparisonSelectedRank(taxonomyComparisonAllFigures()),rankLabel=taxonRankLabel(rank);
-  var shift=strongestTaxonShift(d),support=taxonomySupportSummary(d,rank),summaries=taxonomyDiffSummariesForRank(d,rank),diff=combinedTaxonomyDiffSummary(summaries);
+  var shift=strongestTaxonShift(d),support=taxonomySupportSummary(d,rank),summaries=primaryTaxonomyDiffSummaries(d,rank),diff=combinedTaxonomyDiffSummary(summaries);
+  var abundanceDatabase=taxonomyDatabaseContext(d),abundanceSource=taxonomySourceTableText(d),statMethods=summaries.map(function(summary){return summary.method;}).filter(function(method,index,all){return method&&all.indexOf(method)===index;});
   var conclusionValue,conclusionNote,statValue;
   if(!isDefaultGroupView(d)){
     conclusionValue="The alternative grouping is exploratory.";
@@ -4488,9 +4537,9 @@ function taxonomyResultSummaryPanel(d){
   var statLines=['<span>'+esc(support.note)+'</span>'];
   if(hasShift&&(!diff||diff.adjusted||!diff.raw))statLines.push('<span class="takeaway-stat-caveat">Exploratory observation, not a confirmed '+esc(groupingLevelTerm(d))+' effect.</span>');
   var evidence=[
-    {label:"Main conclusion",value:conclusionValue,detailHtml:'<span>'+esc(conclusionNote)+'</span>',tone:support.tone,icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>'},
-    {label:"Exploratory observation",value:hasShift?taxonDisplayName(shift.taxon,d):"No clear named taxon",detailHtml:hasShift?('<span class="takeaway-card-detail-label">Largest observed median difference</span><span class="takeaway-group-medians">'+esc(groupMedianText)+'</span>'):'<span>No abundance-based taxon shift was identified.</span>',divider:true,icon:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/>'},
-    {label:"Statistical context",value:statValue,detailHtml:statLines.join(""),tone:support.tone,divider:true,icon:'<path d="M3 3v18h18"/><path d="M8 17v-3M13 17V8M18 17V5"/>'}
+    {label:"Main conclusion"+(hasMultipleTaxonomyDatabases(d)&&statMethods.length?" · "+readableList(statMethods):""),value:conclusionValue,detailHtml:'<span>'+esc(conclusionNote)+'</span>',tone:support.tone,icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>'},
+    {label:"Exploratory observation"+(abundanceDatabase?" · "+abundanceDatabase:""),value:hasShift?taxonDisplayName(shift.taxon,d):"No clear named taxon",detailHtml:hasShift?('<span class="takeaway-card-detail-label">Largest observed median difference'+(abundanceSource?' in the '+esc(abundanceSource):'')+'</span><span class="takeaway-group-medians">'+esc(groupMedianText)+'</span>'):'<span>No abundance-based taxon shift was identified'+(abundanceSource?' in the '+esc(abundanceSource):'')+'.</span>',divider:true,icon:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/>'},
+    {label:"Statistical context"+(hasMultipleTaxonomyDatabases(d)&&statMethods.length?" · "+readableList(statMethods):""),value:statValue,detailHtml:statLines.join(""),tone:support.tone,divider:true,icon:'<path d="M3 3v18h18"/><path d="M8 17v-3M13 17V8M18 17V5"/>'}
   ];
   return '<div class="pattern-panel takeaway-panel" aria-label="Composition summary">'+
     '<div class="takeaway-card-grid">'+evidence.map(function(x){
@@ -4513,7 +4562,7 @@ function genusInspectionInsight(row,d){
 }
 function taxonomyInspectionTable(d,method){
   var rows=topGenusInspectionRows(d,5),groups=orderedGroups(d);
-  var intro='<p class="table-caption">Top 5 genus-level assignments by mean abundance across samples.</p>';
+  var intro='<p class="table-caption">Top 5 '+esc(method||taxonomyDatabaseName(d)||"taxonomy")+' genus-level assignments by mean abundance across samples.</p>';
   var table='<div class="pattern-table" style="--group-count:'+groups.length+'"><div class="pattern-row"><b>Assignment</b>'+
     groups.map(function(g){return '<b>'+esc(g.label)+'</b>';}).join("")+
     '<b>Interpretation</b></div>'+
@@ -5606,7 +5655,7 @@ function functionalTopLevel(d,file){
   return {value:"Hypothesis-generating only",note:"Functional charts are predicted from marker-gene composition. Mean NSTI is "+(functionalNstiAvailable(fs)?Number(fs.nsti_mean).toFixed(3):"not available")+" ("+ng.band+")."+nstiSampleContext(fs)+" Use these results to prioritize follow-up, not as measured gene activity.",ref:REFS.picrust};
 }
 function taxonomyTopLevel(d,file){
-  var support=taxonomySupportSummary(d);
+  var support=taxonomySupportSummary(d,loadedTaxonRank(d));
   return {
     value:support.value,
     note:support.note+" Use the taxonomy table to see which samples drive the visible differences.",
@@ -5781,7 +5830,7 @@ function overallEvidenceNote(label,text,tone){
   return '<div class="overall-evidence-note" data-tone="'+esc(tone||"descriptive")+'"><b>'+esc(label)+'</b><span>'+esc(text)+'</span></div>';
 }
 function overallTaxonomyStatState(d){
-  var rank=loadedTaxonRank(d),rankWord=taxonRankLabel(rank).toLowerCase()+"-level",summaries=taxonomyDiffSummariesForRank(d,rank),diff=combinedTaxonomyDiffSummary(summaries),availability=taxonomyDiffAvailability(d,rank);
+  var rank=loadedTaxonRank(d),rankWord=taxonRankLabel(rank).toLowerCase()+"-level",summaries=primaryTaxonomyDiffSummaries(d,rank),diff=combinedTaxonomyDiffSummary(summaries),availability=taxonomyDiffAvailability(d,rank);
   if(!isDefaultGroupView(d))return {status:"unavailable",rank:rank,raw:0,text:"The loaded abundance statistics apply to the pipeline grouping, not the selected alternative grouping."};
   if(diff&&diff.adjusted)return {status:"supported",rank:rank,raw:diff.raw||0,adjusted:diff.adjusted,text:fmtNum(diff.adjusted)+" FDR-supported taxon comparison"+(diff.adjusted===1?"":"s")+" between groups."};
   if(diff&&diff.adjustedAvailable){
@@ -5905,6 +5954,7 @@ function keyFindingDonut(rows,d){
 }
 function overallDonutCard(d){
   var rows=compositionRowsForStart(d).slice(0,6),colors=keyFindingColors(),total=rows.reduce(function(a,x){return a+(Number(x.mean)||0);},0),circ=2*Math.PI*62,offset=0;
+  var database=taxonomyDatabaseContext(d),sourceTable=taxonomySourceTableText(d);
   var segs=rows.map(function(r,i){
     var len=total?((Number(r.mean)||0)/total)*circ:0,label=r.taxon==="Others"?"Other detected taxa":taxonDisplayName(r.taxon,d);
     offset+=len;
@@ -5915,7 +5965,7 @@ function overallDonutCard(d){
     var label=r.taxon==="Others"?"Other detected taxa":taxonDisplayName(r.taxon,d);
     return '<div class="overall-legend-row" data-keyviz-slice="'+i+'" tabindex="0" style="--swatch:'+colors[i%colors.length]+'"><i></i><b>'+esc(label)+'</b><span>'+esc(fmtPct(r.mean,1))+'</span></div>';
   }).join("");
-  return '<div class="overall-card"><h3>Dominant microbes</h3><span class="overall-value">'+esc(taxonDisplayName(top.taxon,d))+' · '+esc(fmtPct(top.mean,1))+'</span><p>Mean relative abundance across all samples; unassigned reads are excluded.</p>'+
+  return '<div class="overall-card"><h3>Dominant microbes'+(database?' — '+esc(database):'')+'</h3><span class="overall-value">'+esc(taxonDisplayName(top.taxon,d))+' · '+esc(fmtPct(top.mean,1))+'</span><p>Mean relative abundance across all samples'+(sourceTable?' from the '+esc(sourceTable):'')+'; unassigned reads are excluded.</p>'+
     '<div class="overall-chart-row"><div class="overall-donut"><svg viewBox="0 0 180 180" role="img" aria-label="Dominant named taxa donut"><circle class="keyviz-donut-bg" cx="90" cy="90" r="62"/>'+segs+'</svg><div class="overall-donut-center"><b>'+esc(fmtPct(top.mean,1))+'</b><span>top share</span></div></div><div class="overall-legend">'+legend+'</div></div>'+overallEvidenceNote("Statistical context","Descriptive only. High overall abundance does not show that groups differ statistically.","descriptive")+'</div>';
 }
 function overallRelationshipCard(d){
@@ -6544,6 +6594,11 @@ function taxonomyDiffSummariesForRank(d,rank){
     return summarizeTaxonomyDiffRows(rows.filter(function(row){return String(row.method||"Taxonomy")===method;}),method);
   }).filter(Boolean);
 }
+function primaryTaxonomyDiffSummaries(d,rank){
+  var summaries=taxonomyDiffSummariesForRank(d,rank),primary=primaryTaxonomyDatabase(d);
+  if(!primary)return summaries;
+  return summaries.filter(function(summary){return String(summary.method||"").toUpperCase()===primary;});
+}
 function combinedTaxonomyDiffSummary(summaries){
   summaries=(summaries||[]).filter(Boolean);
   if(!summaries.length)return null;
@@ -6856,6 +6911,13 @@ function ensureTaxonomyRankData(rank,method,onDone){
   textPromise.then(function(res){
     var callbacks=(state.taxonomyRankTables[key]&&state.taxonomyRankTables[key].callbacks)||[];
     var parsed=parseTaxonomyAbundanceText(res.text,rank,ds());
+    if(parsed){
+      parsed.taxonomySource=taxonomyMethodFromFile(file);
+      parsed.taxonomySourceFile=file.name||file.path||file.id||"";
+      parsed.assay=ds().assay;
+      parsed.methodConfig=ds().methodConfig;
+      parsed.refdb=ds().refdb;
+    }
     state.taxonomyRankTables[key]=parsed?{status:"ready",data:parsed,fileId:file.id}:{status:"error",error:"Could not parse taxonomy abundance table",fileId:file.id};
     callbacks.forEach(function(cb){cb(parsed||null);});
   }).catch(function(err){
@@ -7123,11 +7185,12 @@ function taxonomyComparisonProfileMethods(profiles){
   return methods;
 }
 function taxonomyComparisonObservationItems(d,figs,groupType){
-  var metric=defaultBetaMetric(d),pm=d.permanova&&d.permanova[metric];
   var profiles=(figs||[]).map(chartTextProfile),rank=profiles[0]?profiles[0].rank:"taxon",rankLabel=taxonRankLabel(rank).toLowerCase(),support=taxonomySupportSummary(d,rank);
   var types=profiles.map(function(p){return taxonomyComparisonType(p);});
   var hasSample=types.indexOf("sample abundance")>=0,hasMean=types.indexOf("group mean")>=0,hasHeatmap=types.indexOf("heatmap")>=0;
-  var entries=taxonomyComparisonDataEntries(d,figs),items=[support.value+(pm?(" "+betaStatCompact(d,metric)):(" "+support.note))];
+  var entries=taxonomyComparisonDataEntries(d,figs),primaryDatabase=primaryTaxonomyDatabase(d),multipleDatabases=hasMultipleTaxonomyDatabases(d);
+  var statisticalScope=(multipleDatabases?("Primary "+primaryDatabase+" "):"")+rankLabel+"-level statistical context: ";
+  var items=[statisticalScope+support.value+" "+support.note];
   var figureMethods=taxonomyComparisonProfileMethods(profiles),loadedMethods=entries.map(function(e){return e.method;});
   var missingMethods=figureMethods.filter(function(m){return loadedMethods.indexOf(m)<0;});
   if(missingMethods.length&&loadedMethods.length){
@@ -7136,7 +7199,7 @@ function taxonomyComparisonObservationItems(d,figs,groupType){
   if(entries.length>=2){
     var summaries=entries.map(function(e){
       var dom=overviewDominantMicrobe(e.data),shift=strongestTaxonShift(e.data);
-      return {method:e.method,dom:dom,shift:shift,data:e.data};
+      return {method:taxonomyDatabaseRoleLabel(e.data,e.method),dom:dom,shift:shift,data:e.data};
     });
     var domNames=summaries.map(function(x){return x.dom&&x.dom.taxon;}).filter(Boolean);
     var shiftNames=summaries.map(function(x){return x.shift&&x.shift.taxon&&x.shift.taxon!=="None"?x.shift.taxon:"";}).filter(Boolean);
@@ -7154,20 +7217,21 @@ function taxonomyComparisonObservationItems(d,figs,groupType){
     }
   }else if(entries.length===1){
     var e=entries[0],dom=overviewDominantMicrobe(e.data),shift=strongestTaxonShift(e.data);
-    items.push("Loaded "+e.method+" "+rankLabel+" data: dominant displayed "+rankLabel+"-level taxon is "+taxonDisplayPhrase(dom.taxon,e.data)+"; largest visible median difference is "+(shift&&shift.taxon&&shift.taxon!=="None"?taxonDisplayPhrase(shift.taxon,e.data):"not clear")+".");
+    items.push("Loaded "+taxonomyDatabaseRoleLabel(e.data,e.method)+" "+rankLabel+" data: dominant displayed "+rankLabel+"-level taxon is "+taxonDisplayPhrase(dom.taxon,e.data)+"; largest visible median difference is "+(shift&&shift.taxon&&shift.taxon!=="None"?taxonDisplayPhrase(shift.taxon,e.data):"not clear")+".");
   }else{
     items.push("Linked "+rankLabel+" abundance tables are still loading or unavailable, so this comparison is temporarily image-based.");
   }
   if(entries.length){
-    var primary=entries[0].data;
+    var primaryEntry=entries.filter(function(entry){return String(entry.method||"").toUpperCase()===String(primaryDatabase||"").toUpperCase();})[0]||entries[0];
+    var primary=primaryEntry.data,primaryLabel=taxonomyDatabaseRoleLabel(primary,primaryEntry.method);
     var repeated=sortedTaxonRows(primary,8).map(function(r){return {row:r,insight:taxonInsight(r,primary)};}).filter(function(x){return isRepeatedTaxonInsight(x.insight);});
     if(groupType==="abundance"&&hasSample&&hasMean){
-      if(repeated.length)items.push("Sample bars and group-mean charts should agree on repeated patterns; current repeated candidates include "+repeated.slice(0,3).map(function(x){return taxonDisplayPhrase(x.row.taxon,primary);}).join(", ")+".");
-      else items.push("Group-mean bars should be checked against sample bars; no clean repeated "+groupingLabelForSentence(d)+" marker is visible in the loaded "+rankLabel+" data.");
+      if(repeated.length)items.push("In the "+primaryLabel+" data, sample bars and group-mean charts should agree on repeated patterns; current repeated candidates include "+repeated.slice(0,3).map(function(x){return taxonDisplayPhrase(x.row.taxon,primary);}).join(", ")+".");
+      else items.push("In the "+primaryLabel+" data, group-mean bars should be checked against sample bars; no clean repeated "+groupingLabelForSentence(d)+" marker is visible at "+rankLabel+" level.");
     }
     if(groupType==="heatmap"&&hasHeatmap){
-      if(repeated.length)items.push("Heatmap block check: repeated high/low candidates include "+repeated.slice(0,3).map(function(x){return taxonDisplayPhrase(x.row.taxon,primary);}).join(", ")+". Confirm that the colored block repeats within samples from the same "+groupingCategoryUnit(d)+".");
-      else items.push("Heatmap block check: no clean repeated "+groupingLabelForSentence(d)+" marker is visible in the loaded "+rankLabel+" data; treat isolated high cells as sample-specific.");
+      if(repeated.length)items.push(primaryLabel+" heatmap block check: repeated high/low candidates include "+repeated.slice(0,3).map(function(x){return taxonDisplayPhrase(x.row.taxon,primary);}).join(", ")+". Confirm that the colored block repeats within samples from the same "+groupingCategoryUnit(d)+".");
+      else items.push(primaryLabel+" heatmap block check: no clean repeated "+groupingLabelForSentence(d)+" marker is visible at "+rankLabel+" level; treat isolated high cells as sample-specific.");
     }
   }
   if(support.tone!=="good"){
@@ -7228,7 +7292,7 @@ function taxonomySpeciesBarsCard(entry){
   }).join("");
   var ungrouped=rows.filter(function(row){return !usedGroups[row.sample.group];});
   if(ungrouped.length)groupHtml+=taxonomySpeciesBarsGroup(d,entry.method,"Other samples",ungrouped,taxa,colors);
-  return '<div class="taxonomy-sample-bars-card"><div class="taxonomy-sample-bars-head"><div><h4>'+esc(entry.method)+'</h4></div><button class="keyviz-download" type="button" data-taxonomy-bars-download="'+esc(entry.method)+'">Download SVG</button></div>'+
+  return '<div class="taxonomy-sample-bars-card"><div class="taxonomy-sample-bars-head"><div><h4>'+esc(taxonomyDatabaseRoleLabel(entry.data,entry.method))+'</h4></div><button class="keyviz-download" type="button" data-taxonomy-bars-download="'+esc(entry.method)+'">Download SVG</button></div>'+
     '<div class="taxonomy-sample-bars-legend">'+legend+'</div>'+groupHtml+'</div>';
 }
 function taxonomySpeciesBarsGroup(d,method,groupLabel,rows,taxa,colors){
@@ -7328,7 +7392,7 @@ function taxonomyDominantComparisonObservation(entries){
   var tops=entries.map(function(entry){
     var top=dominantOverall(entry.data);
     return {
-      method:entry.method,
+      method:taxonomyDatabaseRoleLabel(entry.data,entry.method),
       taxon:top.taxon,
       name:taxonDisplayName(top.taxon,entry.data),
       broad:taxonomyBroadLabel(top.taxon,entry.data),
@@ -7378,7 +7442,7 @@ function taxonomyBroadAgreementObservation(entries){
   var ending=labelsDiffer&&abundanceDiffers
     ?", although their labels and estimated abundances differ."
     :(labelsDiffer?", although their species-level labels differ.":(abundanceDiffers?", although their estimated abundances differ.":"."));
-  return "Broad database agreement: Both databases identify "+readableList(hits.map(function(hit){return hit.label;}))+" among the prominent taxa"+ending;
+  return "Broad database agreement: "+readableList(entries.map(function(entry){return taxonomyDatabaseRoleLabel(entry.data,entry.method);}))+" both identify "+readableList(hits.map(function(hit){return hit.label;}))+" among the prominent taxa"+ending;
 }
 function taxonomyBroadLabel(taxon,d){
   var suffix=taxonSuffixInfo(taxon);
@@ -7472,7 +7536,7 @@ function taxonomyDatabaseGroupPatternObservation(entry){
       var pairText=pairs.map(function(pair){
         return pair.high.label+" vs "+pair.low.label+": "+(pair.clear?"clear separation":"overlap")+" (medians "+fmtPct(pair.high.median,1)+" vs "+fmtPct(pair.low.median,1)+")";
       });
-      return entry.method+" group comparison for "+candidate.name+": "+pairText.join("; ");
+      return taxonomyDatabaseRoleLabel(entry.data,entry.method)+" group comparison for "+candidate.name+": "+pairText.join("; ");
     }
   }
   return "";
@@ -7498,7 +7562,7 @@ function taxonomyAllObservationPanel(d){
 function taxonomyAllObservationInner(d){
   var items=taxonomyAllObservationItems(d);
   var hasAssessment=taxonomySpeciesBarEntries(d).length>0;
-  var disclaimer=hasAssessment?'<p class="taxonomy-pattern-disclaimer"><b>This group-by-group visual assessment is descriptive.</b> For each taxon, we look for a consistent pattern: samples in one group remain higher while samples in another remain lower. Use the ALDEx2 result—not this visual screen—to determine statistical support.</p>':"";
+  var disclaimer=hasAssessment?'<p class="taxonomy-pattern-disclaimer"><b>This group-by-group visual assessment is descriptive.</b> For each taxon, we look for a consistent pattern: samples in one group remain higher while samples in another remain lower. Use the matching ALDEx2 result from the same database and taxonomic rank—not this visual screen—to determine statistical support.</p>':"";
   return '<div class="chart-observations-head"><h4>Key observations</h4><button class="chart-observations-help" type="button" data-metric-guide-topic="Group-pattern assessment" aria-label="Open group-pattern assessment rules" title="Group-pattern assessment rules">?</button></div><ol>'+items.map(function(x){return '<li>'+helpCommon(x)+'</li>';}).join("")+'</ol>'+disclaimer;
 }
 function taxonomyRankChartSection(rank,groupType){
@@ -8371,21 +8435,23 @@ function taxonomyRawResultsContext(d,diffOrSummaries,rankLabel){
   var diff=combinedTaxonomyDiffSummary(summaries);
   var rows=diff&&diff.rawRows||[];
   if(!rows.length)return "";
-  var multiple=summaries.length>1;
+  var multiple=summaries.length>1,singleMethod=!multiple&&summaries[0]?String(summaries[0].method||""):"";
   var rawSummary=summaries.map(function(summary){return taxonomyDiffMethodStatusText(summary,rankLabel);}).join(" ")+" ";
   if(summaries.some(function(summary){return summary.raw>summary.rawUniqueTaxa;}))rawSummary+="A taxon can appear more than once because each row represents a separate group comparison. ";
-  var title=diff.adjusted?"Taxon comparisons between groups":"Exploratory results before FDR correction";
+  var title=(singleMethod?singleMethod+" ":"")+(diff.adjusted?"taxon comparisons between groups":"exploratory results before FDR correction");
   var body=rows.map(function(row){
     var taxon=(multiple?(String(row.method||"Taxonomy")+" · "):"")+taxonDisplayName(row.taxon,d);
     return '<div class="result-next-context-row"><strong>'+esc(taxon)+'</strong><span>'+esc(taxonomyDiffContrastLabel(row))+'</span><span>'+esc(taxonomyDiffEffectMagnitude(row.effect))+'</span><span>'+esc(taxonomyDiffPValue(row.p))+'</span><span>'+esc(taxonomyDiffPValue(row.q))+'</span></div>';
   }).join("");
   var methodNote="ALDEx2 compares the difference between groups with the variation among samples within each group. Effect magnitude shows how large and consistent that difference is. High variation within a group can produce a higher p-value, so even a visually large difference will not appear in this table if its raw p-value is 0.05 or higher.";
-  return '<aside class="result-next-context" aria-label="Taxon comparisons between groups"><div class="result-next-context-head"><b>'+esc(title)+'</b><p>'+esc(rawSummary)+'</p></div><div class="result-next-context-table"><div class="result-next-context-row"><b>'+(multiple?'Method · taxon':'Taxon')+'</b><b>Group comparison</b><b>Effect magnitude</b><b>Raw p-value</b><b>FDR-adjusted p-value</b></div>'+body+'</div><p class="result-next-context-method">'+esc(methodNote)+'</p></aside>';
+  return '<aside class="result-next-context" aria-label="Taxon comparisons between groups"><div class="result-next-context-head"><b>'+esc(title)+'</b><p>'+esc(rawSummary)+'</p></div><div class="result-next-context-table"><div class="result-next-context-row"><b>'+esc(multiple?'Method · taxon':(singleMethod?singleMethod+' taxon':'Taxon'))+'</b><b>Group comparison</b><b>Effect magnitude</b><b>Raw p-value</b><b>FDR-adjusted p-value</b></div>'+body+'</div><p class="result-next-context-method">'+esc(methodNote)+'</p></aside>';
 }
 function taxonomyWhatNextPanel(d){
   var figs=taxonomyComparisonAllFigures(),rank=taxonomyComparisonSelectedRank(figs),rankLabel=taxonRankLabel(rank);
-  var summaries=taxonomyDiffSummariesForRank(d,rank),diff=combinedTaxonomyDiffSummary(summaries),defaultView=isDefaultGroupView(d),availability=taxonomyDiffAvailability(d,rank);
-  var status=!defaultView?"unavailable":(diff&&diff.adjusted?"supported":(!diff||!diff.adjustedAvailable?"unavailable":"descriptive")),shift=strongestTaxonShift(d),design=resultStudyDesign(d);
+  var summaries=primaryTaxonomyDiffSummaries(d,rank),diff=combinedTaxonomyDiffSummary(summaries),defaultView=isDefaultGroupView(d),availability=taxonomyDiffAvailability(d,rank);
+  var status=!defaultView?"unavailable":(diff&&diff.adjusted?"supported":(!diff||!diff.adjustedAvailable?"unavailable":"descriptive")),shift=strongestTaxonShift(d),design=resultStudyDesign(d),primaryDatabase=primaryTaxonomyDatabase(d),primarySource=taxonomySourceTableText(d),dualTaxonomy=hasMultipleTaxonomyDatabases(d);
+  var statsDatabase=summaries.length?readableList(summaries.map(function(summary){return summary.method;}).filter(function(method,index,all){return method&&all.indexOf(method)===index;})):(dualTaxonomy?primaryDatabase:"");
+  var statsPrefix=statsDatabase?statsDatabase+" ":"";
   var currentBody="",currentNote="";
   if(!defaultView){
     var def=d.defaultGroupFactor||defaultGroupFactor(baseDataset());
@@ -8396,39 +8462,41 @@ function taxonomyWhatNextPanel(d){
     var candidates=summaries.filter(function(summary){return summary.adjusted&&summary.strongest;}).map(function(summary){return summary.method+": "+taxonDisplayName(summary.strongest.taxon,d);});
     currentNote="Check that every supported direction repeats across individual samples."+(candidates.length?" Top-ranked loaded candidates: "+readableList(candidates)+".":"");
   }else if(diff&&diff.adjustedAvailable){
-    currentBody="No "+rankLabel.toLowerCase()+"-level abundance difference was supported after FDR correction.";
+    currentBody="No "+statsPrefix+rankLabel.toLowerCase()+"-level abundance difference was supported after FDR correction.";
     currentNote=summaries.map(function(summary){return taxonomyDiffMethodStatusText(summary,rankLabel);}).join(" ")+(diff.raw?" These are exploratory observations, not confirmed differences.":"");
   }else if(diff){
-    currentBody="FDR support for the "+rankLabel.toLowerCase()+"-level comparisons could not be determined.";
+    currentBody="FDR support for the "+statsPrefix+rankLabel.toLowerCase()+"-level comparisons could not be determined.";
     currentNote=summaries.map(function(summary){return taxonomyDiffMethodStatusText(summary,rankLabel);}).join(" ")+" Use visible abundance patterns descriptively until adjusted taxon-level statistics are available.";
   }else if(availability==="loading"){
-    currentBody="The "+rankLabel.toLowerCase()+"-level statistical results are still loading.";
+    currentBody="The "+statsPrefix+rankLabel.toLowerCase()+"-level statistical results are still loading.";
     currentNote="Wait for the report to finish loading before interpreting statistical support.";
   }else if(availability==="error"){
-    currentBody="A matching "+rankLabel.toLowerCase()+"-level statistics file exists, but the portal could not read it.";
+    currentBody="A matching "+statsPrefix+rankLabel.toLowerCase()+"-level statistics file exists, but the portal could not read it.";
     currentNote="Refresh the report before interpreting this section; do not treat the temporary loading failure as evidence of no difference.";
   }else if(availability==="empty"){
-    currentBody="The matching "+rankLabel.toLowerCase()+"-level statistics file contained no usable results.";
+    currentBody="The matching "+statsPrefix+rankLabel.toLowerCase()+"-level statistics file contained no usable results.";
     currentNote="Use individual taxa as descriptive leads only; the available file cannot support a group-level conclusion.";
   }else{
-    currentBody="No matching "+rankLabel.toLowerCase()+"-level differential-abundance test was provided for this report.";
+    currentBody="No matching "+statsPrefix+rankLabel.toLowerCase()+"-level differential-abundance test was provided for this report.";
     currentNote="Use individual taxa as descriptive leads only; the charts cannot confirm a group difference without a matching statistical test and FDR correction.";
   }
 
   var researchBody=status==="supported"
-    ? "Use the supported taxon-level result to prioritize taxa whose direction of difference is consistent across biological replicates."
-    : "Use the composition charts to describe patterns and shortlist taxa that repeat across biological replicates; do not treat them as confirmed differences.";
+    ? "Use the supported "+statsPrefix+"taxon-level result to prioritize taxa whose direction of difference is consistent across biological replicates."
+    : "Use the "+(dualTaxonomy?primaryDatabase+" ":"")+"composition charts to describe patterns and shortlist taxa that repeat across biological replicates; do not treat them as confirmed differences.";
   var researchNote="A visible relative-abundance change is not proof of an absolute increase: one taxon's proportion can change because another taxon changed.";
 
   var strengthBody=resultReplicationSummary(design);
-  var methods=taxonomyComparisonProfileMethods(figs.map(chartTextProfile)),robustBody;
-  if(methods.length>1){
+  var methods=taxonomyComparisonProfileMethods(figs.map(chartTextProfile)),comparisonMethods=methods.filter(function(method){return method!==primaryDatabase;}),comparisonLabel=readableList(comparisonMethods),robustBody;
+  if(dualTaxonomy&&comparisonMethods.length){
+    robustBody="Treat "+primaryDatabase+" as the primary ONT result. Use "+readableList(comparisonMethods)+" as a comparison, then check whether candidates repeat across individual samples, group summaries, and neighboring taxonomic ranks.";
+  }else if(methods.length>1){
     robustBody="Check whether the same "+rankLabel.toLowerCase()+"-level candidates repeat across "+readableList(methods)+", across sample-level bars and group summaries, and at neighboring taxonomic ranks.";
   }else{
     robustBody="Check whether the largest visible shift repeats across individual samples, remains present at neighboring taxonomic ranks, and is not driven by one high-abundance sample or a large unassigned fraction.";
   }
   var robustNote=shift&&shift.taxon&&shift.taxon!=="None"
-    ? "The largest descriptive median shift in the loaded composition table is "+taxonDisplayName(shift.taxon,d)+"; magnitude alone does not establish statistical support."
+    ? "The largest descriptive median shift in "+(primarySource?"the "+primarySource:"the loaded composition table")+" is "+taxonDisplayName(shift.taxon,d)+"; magnitude alone does not establish statistical support."
     : "No stable taxon-level shift could be ranked from the loaded composition table.";
 
   var validateBody=!defaultView
@@ -8444,12 +8512,14 @@ function taxonomyWhatNextPanel(d){
       : (!diff.adjustedAvailable
       ? "Calculate FDR-adjusted p-values for the loaded comparisons before deciding whether any taxon differs between groups. Add biological replicates if the present groups are too small to estimate variation reliably."
       : "No taxon is confirmed as different between groups. If detecting smaller effects matters, increase biological replicates (the number of samples per group) and repeat the corrected taxon-level test. The experiment may also have little or no detectable effect on microbiome composition."));
-  var validateNote="Confirm taxonomy at the most reliable available rank; species-level assignments can depend on the classifier and reference database.";
+  var validateNote=dualTaxonomy
+    ? "For this ONT report, treat "+primaryDatabase+" as primary"+(comparisonLabel?" and "+comparisonLabel+" as a comparison":"")+". Confirm important taxa directly because species-level assignments can still depend on the reference database."
+    : "Confirm taxonomy at the most reliable available rank; species-level assignments can depend on the classifier and reference database.";
   var decisionEvidence=[fmtNum(design.total)+" samples",fmtNum(design.positive.length)+" "+groupingUnitLabel(d)];
   summaries.forEach(function(summary){
     decisionEvidence.push(summary.method+": "+summary.rows+" tested results; "+summary.raw+" with raw p-values below 0.05; "+summary.adjusted+" FDR-supported");
   });
-  return resultWhatNextPanel("taxonomy","Use these steps to understand the result and plan follow-up work.",[
+  return resultWhatNextPanel("taxonomy",dualTaxonomy?("Use "+primaryDatabase+" as the primary ONT taxonomy result"+(comparisonLabel?"; use "+comparisonLabel+" only as a labelled comparison.":".")):"Use these steps to understand the result and plan follow-up work.",[
     resultNextCard("Current interpretation",currentBody,currentNote,[]),
     resultNextCard("Use the composition result",researchBody,researchNote,[]),
     resultNextCard("Check the study design",strengthBody,design.note,[{section:"pipeline",label:"Review pipeline & QC"}]),
@@ -10281,12 +10351,19 @@ function chatOverviewSection(d){
   };
 }
 function chatCompositionSection(d,message){
-  var text=String(message||"").toLowerCase(),ranked=rankTaxa(d),selected=ranked.slice(0,12);
+  var text=String(message||"").toLowerCase(),primaryDatabase=primaryTaxonomyDatabase(d),multipleDatabases=hasMultipleTaxonomyDatabases(d);
+  var wantsDatabaseComparison=/\bemu\b/.test(text)&&/\bsilva\b/.test(text);
+  var requestedDatabase=wantsDatabaseComparison?"":(/\bsilva\b/.test(text)?"SILVA":(/\bemu\b/.test(text)?"EMU":primaryDatabase));
+  var ranked=rankTaxa(d),selected=ranked.slice(0,12);
   ranked.forEach(function(item){
     var label=String(taxonDisplayName(item.taxon,d)||item.taxon).toLowerCase();
     if(text&&label.length>3&&text.indexOf(label)>=0&&!selected.some(function(entry){return entry.taxon===item.taxon;}))selected.push(item);
   });
-  var diffRows=(d.taxonomyDiffStats||[]).slice().sort(function(a,b){
+  var configuredDatabases=(d&&d.assay&&d.assay.taxonomy_methods||[]).map(function(method){return String(method||"").toUpperCase();}).filter(function(method,index,all){return method&&all.indexOf(method)===index;});
+  var diffSource=(d.taxonomyDiffStats||[]).filter(function(row){
+    return wantsDatabaseComparison||!requestedDatabase||String(row.method||"Taxonomy").toUpperCase()===requestedDatabase;
+  });
+  var diffRows=diffSource.slice().sort(function(a,b){
     var aq=a.q!=null?a.q:(a.p!=null?a.p:1),bq=b.q!=null?b.q:(b.p!=null?b.p:1);
     return aq-bq||Math.abs(Number(b.effect)||0)-Math.abs(Number(a.effect)||0);
   }).filter(function(row,index){
@@ -10297,12 +10374,16 @@ function chatCompositionSection(d,message){
     title:"Microbiome Composition",
     summary:taxonomyTopLevel(d),
     taxonomic_level:String(d.taxonLevel||"Taxon"),
+    taxonomy_database:taxonomyDatabaseName(d)||null,
+    taxonomy_database_roles:{primary:primaryDatabase||null,comparisons:multipleDatabases?configuredDatabases.filter(function(method){return method!==primaryDatabase;}):[]},
+    abundance_source_table:taxonomySourceTableText(d)||null,
     displayed_features:selected.slice(0,16).map(function(item){return {
       id:String(item.taxon),label:taxonDisplayName(item.taxon,d),mean_relative_abundance:chatNumber(item.mean),
       sample_values:(d.samples||[]).map(function(sample){return {sample_id:String(sample.id),group_id:String(sample.group),relative_abundance:chatNumber(sample.fr&&sample.fr[item.taxon]||0)};}),
       group_summaries:taxonGroupSampleStats(d,item.taxon).map(function(group){return {group_id:String(group.id),label:group.label,n:group.total,mean:chatNumber(group.mean),median:chatNumber(group.median),minimum:chatNumber(group.min),maximum:chatNumber(group.max)};})
     };}),
-    differential_results:diffRows.map(function(row){return {taxon:String(row.taxon||""),rank:String(row.rank||""),taxonomy_method:String(row.method||"Taxonomy"),effect:chatNumber(row.effect),raw_p_value:chatNumber(row.p),adjusted_p_value:chatNumber(row.q),status:chatResultStatus(row.p,row.q,row.q!=null),comparison:taxonomyDiffContrastLabel(row)};}),
+    differential_results_scope:wantsDatabaseComparison?"primary and comparison databases":(requestedDatabase?(taxonomyDatabaseRoleLabel(d,requestedDatabase)+" only"):"available taxonomy results"),
+    differential_results:diffRows.map(function(row){return {taxon:String(row.taxon||""),rank:String(row.rank||""),taxonomy_method:String(row.method||"Taxonomy"),database_role:String(row.method||"Taxonomy").toUpperCase()===primaryDatabase?"primary":"comparison",effect:chatNumber(row.effect),raw_p_value:chatNumber(row.p),adjusted_p_value:chatNumber(row.q),status:chatResultStatus(row.p,row.q,row.q!=null),comparison:taxonomyDiffContrastLabel(row)};}),
     charts:chatFigureEntries("taxonomy",message),
     limitations:["Relative abundance is compositional and does not measure absolute microbial load.","A visible taxon difference is not a confirmed group effect without matching adjusted statistical support."]
   };
@@ -10451,11 +10532,11 @@ function chatFallbackAnswer(text,err){
     var conf=confidenceSummary(d),shift=strongestTaxonShift(d);
     add("Overall",welcomeTopline(d),"Start with Overall Summary, then inspect the detailed result pages.");
     add("Confidence",conf.value,conf.note);
-    if(shift&&shift.taxon&&shift.taxon!=="None")add("Main composition signal",taxonDisplayName(shift.taxon,d),taxonMedianShiftNote(d,shift));
+    if(shift&&shift.taxon&&shift.taxon!=="None")add("Main composition signal"+(taxonomyDatabaseContext(d)?" ("+taxonomyDatabaseContext(d)+")":""),taxonDisplayName(shift.taxon,d),taxonMedianShiftNote(d,shift));
   }else if(/composition|taxon|taxa|microbe|organism|abundance|who/.test(q)){
     var ts=taxonomyTopLevel(d),s=strongestTaxonShift(d);
-    add("Composition",ts.value,ts.note);
-    if(s&&s.taxon&&s.taxon!=="None")add("Largest displayed-taxon shift",taxonDisplayName(s.taxon,d),taxonMedianShiftNote(d,s));
+    add("Composition"+(taxonomyDatabaseContext(d)?" ("+taxonomyDatabaseContext(d)+")":""),ts.value,ts.note);
+    if(s&&s.taxon&&s.taxon!=="None")add("Largest displayed-taxon shift"+(taxonomyDatabaseContext(d)?" ("+taxonomyDatabaseContext(d)+")":""),taxonDisplayName(s.taxon,d),taxonMedianShiftNote(d,s));
   }else if(/diversity|alpha|within|shannon|simpson|richness|evenness/.test(q)){
     var at=alphaTopLevel(d,defaultAlphaMetric(d));
     add("Within-sample diversity",at.value,at.note);
