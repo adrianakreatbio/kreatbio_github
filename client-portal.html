@@ -435,6 +435,30 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .result-next-context-row:first-child b{color:#fff;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase}
 .result-next-context-row:nth-child(odd):not(:first-child){background:#FBFDFE}
 .result-next-context-method{margin:0;padding:11px 17px;border-top:1px solid #D8E4EF;color:var(--muted);font-size:.76rem;line-height:1.45}
+.bh-guide{border-top:1px solid #D8E4EF;background:#F7FAFC;padding:16px 17px 14px}
+.bh-guide-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.bh-guide-head b{color:var(--navy);font-size:.9rem;line-height:1.3}
+.bh-guide-head span{color:var(--muted);font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.bh-guide-stage{position:relative;margin-top:11px}
+.bh-guide-slide{display:grid;grid-template-columns:64px minmax(0,1fr);align-items:center;gap:15px;min-height:142px;border:1px solid #DCE7F1;border-radius:12px;background:#fff;padding:18px;box-shadow:0 12px 28px -28px rgba(7,27,58,.5)}
+.bh-guide-slide[hidden]{display:none}
+.bh-guide-number{display:grid;width:58px;height:58px;place-items:center;border-radius:50%;background:#EAF8F6;color:#087B72;font-size:1.35rem;font-weight:900}
+.bh-guide-copy{min-width:0}
+.bh-guide-copy h4{color:var(--navy);font-size:1rem;line-height:1.25}
+.bh-guide-copy p{margin-top:6px;color:#4D5D6C;font-size:.84rem;line-height:1.5}
+.bh-guide-formula{display:inline-block;margin-top:9px;border-radius:7px;background:#102E4F;padding:7px 10px;color:#fff;font-size:.78rem;font-weight:800;letter-spacing:.01em}
+.bh-guide-outcomes{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.bh-guide-outcomes span{border:1px solid #DCE7F1;border-radius:999px;background:#F7FAFC;padding:6px 9px;color:#43576A;font-size:.74rem;font-weight:800}
+.bh-guide-outcomes .supported{border-color:#BCE4D4;background:#EFFAF5;color:#247A4B}
+.bh-guide-controls{display:grid;grid-template-columns:36px minmax(0,1fr) auto 36px;align-items:center;gap:10px;margin-top:11px}
+.bh-guide-control{display:grid;width:36px;height:34px;place-items:center;border:1px solid #CBD9E5;border-radius:8px;background:#fff;color:var(--navy);font-size:1rem;font-weight:900}
+.bh-guide-control:hover:not(:disabled),.bh-guide-control:focus-visible{border-color:#0E8F98;color:#087B72}
+.bh-guide-control:disabled{cursor:not-allowed;opacity:.35}
+.bh-guide-dots{display:flex;align-items:center;justify-content:center;gap:7px}
+.bh-guide-dot{width:9px;height:9px;border:0;border-radius:50%;background:#C5D2DE;padding:0}
+.bh-guide-dot[aria-current="step"]{width:24px;border-radius:999px;background:#0E8F98}
+.bh-guide-progress{color:var(--muted);font-size:.72rem;font-weight:800;white-space:nowrap}
+.bh-guide-foot{margin-top:10px;color:var(--muted);font-size:.74rem;line-height:1.45}
 .result-next-roadmap{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px;margin-top:38px;padding:0 4px}
 .result-next-step{--step:#287C96;position:relative;z-index:1;display:flex;flex-direction:column;min-width:0;min-height:205px;padding:0 4px;background:#fff}
 .result-next-step:nth-child(2){--step:#B26A1C}
@@ -1559,6 +1583,13 @@ a.chat-source:hover{border-color:var(--blue);color:var(--blue)}
   .result-next-recommendation{grid-template-columns:44px minmax(0,1fr);padding:14px}
   .result-next-recommendation-icon{width:44px;height:44px}
   .result-next-detail-body{padding-left:15px}
+  .bh-guide{padding:15px 13px 13px}
+  .bh-guide-head{align-items:flex-start;flex-direction:column;gap:3px}
+  .bh-guide-slide{grid-template-columns:46px minmax(0,1fr);gap:11px;min-height:166px;padding:15px 13px}
+  .bh-guide-number{width:44px;height:44px;font-size:1.05rem}
+  .bh-guide-formula{font-size:.7rem;overflow-wrap:anywhere}
+  .bh-guide-controls{grid-template-columns:36px minmax(0,1fr) 36px}
+  .bh-guide-progress{display:none}
   .takeaway-card-grid{grid-template-columns:1fr}
   .takeaway-card:first-child{grid-column:auto}
   .takeaway-card,.takeaway-card:first-child{min-height:0;padding:22px 18px}
@@ -2266,7 +2297,7 @@ function groupObjectsFromSamples(samples){
 function emptyReportDataset(report){
   var assay=report.assay||{},taxonomyMethods=(assay.taxonomy_methods||[]).map(function(method){return String(method||"").toUpperCase();});
   var taxonomyLabel=String(assay.id||"").toLowerCase()==="ont16sfl"
-    ? "EMU (primary) / SILVA (comparison) taxonomy"
+    ? "EMU (primary) / SILVA taxonomy"
     : (taxonomyMethods.length?taxonomyMethods.join(" / ")+" taxonomy":"Taxonomy reference database");
   return {
     kind:String(assay.kingdom||"").toLowerCase()==="fungi"?"fungi":"bacteria",
@@ -2448,7 +2479,7 @@ function methodConfigFromRelease(methodsText,params,versions,assay){
   var classifierName=classifierPath.split(/[\\/]/).pop()||"the configured classifier";
   var taxonomyDatabase=String(params.taxonomy_database||"SILVA");
   var taxonomyDatabaseLabel=isOnt
-    ? "EMU "+emuVersion+" (primary) / SILVA "+silvaVersion+" (comparison)"
+    ? "EMU "+emuVersion+" (primary) / SILVA "+silvaVersion
     : taxonomyDatabase+(silvaVersion?" "+silvaVersion:"");
   var illuminaFilterSettings="fastp"+(fastpVersion?" "+fastpVersion:"")+" used quality threshold "+(params.fastp_qual||"the configured value")+" and maximum unqualified bases "+(params.fastp_unqual_pct||"the configured percentage")+"%. DADA2 used forward/reverse truncation lengths "+(params.dada2_trunc_len_f||"configured")+"/"+(params.dada2_trunc_len_r||"configured")+" bp and maximum expected errors "+(params.dada2_max_ee_f||"configured")+"/"+(params.dada2_max_ee_r||"configured")+".";
   var ontRange=minLen!=null&&maxLen!=null?minLen+" to "+maxLen+" bp":"the configured length range";
@@ -8430,6 +8461,16 @@ function taxonomyDiffEffectMagnitude(value){
   if(value==null||isNaN(value))return "not available";
   return Math.abs(Number(value)).toFixed(2);
 }
+function taxonomyBhCorrectionGuide(){
+  var slides=[
+    '<article class="bh-guide-slide" data-bh-slide="0"><span class="bh-guide-number" aria-hidden="true">1</span><div class="bh-guide-copy"><h4>Test each taxon</h4><p>ALDEx2 repeats the Welch test across many estimates of the abundance data to account for uncertainty. It reports one expected raw p-value (we.ep) for each taxon.</p></div></article>',
+    '<article class="bh-guide-slide" data-bh-slide="1" hidden><span class="bh-guide-number" aria-hidden="true">2</span><div class="bh-guide-copy"><h4>Rank the p-values</h4><p>Within each comparison between two groups, BH considers the p-values for all tested taxa and ranks them from smallest to largest.</p></div></article>',
+    '<article class="bh-guide-slide" data-bh-slide="2" hidden><span class="bh-guide-number" aria-hidden="true">3</span><div class="bh-guide-copy"><h4>Adjust for the number of tests</h4><p>Standard BH starts with the ranked calculation below, then applies its ordered step-up rule and caps values at 1. ALDEx2 reports the expected BH-corrected result across its Monte Carlo estimates (we.eBH).</p><span class="bh-guide-formula">Standard BH starting value = p × number of tests ÷ rank</span></div></article>',
+    '<article class="bh-guide-slide" data-bh-slide="3" hidden><span class="bh-guide-number" aria-hidden="true">4</span><div class="bh-guide-copy"><h4>Decide what is supported</h4><p>The portal reads ALDEx2\'s FDR-adjusted p-value for every taxon.</p><div class="bh-guide-outcomes"><span class="supported">FDR-adjusted p &lt; 0.05 · supported</span><span>Raw p &lt; 0.05 only · exploratory</span></div></div></article>'
+  ];
+  var dots=slides.map(function(slide,index){return '<button class="bh-guide-dot" type="button" data-bh-dot="'+index+'" aria-label="Show BH step '+(index+1)+'"'+(index===0?' aria-current="step"':'')+'></button>';}).join("");
+  return '<section class="bh-guide" data-bh-guide aria-label="How Benjamini-Hochberg correction works"><div class="bh-guide-head"><b>How Benjamini–Hochberg correction works</b><span>One step at a time</span></div><div class="bh-guide-stage">'+slides.join("")+'</div><div class="bh-guide-controls"><button class="bh-guide-control" type="button" data-bh-step="-1" aria-label="Previous BH step" disabled>‹</button><div class="bh-guide-dots">'+dots+'</div><output class="bh-guide-progress" data-bh-progress aria-live="polite">1 of 4</output><button class="bh-guide-control" type="button" data-bh-step="1" aria-label="Next BH step">›</button></div><p class="bh-guide-foot">ALDEx2 applies Welch testing and BH correction separately within each comparison between two groups. The portal reads the resulting we.ep and we.eBH values; it does not run an additional test or recalculate the correction.</p></section>';
+}
 function taxonomyRawResultsContext(d,diffOrSummaries,rankLabel){
   var summaries=Array.isArray(diffOrSummaries)?diffOrSummaries:(diffOrSummaries&&diffOrSummaries.methods||[diffOrSummaries]).filter(Boolean);
   var diff=combinedTaxonomyDiffSummary(summaries);
@@ -8443,8 +8484,8 @@ function taxonomyRawResultsContext(d,diffOrSummaries,rankLabel){
     var taxon=(multiple?(String(row.method||"Taxonomy")+" · "):"")+taxonDisplayName(row.taxon,d);
     return '<div class="result-next-context-row"><strong>'+esc(taxon)+'</strong><span>'+esc(taxonomyDiffContrastLabel(row))+'</span><span>'+esc(taxonomyDiffEffectMagnitude(row.effect))+'</span><span>'+esc(taxonomyDiffPValue(row.p))+'</span><span>'+esc(taxonomyDiffPValue(row.q))+'</span></div>';
   }).join("");
-  var methodNote="ALDEx2 compares the difference between groups with the variation among samples within each group. Effect magnitude shows how large and consistent that difference is. High variation within a group can produce a higher p-value, so even a visually large difference will not appear in this table if its raw p-value is 0.05 or higher.";
-  return '<aside class="result-next-context" aria-label="Taxon comparisons between groups"><div class="result-next-context-head"><b>'+esc(title)+'</b><p>'+esc(rawSummary)+'</p></div><div class="result-next-context-table"><div class="result-next-context-row"><b>'+esc(multiple?'Method · taxon':(singleMethod?singleMethod+' taxon':'Taxon'))+'</b><b>Group comparison</b><b>Effect magnitude</b><b>Raw p-value</b><b>FDR-adjusted p-value</b></div>'+body+'</div><p class="result-next-context-method">'+esc(methodNote)+'</p></aside>';
+  var methodNote="Effect magnitude summarizes how large and consistent the difference is relative to variation within the groups; use the FDR-adjusted p-value to determine statistical support.";
+  return '<aside class="result-next-context" aria-label="Taxon comparisons between groups"><div class="result-next-context-head"><b>'+esc(title)+'</b><p>'+esc(rawSummary)+'</p></div><div class="result-next-context-table"><div class="result-next-context-row"><b>'+esc(multiple?'Method · taxon':(singleMethod?singleMethod+' taxon':'Taxon'))+'</b><b>Group comparison</b><b>Effect magnitude</b><b>Raw p-value</b><b>FDR-adjusted p-value</b></div>'+body+'</div><p class="result-next-context-method">'+esc(methodNote)+'</p>'+taxonomyBhCorrectionGuide()+'</aside>';
 }
 function taxonomyWhatNextPanel(d){
   var figs=taxonomyComparisonAllFigures(),rank=taxonomyComparisonSelectedRank(figs),rankLabel=taxonRankLabel(rank);
@@ -8885,7 +8926,9 @@ function betaWhatNextPanel(d,opts){
     var status=quality.available&&!quality.informative?"uninformative":betaNextDecisionStatus(d,metric.id);
     return {id:metric.id,label:metricLabel(d,"beta",metric.id),pm:pm,pd:pd,quality:quality,status:status,use:betaMetricResearchUse(metric.id)};
   });
-  var supported=rows.filter(function(row){return row.status==="supported";}),small=rows.filter(function(row){return row.status==="small";}),exploratory=rows.filter(function(row){return row.status==="exploratory";});
+  var supported=rows.filter(function(row){return row.status==="supported";}),small=rows.filter(function(row){return row.status==="small";}),exploratory=rows.filter(function(row){return row.status==="exploratory";}),unsupported=rows.filter(function(row){return row.status==="unsupported";}).sort(function(a,b){
+    return Number(a.pm.p)-Number(b.pm.p)||(Number(b.pm.R2)||0)-(Number(a.pm.R2)||0);
+  });
   var dispersion=rows.filter(function(row){return row.status==="dispersion";}),tested=rows.filter(function(row){return row.pm&&row.pm.p!=null;}),design=resultStudyDesign(d);
   var groupNames=readableList(design.positive.map(function(group){return group.label;}));
   var pairwiseFollowUp=design.positive.length>2?" Use FDR-adjusted PERMANOVA comparisons between group pairs to identify which groups differ before investigating contributing taxa.":"";
@@ -8934,11 +8977,18 @@ function betaWhatNextPanel(d,opts){
     recommendation="Increase biological replicates, then repeat the "+preliminary.label+" analysis.";
     tone="exploratory";statusLabel="Preliminary Beta signal";
   }else if(tested.length){
-    currentBody="The available beta-diversity tests do not show a clear whole-community difference between groups. The effect may be small or absent, or the study may have too few biological replicates to detect it.";
+    var unsupportedLead=unsupported[0]||tested[0],unsupportedP=unsupportedLead.pm&&unsupportedLead.pm.p,unsupportedR2=unsupportedLead.pm&&unsupportedLead.pm.R2;
+    if(unsupported.length){
+      currentBody=unsupportedLead.label+" does not provide statistical evidence that the groups differ in community composition (PERMANOVA p="+fmtP(unsupportedP)+").";
+      if(unsupportedR2!=null)currentBody+=" Although the group labels account for "+(Number(unsupportedR2)*100).toFixed(1)+"% of variation in this dataset, this R² is descriptive because the group difference is not statistically supported (p-value > 0.05).";
+      currentBody+=" The treatment or other selected grouping factor may have little or no consistent effect on microbiome composition, or the current sample size and within-group variation may make a smaller effect difficult to detect. This analysis cannot distinguish between these possibilities.";
+    }else{
+      currentBody="The available beta-diversity tests do not show a clear whole-community difference between groups. The effect may be small or absent, or the study may have too few biological replicates to detect it.";
+    }
     useTitle="Use beta diversity descriptively";
-    useBody="Use the PCoA plots to describe sample relationships and identify outliers. Do not report confirmed group separation.";
-    validateBody="If detecting a smaller community difference matters, use the observed variability to plan additional biological replicates, then repeat the same beta-diversity tests.";
-    recommendation="Do not claim group separation. If detecting smaller differences matters, plan additional biological replicates before repeating the beta-diversity tests.";
+    useBody="Report that no statistically supported group separation was detected. Use the PCoA plots only to describe sample relationships and inspect unusual samples, possible subgroups, batch effects, or other metadata patterns.";
+    validateBody="If detecting a smaller group difference is important, collect additional independent biological samples with reasonably balanced groups and repeat the same predefined beta-diversity analysis. If the result remains unsupported in a stronger study, this would provide greater confidence that the selected grouping factor has little detectable effect on community composition.";
+    recommendation="Do not claim group separation. Use the current PCoA descriptively, and collect additional independent samples only if detecting a smaller group difference is important.";
     tone="descriptive";statusLabel="No supported Beta difference";
   }else{
     currentBody="The community relationship plots are available, but the matching group-separation tests are not.";
@@ -9996,8 +10046,25 @@ function closeDiversityViewMenus(except){
     if(menu)menu.hidden=true;
   });
 }
+function wireBhCorrectionGuides(){
+  $$('[data-bh-guide]',$('#content')).forEach(function(guide){
+    var slides=$$('[data-bh-slide]',guide),dots=$$('[data-bh-dot]',guide),controls=$$('[data-bh-step]',guide),progress=$('[data-bh-progress]',guide),index=0;
+    if(!slides.length)return;
+    function show(next){
+      index=Math.max(0,Math.min(slides.length-1,next));
+      slides.forEach(function(slide,i){slide.hidden=i!==index;slide.setAttribute('aria-hidden',i===index?'false':'true');});
+      dots.forEach(function(dot,i){if(i===index)dot.setAttribute('aria-current','step');else dot.removeAttribute('aria-current');});
+      controls.forEach(function(control){var step=parseInt(control.dataset.bhStep,10)||0;control.disabled=step<0?index===0:index===slides.length-1;});
+      if(progress)progress.textContent=(index+1)+' of '+slides.length;
+    }
+    controls.forEach(function(control){control.addEventListener('click',function(){show(index+(parseInt(control.dataset.bhStep,10)||0));});});
+    dots.forEach(function(dot){dot.addEventListener('click',function(){show(parseInt(dot.dataset.bhDot,10)||0);});});
+    show(0);
+  });
+}
 function wireSectionButtons(){
   wireReleasedChartLoadState();
+  wireBhCorrectionGuides();
   $$('[data-result-next-toggle]',$('#content')).forEach(function(button){
     button.addEventListener('click',function(){
       var panelId=button.getAttribute('aria-controls'),panel=panelId?document.getElementById(panelId):null;
