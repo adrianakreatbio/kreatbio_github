@@ -739,8 +739,6 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .alpha-stat-definitions div{padding:8px 0}
 .alpha-stat-definitions dt{color:var(--navy);font-size:.78rem;font-weight:800}
 .alpha-stat-definitions dd{margin-top:4px;color:var(--muted);font-size:.8rem;line-height:1.48}
-.alpha-detail-note{margin-top:14px;padding-top:12px;border-top:1px solid #E2E9EF;color:var(--muted);font-size:.84rem;line-height:1.5}
-.alpha-detail-note b{color:var(--navy)}
 .takeaway-group-medians{color:#16866B;font-weight:800;line-height:1.45}
 .takeaway-stat-line{display:block;color:#354B60;font-weight:700}
 .takeaway-stat-caveat{display:block;margin-top:3px;color:#4D5D6C}
@@ -4659,11 +4657,9 @@ function alphaInspectionTable(d,metric){
     var chips=samples.length?samples.map(function(x){return '<i>'+esc(x.id)+' '+metricValueText(x.val,metric)+'</i>';}).join(""):'<i>No values</i>';
     return '<div class="inspection-row"><b>'+esc(g.label)+'</b><span class="inspection-values">'+chips+'</span><span><strong>'+esc(st&&st.n?("n="+st.n+"; range "+metricValueText(st.min,metric)+"-"+metricValueText(st.max,metric)):"Not available")+'</strong></span></div>';
   }).join("");
-  var intro='<p class="table-caption">'+helpCommon("Sample-level "+label+" values, shown without converting them into above/below categories.")+'</p>';
-  var detailNote=alphaSampleDeviationNote(d,metric);
-  return '<div class="pattern-panel"><h3>Diversity Values To Inspect</h3>'+intro+
+  var intro='<p class="table-caption">'+helpCommon("Each sample’s displayed "+label+" value is listed with its group, followed by the group’s sample count and observed minimum-to-maximum range. Use this table to check individual values; it does not identify outliers or test statistical significance.")+'</p>';
+  return '<div class="pattern-panel"><h3>'+esc(label+" Values by Sample")+'</h3>'+intro+
     '<div class="inspection-table"><div class="inspection-row"><b>'+esc(activeGroupingLabel(d))+'</b><b>Samples</b><b>Group summary</b></div>'+rows+'</div>'+
-    (detailNote?'<p class="alpha-detail-note"><b>Sample-level note:</b> '+esc(detailNote)+'</p>':"")+
     refLink(alphaMetricRef(metric))+'</div>';
 }
 function alphaStatsForActiveGrouping(d){
@@ -4791,14 +4787,14 @@ function selfExperimentLabelPlacement(x,y,label,bounds,occupied,fontSize,radius)
   return null;
 }
 function alphaSelfMiniPlot(d,metric,result,selected,byId,sampleNumbers){
-  var w=420,h=260,p={l:66,r:46,t:38,b:58},groups={},values=[];
+  var w=460,h=260,p={l:66,r:58,t:38,b:58},groups={},values=[];
   (d.samples||[]).forEach(function(s){var id=String(s.raw||s.id),v=Number(alphaVal(s,metric));if(selected.indexOf(id)<0||!isFinite(v))return;(groups[s.group]||(groups[s.group]=[])).push({id:id,value:v});values.push(v);});
   var keys=Object.keys(groups),groupLabels=keys.map(function(key){var groupObj=(d.groups||[]).filter(function(g){return g.id===key;})[0];return String(groupObj?groupObj.label:key);}),rotateGroupLabels=keys.length>4||groupLabels.some(function(label){return label.length>10;}),scale=selfExperimentNumericScale(values,5,.14);
   if(rotateGroupLabels){h=284;p.b=82;}
-  var plotLeft=p.l+30,plotRight=w-p.r-30,sx=function(i){return keys.length===1?(plotLeft+plotRight)/2:plotLeft+i*(plotRight-plotLeft)/(keys.length-1);},sy=function(v){return h-p.b-(v-scale.min)/(scale.max-scale.min)*(h-p.t-p.b);};
+  var plotLeft=p.l+38,plotRight=w-p.r-50,sx=function(i){return keys.length===1?(plotLeft+plotRight)/2:plotLeft+i*(plotRight-plotLeft)/(keys.length-1);},sy=function(v){return h-p.b-(v-scale.min)/(scale.max-scale.min)*(h-p.t-p.b);};
   var body=scale.ticks.map(function(value){var y=sy(value);return '<line x1="'+p.l+'" y1="'+y.toFixed(1)+'" x2="'+(w-p.r)+'" y2="'+y.toFixed(1)+'" stroke="#E2EAF2"/><line x1="'+(p.l-4)+'" y1="'+y.toFixed(1)+'" x2="'+p.l+'" y2="'+y.toFixed(1)+'" stroke="#8094A8"/><text x="'+(p.l-7)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="8" fill="#526779">'+esc(selfExperimentAxisNumber(value,scale.step))+'</text>';}).join("");
   body+='<rect x="'+p.l+'" y="'+p.t+'" width="'+(w-p.l-p.r)+'" height="'+(h-p.t-p.b)+'" fill="none" stroke="#AAB9C8"/>';
-  var pointLayouts={},occupiedLabels=[],labelBounds={left:p.l+3,right:w-p.r-3,top:p.t+3,bottom:h-p.b-3};
+  var pointLayouts={},occupiedLabels=[],labelBounds={left:p.l+8,right:w-p.r-8,top:p.t+3,bottom:h-p.b-3};
   keys.forEach(function(key,gi){var groupItems=groups[key],x=sx(gi),jitterLimit=Math.min(18,Math.max(10,(plotRight-plotLeft)/Math.max(2,keys.length)*.18));pointLayouts[key]=groupItems.map(function(item,ii){var jitter=groupItems.length===1?0:-jitterLimit+(2*jitterLimit*ii/(groupItems.length-1)),px=x+jitter,py=sy(item.value);occupiedLabels.push({left:px-3,right:px+3,top:py-3,bottom:py+3});return {item:item,px:px,py:py};});});
   keys.forEach(function(key,gi){
     var vals=groups[key].map(function(item){return item.value;}).sort(function(a,b){return a-b;}),med=median(vals),q=function(prob){if(vals.length<2)return null;var pos=(vals.length-1)*prob,lo=Math.floor(pos),hi=Math.ceil(pos);return vals[lo]+(vals[hi]-vals[lo])*(pos-lo);},q1=q(.25),q3=q(.75),min=vals[0],max=vals[vals.length-1],x=sx(gi),color=groupColor(Math.max(0,(d.groups||[]).findIndex(function(g){return g.id===key;})));
@@ -5329,7 +5325,7 @@ function betaSelfExperimentPanel(d){
   return clinicalDetails("Self-experiment",body).replace('<details class="clinical-details">','<details data-beta-self-details'+(betaSelfState.open?' open':'')+' class="clinical-details">');
 }
 function betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers,matrixIssue){
-  var w=720,h=390,p={l:82,r:58,t:42,b:72},pts=stats.pcoa.points,xScale=selfExperimentNumericScale(pts.map(function(pt){return pt.x;}),6,.14),yScale=selfExperimentNumericScale(pts.map(function(pt){return pt.y;}),6,.14);
+  var w=760,h=390,p={l:82,r:88,t:42,b:72},pts=stats.pcoa.points,xScale=selfExperimentNumericScale(pts.map(function(pt){return pt.x;}),6,.14),yScale=selfExperimentNumericScale(pts.map(function(pt){return pt.y;}),6,.14);
   var sx=function(x){return p.l+(x-xScale.min)/(xScale.max-xScale.min)*(w-p.l-p.r);},sy=function(y){return h-p.b-(y-yScale.min)/(yScale.max-yScale.min)*(h-p.t-p.b);};
   var axes=xScale.ticks.map(function(value){var x=sx(value);return '<line x1="'+x.toFixed(1)+'" y1="'+p.t+'" x2="'+x.toFixed(1)+'" y2="'+(h-p.b)+'" stroke="#E2EAF2"/><line x1="'+x.toFixed(1)+'" y1="'+(h-p.b)+'" x2="'+x.toFixed(1)+'" y2="'+(h-p.b+5)+'" stroke="#8094A8"/><text x="'+x.toFixed(1)+'" y="'+(h-p.b+18)+'" text-anchor="middle" font-size="10" fill="#526779">'+esc(selfExperimentAxisNumber(value,xScale.step))+'</text>';}).join("");
   axes+=yScale.ticks.map(function(value){var y=sy(value);return '<line x1="'+p.l+'" y1="'+y.toFixed(1)+'" x2="'+(w-p.r)+'" y2="'+y.toFixed(1)+'" stroke="#E2EAF2"/><line x1="'+(p.l-5)+'" y1="'+y.toFixed(1)+'" x2="'+p.l+'" y2="'+y.toFixed(1)+'" stroke="#8094A8"/><text x="'+(p.l-9)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="10" fill="#526779">'+esc(selfExperimentAxisNumber(value,yScale.step))+'</text>';}).join("");
@@ -5337,7 +5333,7 @@ function betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers,matrixIssue){
   if(xScale.min<0&&xScale.max>0){var zeroX=sx(0);axes+='<line x1="'+zeroX.toFixed(1)+'" y1="'+p.t+'" x2="'+zeroX.toFixed(1)+'" y2="'+(h-p.b)+'" stroke="#AAB9C8" stroke-dasharray="4 4"/>';}
   if(yScale.min<0&&yScale.max>0){var zeroY=sy(0);axes+='<line x1="'+p.l+'" y1="'+zeroY.toFixed(1)+'" x2="'+(w-p.r)+'" y2="'+zeroY.toFixed(1)+'" stroke="#AAB9C8" stroke-dasharray="4 4"/>';}
   var plottedPoints=pts.map(function(pt,index){var s=byId[pt.id],x=sx(pt.x),y=sy(pt.y);return {pt:pt,s:s,x:x,y:y,number:sampleNumbers&&sampleNumbers[pt.id]!=null?sampleNumbers[pt.id]:index+1,gi:(d.groups||[]).findIndex(function(g){return s&&g.id===s.group;})};});
-  var occupiedLabels=plottedPoints.map(function(point){return {left:point.x-7,right:point.x+7,top:point.y-7,bottom:point.y+7};}),labelBounds={left:p.l+4,right:w-p.r-4,top:p.t+4,bottom:h-p.b-4},body="";
+  var occupiedLabels=plottedPoints.map(function(point){return {left:point.x-7,right:point.x+7,top:point.y-7,bottom:point.y+7};}),labelBounds={left:p.l+8,right:w-p.r-8,top:p.t+4,bottom:h-p.b-4},body="";
   plottedPoints.forEach(function(point){var placement=selfExperimentLabelPlacement(point.x,point.y,point.number,labelBounds,occupiedLabels,11,7);body+='<circle cx="'+point.x.toFixed(1)+'" cy="'+point.y.toFixed(1)+'" r="7" fill="'+groupColor(Math.max(0,point.gi))+'"><title>'+esc(point.number+'. '+(point.s?sampleLabel(point.s):point.pt.id))+'</title></circle>';if(placement)body+='<text x="'+placement.x.toFixed(1)+'" y="'+placement.y.toFixed(1)+'" text-anchor="'+placement.anchor+'" font-size="11" font-weight="800" fill="#071B3A">'+point.number+'</text>';});
   var legend=(d.groups||[]).filter(function(g){return pts.some(function(pt){var s=byId[pt.id];return s&&s.group===g.id;});}).map(function(g,i){return '<span><i style="background:'+groupColor((d.groups||[]).indexOf(g))+'"></i>'+esc(g.label)+'</span>';}).join("");
   var warning=matrixIssue?'<div class="self-experiment-plot-warning"><strong data-svg-warning-line>Warning — uninformative distance matrix</strong><span data-svg-warning-line>Every retained sample pair has the same '+esc(metricLabel(d,"beta",metric))+' distance ('+esc(Number(matrixIssue.value).toFixed(3))+').</span><span data-svg-warning-line>Point positions, separation and overlap are arbitrary and should not be interpreted.</span></div>':"";
@@ -5515,21 +5511,6 @@ function alphaGroupStats(d,metric){
     var m=mean(vals);
     return {id:g.id,label:g.label,vals:vals,mean:m,median:median(vals),min:vals.length?Math.min.apply(null,vals):0,max:vals.length?Math.max.apply(null,vals):0,n:vals.length};
   }).sort(function(a,b){return b.mean-a.mean;});
-}
-function alphaSampleDeviationNote(d,metric){
-  var candidates=[];
-  orderedGroups(d).forEach(function(g){
-    var samples=(d.samples||[]).filter(function(s){return s.group===g.id;}).map(function(s){return {id:sampleLabel(s),value:alphaVal(s,metric)};}).filter(function(x){return x.value!=null&&!isNaN(x.value);});
-    if(samples.length<2)return;
-    var groupMedian=median(samples.map(function(x){return x.value;}));
-    samples.forEach(function(sample){
-      candidates.push({sample:sample.id,value:sample.value,group:g.label,median:groupMedian,difference:Math.abs(sample.value-groupMedian)});
-    });
-  });
-  candidates.sort(function(a,b){return b.difference-a.difference||String(a.sample).localeCompare(String(b.sample));});
-  var top=candidates[0];
-  if(!top)return "";
-  return top.sample+" differs most from its group median: "+metricValueText(top.value,metric)+" versus "+top.group+" median "+metricValueText(top.median,metric)+" (absolute difference "+metricValueText(top.difference,metric)+"). This is descriptive, not a formal outlier test.";
 }
 function alphaSampleDiversitySummary(d,metric){
   var values=(d.samples||[]).map(function(s){
@@ -8759,7 +8740,7 @@ function secAlpha(){
   html+=alphaStatsPanel(d);
   html+=releasedFigurePanel("alpha","Diversity chart","",alphaWhatNextPanel(d,{embedded:true}));
   if(!isWhatNext){
-    html+='<div id="page-details" class="guided-anchor">'+clinicalDetails("Sample diversity details",alphaInspectionTable(d,primary))+'</div>';
+    html+='<div id="page-details" class="guided-anchor">'+clinicalDetails("Sample "+metricLabel(d,"alpha",primary)+" values",alphaInspectionTable(d,primary))+'</div>';
     html+='<div class="guided-anchor">'+alphaSelfExperimentPanel(d)+'</div>';
     var alphaSupplementMetric=selectedAlphaFig?figureAlphaMetric(d,figureText(selectedAlphaFig)):alphaState.metric;
     html+=supplementFigureStack([alphaSupplementFigureForMetric(alphaSupplementMetric)]);
