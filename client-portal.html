@@ -7189,6 +7189,7 @@ function taxonomyComparisonObservationItems(d,figs,groupType){
   var types=profiles.map(function(p){return taxonomyComparisonType(p);});
   var hasSample=types.indexOf("sample abundance")>=0,hasMean=types.indexOf("group mean")>=0,hasHeatmap=types.indexOf("heatmap")>=0;
   var entries=taxonomyComparisonDataEntries(d,figs),primaryDatabase=primaryTaxonomyDatabase(d),multipleDatabases=hasMultipleTaxonomyDatabases(d);
+  var primaryEntry=entries.filter(function(entry){return String(entry.method||"").toUpperCase()===String(primaryDatabase||"").toUpperCase();})[0]||entries[0]||null;
   var statisticalScope=(multipleDatabases?("Primary "+primaryDatabase+" "):"")+rankLabel+"-level statistical context: ";
   var items=[statisticalScope+support.value+" "+support.note];
   var figureMethods=taxonomyComparisonProfileMethods(profiles),loadedMethods=entries.map(function(e){return e.method;});
@@ -7206,12 +7207,12 @@ function taxonomyComparisonObservationItems(d,figs,groupType){
     var sameDom=domNames.length>1&&domNames.every(function(t){return t===domNames[0];});
     var sameShift=shiftNames.length>1&&shiftNames.every(function(t){return t===shiftNames[0];});
     if(sameDom){
-      items.push("Method agreement: "+summaries.map(function(x){return x.method;}).join(" and ")+" identify "+taxonDisplayPhrase(domNames[0],entries[0].data)+" as the dominant displayed "+rankLabel+"-level taxon.");
+      items.push("Method agreement: "+summaries.map(function(x){return x.method;}).join(" and ")+" identify "+taxonDisplayPhrase(domNames[0],primaryEntry.data)+" as the dominant displayed "+rankLabel+"-level taxon.");
     }else{
       items.push("Method comparison: dominant displayed "+rankLabel+"-level taxon differs by database: "+summaries.map(function(x){return x.method+" highlights "+(x.dom&&x.dom.taxon?taxonDisplayPhrase(x.dom.taxon,x.data):"no clear taxon");}).join("; ")+".");
     }
     if(sameShift){
-      items.push("Largest visible "+rankLabel+" difference is consistent across loaded methods: "+taxonDisplayPhrase(shiftNames[0],entries[0].data)+".");
+      items.push("Largest visible "+rankLabel+" difference is consistent across loaded methods: "+taxonDisplayPhrase(shiftNames[0],primaryEntry.data)+".");
     }else if(shiftNames.length){
       items.push("Largest visible "+rankLabel+" difference depends on database: "+summaries.map(function(x){return x.method+" -> "+(x.shift&&x.shift.taxon&&x.shift.taxon!=="None"?taxonDisplayPhrase(x.shift.taxon,x.data):"no clear taxon");}).join("; ")+".");
     }
@@ -7222,7 +7223,6 @@ function taxonomyComparisonObservationItems(d,figs,groupType){
     items.push("Linked "+rankLabel+" abundance tables are still loading or unavailable, so this comparison is temporarily image-based.");
   }
   if(entries.length){
-    var primaryEntry=entries.filter(function(entry){return String(entry.method||"").toUpperCase()===String(primaryDatabase||"").toUpperCase();})[0]||entries[0];
     var primary=primaryEntry.data,primaryLabel=taxonomyDatabaseRoleLabel(primary,primaryEntry.method);
     var repeated=sortedTaxonRows(primary,8).map(function(r){return {row:r,insight:taxonInsight(r,primary)};}).filter(function(x){return isRepeatedTaxonInsight(x.insight);});
     if(groupType==="abundance"&&hasSample&&hasMean){
