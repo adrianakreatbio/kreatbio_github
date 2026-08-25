@@ -5967,9 +5967,9 @@ function overallConfidenceCard(d){
     '<div class="confidence-meter"><span class="confidence-marker" style="--pos:'+band.pos+'%"></span></div>'+
     '<p class="confidence-current"><b>Current interpretation:</b> '+esc(currentText)+'</p>'+
     '<details class="confidence-scale-details"><summary>How to read this scale</summary><div class="confidence-guide">'+
-      '<span><b>Not statistically supported:</b> the group test does not support a reliable difference.</span>'+
-      '<span><b>Exploratory:</b> the statistical threshold is not met; visible patterns remain descriptive.</span>'+
-      '<span><b>Statistically supported:</b> the group test supports an overall difference.</span>'+
+      '<span><b>Not statistically supported:</b> PERMANOVA p ≥ 0.10; the test does not show a meaningful statistical signal.</span>'+
+      '<span><b>Exploratory:</b> PERMANOVA 0.05 ≤ p &lt; 0.10; the signal is near the threshold but is not statistically significant.</span>'+
+      '<span><b>Statistically supported:</b> PERMANOVA p &lt; 0.05; interpret the result together with PERMDISP.</span>'+
     '</div></details>'+overallEvidenceNote("Statistics used",evidence.text,evidence.tone)+'</div>';
 }
 function overallVariabilityCard(d){
