@@ -10445,11 +10445,26 @@ function chatFigureEntries(kind,message){
     observations:chartObservationItems(kind,file).slice(0,6)
   };});
 }
+function chatPipelineMethods(d){
+  var m=d&&d.methodConfig||{};
+  return {
+    assay:m.assayNote||"",
+    sequencing_input:{read_type:m.qcReadType||m.sampleFileType||"",raw_reads:m.rawReadsLabel||"",details:m.sequencingDetails||""},
+    primer_trimming:{tool:m.trimTool||"",primers:m.primerNames||""},
+    quality_control:{filtering_tool:m.filterTool||"",filtering_description:m.filterWhat||"",filtering_settings:m.filterSettings||"",qc_tools:m.qcTools||"",purpose:m.qcWhy||""},
+    feature_inference:{input:m.featureInputLabel||"",output:m.featureOutputLabel||"",tools_and_method:m.reconstructionTools||"",description:m.featureWhat||""},
+    taxonomy:{tools_and_databases:m.taxonomyDatabaseLabel||"",method:m.taxonomyWhat||"",settings:m.taxonomySettings||""},
+    functional_prediction:{tool:m.functionTool||"",settings:m.functionSettings||""},
+    statistical_analysis:m.analysisSettings||"",
+    method_source_files:(d&&d.methodSources||[]).slice()
+  };
+}
 function chatOverviewSection(d){
   var confidence=confidenceSummary(d),taxonomy=taxonomyTopLevel(d),alpha=alphaTopLevel(d,defaultAlphaMetric(d)),beta=betaTopLevel(d,defaultBetaMetric(d)),functional=functionalTopLevel(d,null);
   return {
     title:"Overall Summary",
     summary:welcomeTopline(d),
+    pipeline_methods:chatPipelineMethods(d),
     statistical_support:{value:confidence.value,note:confidence.note},
     section_findings:[
       {section:"composition",value:taxonomy.value,note:taxonomy.note},
