@@ -1432,6 +1432,10 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .chat-head p{margin-top:2px;color:#DCE9F7;font-size:.78rem}
 .chat-quota{display:block;margin-top:4px;color:#BFD7EA;font-size:.72rem;font-variant-numeric:tabular-nums}
 .report-chat.chat-disabled{display:none}
+.app.on .report-chat.chat-disabled.chat-unavailable{display:flex}
+.report-chat.chat-disabled.open .chat-panel{grid-template-rows:auto 1fr}
+.report-chat.chat-disabled .chat-form{display:none}
+.report-chat.chat-disabled .chat-msg{max-width:100%;background:#FFF3D8;color:#624619}
 .chat-close{width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:50%;color:#fff;background:#D64045;font-weight:900}
 .chat-close:hover{background:#B72E35}
 .chat-messages{min-height:0;overflow:auto;padding:14px;display:grid;align-content:start;gap:10px;background:#0E8F98}
@@ -1876,7 +1880,7 @@ a.chat-source:hover{border-color:var(--blue);color:var(--blue)}
       <div class="chat-head">
         <div>
           <h3 id="chat-title">Report Q&A</h3>
-          <p>Ask about this report or related biology.</p>
+          <p id="chat-subtitle">Ask about this report or related biology.</p>
           <span class="chat-quota" id="chat-quota"></span>
         </div>
         <button class="chat-close" id="chat-close" type="button" aria-label="Close report chat">×</button>
@@ -2125,8 +2129,16 @@ async function chatApiJson(path,opts){
 }
 function updateChatAvailability(available){
   state.chatAvailable=!!available;
-  var chat=$("#report-chat"),help=$("#rail-help-chat");
-  if(chat)chat.classList.toggle("chat-disabled",!state.chatAvailable);
+  var chat=$("#report-chat"),help=$("#rail-help-chat"),toggle=$("#chat-toggle"),subtitle=$("#chat-subtitle"),showUnavailable=!state.chatAvailable&&!!(state.localExample||state.chatAuthError);
+  if(chat){
+    chat.classList.toggle("chat-disabled",!state.chatAvailable);
+    chat.classList.toggle("chat-unavailable",showUnavailable);
+  }
+  if(subtitle)subtitle.textContent=showUnavailable?(state.localExample?"Unavailable in the public example report.":"Chat is currently unavailable."):"Ask about this report or related biology.";
+  if(toggle){
+    toggle.setAttribute("aria-label",showUnavailable?"View chat availability":"Open report chat");
+    toggle.title=showUnavailable?(state.localExample?"Chat is not available for the public example report.":"Chat is currently unavailable."):"Open report chat";
+  }
   if(help)help.hidden=!state.chatAvailable;
   if(!state.chatAvailable&&chat)chat.classList.remove("open");
   updateChatQuotaLabel();
@@ -10588,7 +10600,12 @@ function chatSourcesMarkup(message){
 function renderChatMessages(){
   var box=$("#chat-messages");
   if(!box)return;
-  var msgs=state.chatMessages.length?state.chatMessages:[{role:"bot",text:state.reportHydrating?"Preparing the report assistant. The loaded results and statistics are being organized now.":"Ask about any result page, compare sections, or ask a related biology or genomics question."}];
+  var unavailableMessage=state.localExample
+    ? "Report Q&A is not available for the public example report. Open an authenticated client report with its access code to use chat."
+    : (state.chatAuthError||"Report Q&A is unavailable for this report right now.");
+  var msgs=!state.chatAvailable
+    ? [{role:"bot",text:unavailableMessage}]
+    : (state.chatMessages.length?state.chatMessages:[{role:"bot",text:state.reportHydrating?"Preparing the report assistant. The loaded results and statistics are being organized now.":"Ask about any result page, compare sections, or ask a related biology or genomics question."}]);
   box.innerHTML=msgs.map(function(m){
     var cls=m.role==="user"?"user":(m.role==="error"?"bot err":"bot");
     return '<div class="chat-msg '+cls+'">'+esc(m.text)+chatSourcesMarkup(m)+'</div>';
@@ -10605,13 +10622,13 @@ function setChatBusy(on){
 function setChatOpen(open){
   var chat=$("#report-chat"),toggle=$("#chat-toggle");
   if(!chat||!toggle)return;
-  if(open&&!state.chatAvailable)return;
+  if(open&&!state.chatAvailable&&!chat.classList.contains("chat-unavailable"))return;
   chat.classList.toggle("open",!!open);
   toggle.setAttribute("aria-expanded",open?"true":"false");
-  toggle.setAttribute("aria-label",open?"Close report chat":"Open report chat");
+  toggle.setAttribute("aria-label",open?"Close report chat":(state.chatAvailable?"Open report chat":"View chat availability"));
   setChatBusy(state.chatBusy);
   renderChatMessages();
-  if(open&&!state.reportHydrating)setTimeout(function(){var input=$("#chat-input");if(input)input.focus();},0);
+  if(open&&state.chatAvailable&&!state.reportHydrating)setTimeout(function(){var input=$("#chat-input");if(input)input.focus();},0);
 }
 function chatFallbackIntro(err){
   var msg=String(err&&err.message||"");
