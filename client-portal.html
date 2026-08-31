@@ -1425,9 +1425,13 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .app.on .report-chat{display:flex}
 .chat-launch{width:56px;height:56px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(150deg,#1D5FA7 0%,#0B2547 60%,#071B3A 100%);color:#fff;border:1px solid rgba(255,255,255,.55);box-shadow:0 18px 42px -22px rgba(7,27,58,.8);transition:transform .15s var(--ease),box-shadow .15s}
 .chat-launch:hover{transform:translateY(-2px);box-shadow:0 22px 48px -22px rgba(7,27,58,.85)}
-.chat-panel{display:none;width:min(380px,calc(100vw - 28px));height:min(520px,calc(100vh - 112px));background:#0E8F98;border:0;border-radius:16px;box-shadow:0 24px 70px -38px rgba(7,27,58,.8);overflow:hidden}
+.chat-panel{position:relative;display:none;width:min(380px,calc(100vw - 112px));height:min(520px,calc(100vh - 112px));min-width:min(320px,calc(100vw - 112px));min-height:min(360px,calc(100vh - 112px));max-width:calc(100vw - 112px);max-height:calc(100vh - 112px);background:#0E8F98;border:0;border-radius:16px;box-shadow:0 24px 70px -38px rgba(7,27,58,.8);overflow:hidden}
 .report-chat.open .chat-panel{display:grid;grid-template-rows:auto 1fr auto}
-.chat-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:0;background:#071B3A}
+.chat-resize-handle{position:absolute;left:5px;top:5px;z-index:2;display:grid;width:26px;height:26px;place-items:center;border:0;border-radius:7px;background:rgba(255,255,255,.08);color:#BFD7EA;cursor:nwse-resize;touch-action:none}
+.chat-resize-handle:hover,.chat-resize-handle:focus-visible{outline:0;background:rgba(255,255,255,.18);color:#fff}
+.chat-resize-handle .icon{width:17px;height:17px;stroke-width:2}
+.chat-resizing,.chat-resizing *{cursor:nwse-resize!important;user-select:none!important}
+.chat-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 14px 38px;border:0;background:#071B3A}
 .chat-head h3{font-size:.98rem;color:#fff}
 .chat-head p{margin-top:2px;color:#DCE9F7;font-size:.78rem}
 .chat-quota{display:block;margin-top:4px;color:#BFD7EA;font-size:.72rem;font-variant-numeric:tabular-nums}
@@ -1746,7 +1750,9 @@ a.chat-source:hover{border-color:var(--blue);color:var(--blue)}
   .report-chat{right:14px;bottom:14px}
   .app.section-pipeline .report-chat:not(.open){display:none}
   .report-chat.open{left:14px}
-  .chat-panel{width:calc(100vw - 28px);height:min(520px,calc(100vh - 92px))}
+  .chat-panel{width:calc(100vw - 28px)!important;height:min(520px,calc(100vh - 92px))!important;min-width:0;min-height:0;max-width:none;max-height:calc(100vh - 92px)}
+  .chat-resize-handle{display:none}
+  .chat-head{padding-left:16px}
   .chat-form{grid-template-columns:1fr}
   .chat-form .btn{width:100%}
 }
@@ -1877,6 +1883,9 @@ a.chat-source:hover{border-color:var(--blue);color:var(--blue)}
   </div>
   <div class="report-chat" id="report-chat" aria-label="Report Q&A assistant">
     <div class="chat-panel" role="dialog" aria-modal="false" aria-labelledby="chat-title">
+      <button class="chat-resize-handle" id="chat-resize-handle" type="button" aria-label="Resize chat panel. Drag left or up to enlarge; double-click to reset." title="Drag to resize · Double-click to reset">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M5 19 19 5M5 13l8-8M5 7l2-2"/></svg>
+      </button>
       <div class="chat-head">
         <div>
           <h3 id="chat-title">Report Q&A</h3>
@@ -10634,6 +10643,52 @@ function setChatBusy(on){
   if(send)send.disabled=disabled;
   if(input){input.disabled=disabled;input.placeholder=state.reportHydrating?"Preparing report assistant...":"Ask about this report...";}
 }
+function setChatPanelSize(panel,width,height){
+  if(!panel)return;
+  var maxWidth=Math.max(240,window.innerWidth-112),maxHeight=Math.max(260,window.innerHeight-112);
+  var minWidth=Math.min(320,maxWidth),minHeight=Math.min(360,maxHeight);
+  panel.style.width=Math.round(Math.max(minWidth,Math.min(maxWidth,width)))+"px";
+  panel.style.height=Math.round(Math.max(minHeight,Math.min(maxHeight,height)))+"px";
+}
+function wireChatResize(){
+  var panel=$("#report-chat .chat-panel"),handle=$("#chat-resize-handle"),drag=null;
+  if(!panel||!handle)return;
+  function reset(){panel.style.removeProperty("width");panel.style.removeProperty("height");}
+  function finish(e){
+    if(!drag)return;
+    drag=null;
+    document.documentElement.classList.remove("chat-resizing");
+    if(e&&handle.hasPointerCapture&&handle.hasPointerCapture(e.pointerId))handle.releasePointerCapture(e.pointerId);
+  }
+  handle.addEventListener("pointerdown",function(e){
+    if(e.button!==0||window.innerWidth<=560)return;
+    var rect=panel.getBoundingClientRect();
+    drag={x:e.clientX,y:e.clientY,width:rect.width,height:rect.height};
+    document.documentElement.classList.add("chat-resizing");
+    handle.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  handle.addEventListener("pointermove",function(e){
+    if(!drag)return;
+    setChatPanelSize(panel,drag.width+(drag.x-e.clientX),drag.height+(drag.y-e.clientY));
+    e.preventDefault();
+  });
+  handle.addEventListener("pointerup",finish);
+  handle.addEventListener("pointercancel",finish);
+  handle.addEventListener("lostpointercapture",finish);
+  handle.addEventListener("dblclick",function(e){reset();e.preventDefault();});
+  handle.addEventListener("keydown",function(e){
+    var rect=panel.getBoundingClientRect(),step=e.shiftKey?80:40,width=rect.width,height=rect.height;
+    if(e.key==="ArrowLeft")width+=step;
+    else if(e.key==="ArrowRight")width-=step;
+    else if(e.key==="ArrowUp")height+=step;
+    else if(e.key==="ArrowDown")height-=step;
+    else if(e.key==="Home"){reset();e.preventDefault();return;}
+    else return;
+    setChatPanelSize(panel,width,height);
+    e.preventDefault();
+  });
+}
 function setChatOpen(open){
   var chat=$("#report-chat"),toggle=$("#chat-toggle");
   if(!chat||!toggle)return;
@@ -10799,6 +10854,7 @@ $("#chat-form").addEventListener("submit",function(e){
   if(input)input.value="";
   sendChatMessage(text);
 });
+wireChatResize();
 $$("[data-glossary-toggle]").forEach(function(b){b.addEventListener("click",openGlossary);});
 $$("[data-metric-guide-toggle]").forEach(function(b){b.addEventListener("click",openMetricGuide);});
 $$("[data-glossary-close]").forEach(function(b){b.addEventListener("click",closeGlossary);});
