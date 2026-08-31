@@ -24,9 +24,10 @@ export function buildOpenAIResponseBody(chatPrompt, options = {}) {
                   type: "array",
                   items: { type: "string" },
                   maxItems: 8
-                }
+                },
+                context_sufficient: { type: "boolean" }
               },
-              required: ["answer", "report_source_ids"],
+              required: ["answer", "report_source_ids", "context_sufficient"],
               additionalProperties: false
             }
           },
@@ -36,6 +37,8 @@ export function buildOpenAIResponseBody(chatPrompt, options = {}) {
 
   const safetyIdentifier = String(options.safetyIdentifier || "").trim();
   if (safetyIdentifier) body.safety_identifier = safetyIdentifier.slice(0, 64);
+  const promptCacheKey = String(options.promptCacheKey || "").trim();
+  if (promptCacheKey) body.prompt_cache_key = promptCacheKey.slice(0, 64);
   if (useWebSearch) {
     body.tools = [{ type: "web_search", search_context_size: "low" }];
     body.include = ["web_search_call.action.sources"];
@@ -60,13 +63,13 @@ export function parseOpenAIChatResponse(data, options = {}) {
   const parsed = options.useWebSearch
     ? { answer: rawText || "No response was returned.", reportSourceIds: [] }
     : parseReportPayload(rawText);
-  const totalTokenCount = Number(data?.usage?.total_tokens);
+  const usage = parseUsage(data?.usage);
   return {
     ...parsed,
     webSources: extractOpenAIWebSources(data, outputParts),
-    totalTokenCount: Number.isSafeInteger(totalTokenCount) && totalTokenCount >= 0
-      ? totalTokenCount
-      : null
+    webSearchUsed: (Array.isArray(data?.output) ? data.output : []).some((item) => item?.type === "web_search_call"),
+    usage,
+    totalTokenCount: usage.totalTokens
   };
 }
 
@@ -96,11 +99,28 @@ function parseReportPayload(text) {
       answer: String(parsed.answer || "").trim() || "No response was returned.",
       reportSourceIds: Array.isArray(parsed.report_source_ids)
         ? parsed.report_source_ids.map(String).slice(0, 8)
-        : []
+        : [],
+      contextSufficient: parsed.context_sufficient !== false
     };
   } catch {
-    return { answer: raw || "No response was returned.", reportSourceIds: [] };
+    return { answer: raw || "No response was returned.", reportSourceIds: [], contextSufficient: true };
   }
+}
+
+function parseUsage(usage) {
+  return {
+    inputTokens: usageInteger(usage?.input_tokens),
+    cachedTokens: usageInteger(usage?.input_tokens_details?.cached_tokens),
+    cacheWriteTokens: usageInteger(usage?.cache_write_tokens),
+    outputTokens: usageInteger(usage?.output_tokens),
+    reasoningTokens: usageInteger(usage?.output_tokens_details?.reasoning_tokens),
+    totalTokens: usageInteger(usage?.total_tokens, null)
+  };
+}
+
+function usageInteger(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isSafeInteger(number) && number >= 0 ? number : fallback;
 }
 
 function extractOpenAIWebSources(data, outputParts) {

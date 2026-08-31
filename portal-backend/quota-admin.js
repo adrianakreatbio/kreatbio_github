@@ -10,7 +10,13 @@ const code = normalizeCode(process.argv[3]);
 const databasePath = process.env.CHAT_QUOTA_DB || path.join(__dirname, ".data", "chat-quota.sqlite");
 const secret = environmentSecret("SESSION_SECRET");
 
-if (!command || !code || !["add", "status", "increase", "disable", "enable", "reset"].includes(command)) {
+const reportCommands = ["add", "status", "increase", "disable", "enable", "reset", "usage"];
+const globalCommands = ["raise-all"];
+
+if (!reportCommands.includes(command) && !globalCommands.includes(command)) {
+  usage();
+  process.exitCode = 2;
+} else if (reportCommands.includes(command) && !code) {
   usage();
   process.exitCode = 2;
 } else if (!secret || secret.length < 32) {
@@ -20,14 +26,16 @@ if (!command || !code || !["add", "status", "increase", "disable", "enable", "re
   const store = new ChatQuotaStore({ databasePath, secret });
   try {
     let result;
-    if (command === "add") result = store.add(code, optionalPositiveInteger(process.argv[4]) || 100_000);
+    if (command === "add") result = store.add(code, optionalPositiveInteger(process.argv[4]) || 500_000);
     if (command === "status") result = store.status(code);
     if (command === "increase") result = store.increase(code, requiredPositiveInteger(process.argv[4], "increase amount"));
     if (command === "disable") result = store.setEnabled(code, false);
     if (command === "enable") result = store.setEnabled(code, true);
     if (command === "reset") result = store.reset(code);
+    if (command === "usage") result = store.usage(code, optionalPositiveInteger(process.argv[4]) || 20);
+    if (command === "raise-all") result = store.raiseAllLimits(requiredPositiveInteger(process.argv[3], "minimum token limit"));
     if (!result) throw new Error("No chatbot allowance exists for this report.");
-    console.log(JSON.stringify(formatResult(result), null, 2));
+    console.log(JSON.stringify(command === "usage" || command === "raise-all" ? result : formatResult(result), null, 2));
   } catch (err) {
     console.error(err.message);
     process.exitCode = 1;
@@ -79,5 +87,7 @@ function usage() {
   npm run quota -- increase REPORT_CODE TOKENS
   npm run quota -- disable REPORT_CODE
   npm run quota -- enable REPORT_CODE
-  npm run quota -- reset REPORT_CODE`);
+  npm run quota -- reset REPORT_CODE
+  npm run quota -- usage REPORT_CODE [RECENT_ROWS]
+  npm run quota -- raise-all MINIMUM_TOKEN_LIMIT`);
 }

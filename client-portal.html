@@ -10421,18 +10421,21 @@ function chatSectionId(section){
   if(section==="functional")return "functional_prediction";
   return "overview";
 }
-function chatQuestionSectionIds(message){
-  var text=String(message||"").toLowerCase(),ids=[];
+function chatQuestionSectionIds(message,history){
+  var ids=[];
   function add(id){if(ids.indexOf(id)<0)ids.push(id);}
-  if(/overview|overall|summary|main finding|conclusion|study design|sample size|replicate/.test(text))add("overview");
-  if(/taxon|taxa|taxonomy|composition|abundance|microbe|bacteria|fung|species|genus|family|phylum|emu|silva/.test(text))add("composition");
-  if(/alpha|shannon|simpson|faith|observed feature|richness|evenness|within.sample|rarefaction/.test(text))add("alpha_diversity");
-  if(/beta|bray|curtis|unifrac|pcoa|ordination|permanova|permdisp|between.sample|community composition|cluster|separation|overlap/.test(text))add("beta_diversity");
-  if(/function|functional|picrust|nsti|pathway|metacyc|\bko\b|kegg|enzyme|\bec\b|aldex/.test(text))add("functional_prediction");
-  var active=chatSectionId(state.section);
-  if(ids.indexOf(active)<0)ids.unshift(active);
-  if(ids.indexOf("overview")<0)ids.unshift("overview");
-  return ids.slice(0,4);
+  function scan(value){
+    var text=String(value||"").toLowerCase();
+    if(/overview|overall|summary|main finding|conclusion|study design|sample size|sample count|how many (groups?|samples?)|replicate|whole method|workflow|pipeline|methodology|quality control|\bqc\b|fastp|fastqc|cutadapt|dada2|qiime|classifier/.test(text))add("overview");
+    if(/taxon|taxa|taxonomy|composition|abundance|microbe|bacteria|fung|species|genus|family|phylum|emu|silva/.test(text))add("composition");
+    if(/alpha|shannon|simpson|faith|observed feature|richness|evenness|within.sample|rarefaction/.test(text))add("alpha_diversity");
+    if(/beta|bray|curtis|unifrac|pcoa|ordination|permanova|permdisp|between.sample|community composition|cluster|separation|overlap/.test(text))add("beta_diversity");
+    if(/function|functional|picrust|nsti|pathway|metacyc|\bko\b|kegg|enzyme|\bec\b|aldex/.test(text))add("functional_prediction");
+  }
+  scan(message);
+  if(!ids.length)(history||[]).slice(-4).reverse().some(function(item){scan(item&&item.text);return ids.length>0;});
+  if(!ids.length)add(chatSectionId(state.section));
+  return ids.slice(0,2);
 }
 function chatStudyDesign(d){
   var activeFactor=(d&&d.activeGroupFactor)||activeGroupFactor(baseDataset());
@@ -10551,19 +10554,23 @@ function chatAlphaSection(d,message){
   };
 }
 function chatBetaSection(d,message){
+  var text=String(message||"").toLowerCase(),statisticsOnly=/permanova|permdisp|pseudo.f|permutation|r[²2]/.test(text),wantsPairwise=/pairwise|which groups?|versus|\bvs\.?\b/.test(text);
   return {
     title:"Between-Sample Diversity",
     summary:betaTopLevel(d,defaultBetaMetric(d)),
     metrics:(d.betaMetrics||[]).map(function(metric){
       var pm=d.permanova&&d.permanova[metric.id],pd=betaPerDispForMetric(d,metric.id),pairwise=betaPairwiseGroupStats(d,metric.id);
-      return {
+      var result={
         id:String(metric.id),label:String(metric.label||metric.id),
-        axes:{pc1_explained_percent:pm?chatNumber(pm.pc1):null,pc2_explained_percent:pm?chatNumber(pm.pc2):null},
-        points:(d.samples||[]).map(function(sample){var point=sample.pco&&sample.pco[metric.id];return point?{sample_id:String(sample.id),group_id:String(sample.group),pc1:chatNumber(point[0]),pc2:chatNumber(point[1])}:null;}).filter(Boolean),
         permanova:pm?{pseudo_f:chatNumber(pm.F),r_squared:chatNumber(pm.R2),p_value:chatNumber(pm.p),permutations:chatNumber(pm.permutations),status:pm.p!=null&&Number(pm.p)<0.05?"supported":"not_supported"}:null,
-        permdisp:pd?{f_statistic:chatNumber(pd.F),p_value:chatNumber(pd.p),permutations:chatNumber(pd.permutations),status:pd.p!=null&&Number(pd.p)<0.05?"unequal_spread":"not_flagged"}:null,
-        pairwise_tests:(pairwise||[]).slice(0,12).map(function(row){return {group_a:row.a&&row.a.label,group_b:row.b&&row.b.label,p_value:chatNumber(row.p),adjusted_p_value:chatNumber(row.q),r_squared:chatNumber(row.R2),status:row.q!=null&&Number(row.q)<0.05?"supported":"not_supported"};})
+        permdisp:pd?{f_statistic:chatNumber(pd.F),p_value:chatNumber(pd.p),permutations:chatNumber(pd.permutations),status:pd.p!=null&&Number(pd.p)<0.05?"unequal_spread":"not_flagged"}:null
       };
+      if(!statisticsOnly){
+        result.axes={pc1_explained_percent:pm?chatNumber(pm.pc1):null,pc2_explained_percent:pm?chatNumber(pm.pc2):null};
+        result.points=(d.samples||[]).map(function(sample){var point=sample.pco&&sample.pco[metric.id];return point?{sample_id:String(sample.id),group_id:String(sample.group),pc1:chatNumber(point[0]),pc2:chatNumber(point[1])}:null;}).filter(Boolean);
+      }
+      if(wantsPairwise)result.pairwise_tests=(pairwise||[]).slice(0,12).map(function(row){return {group_a:row.a&&row.a.label,group_b:row.b&&row.b.label,p_value:chatNumber(row.p),adjusted_p_value:chatNumber(row.q),r_squared:chatNumber(row.R2),status:row.q!=null&&Number(row.q)<0.05?"supported":"not_supported"};});
+      return result;
     }),
     charts:chatFigureEntries("beta",message),
     limitations:["PCoA separation or non-overlap is descriptive until supported by PERMANOVA.","A significant PERMDISP result means unequal within-group spread may complicate PERMANOVA interpretation."]
@@ -10609,8 +10616,8 @@ function chatCurrentView(){
   var active=activeGroupFactor(baseDataset());
   return {section:chatSectionId(state.section),chart_id:figure&&figure.id||null,chart_title:figure?figureDisplayName(figure):null,metric:kind==="alpha"?alphaState.metric:(kind==="beta"?betaState.metric:(kind==="functional"?functionalKindForFigure(figure):null)),grouping_id:active&&active.id||defaultGroupFactor(baseDataset()).id};
 }
-function chatContextForQuestion(message){
-  var d=ds(),sectionIds=chatQuestionSectionIds(message),sections={};
+function chatContextForQuestion(message,history){
+  var d=ds(),sectionIds=chatQuestionSectionIds(message,history),sections={};
   sectionIds.forEach(function(id){
     if(id==="overview")sections[id]=chatOverviewSection(d);
     if(id==="composition")sections[id]=chatCompositionSection(d,message);
@@ -10618,7 +10625,9 @@ function chatContextForQuestion(message){
     if(id==="beta_diversity")sections[id]=chatBetaSection(d,message);
     if(id==="functional_prediction")sections[id]=chatFunctionalSection(d,message);
   });
-  return {context_schema_version:"1.0",report_id:String(d.reportCode||state.report&&state.report.code||""),current_view:chatCurrentView(),study_design:chatStudyDesign(d),sections:sections,sources:chatContextSources(sectionIds)};
+  if(!sections.overview)sections.overview=chatOverviewSection(d);
+  var sourceSectionIds=sectionIds.indexOf("overview")>=0?sectionIds:sectionIds.concat(["overview"]);
+  return {context_schema_version:"1.0",report_id:String(d.reportCode||state.report&&state.report.code||""),current_view:chatCurrentView(),study_design:chatStudyDesign(d),sections:sections,sources:chatContextSources(sourceSectionIds)};
 }
 function chatSectionSummary(){
   try{return JSON.stringify(chatContextForQuestion("summary"));}catch(err){return "";}
@@ -10796,7 +10805,7 @@ function chatFallbackAnswer(text,err){
 async function sendChatMessage(text){
   text=String(text||"").trim();
   if(!text||state.chatBusy||state.reportHydrating||!state.chatAvailable||!state.chatToken)return;
-  var history=state.chatMessages.slice(-6).map(function(message){return {role:message.role==="user"?"user":"assistant",text:String(message.text||"").slice(0,1200)};});
+  var history=state.chatMessages.slice(-4).map(function(message){return {role:message.role==="user"?"user":"assistant",text:String(message.text||"").slice(0,800)};});
   state.chatMessages.push({role:"user",text:text});
   renderChatMessages();
   setChatBusy(true);
@@ -10808,7 +10817,7 @@ async function sendChatMessage(text){
       body:JSON.stringify({
         message:text,
         current_view:chatCurrentView(),
-        report_context:chatContextForQuestion(text),
+        report_context:chatContextForQuestion(text,history),
         history:history
       })
     });
@@ -10819,7 +10828,7 @@ async function sendChatMessage(text){
     if(err&&err.status===429){
       state.chatQuota=Object.assign({},state.chatQuota||{},{tokens_remaining:0});
       updateChatQuotaLabel();
-      state.chatMessages.push({role:"error",text:"This report has used its 100,000-token Q&A allowance. Contact KreatBio if you need additional access."});
+      state.chatMessages.push({role:"error",text:"This report has used its 500,000-token Q&A allowance. Contact KreatBio if you need additional access."});
     }else if(err&&err.status===401){
       state.chatMessages.push({role:"error",text:"This Q&A session has expired. Reopen the report to continue."});
     }else{

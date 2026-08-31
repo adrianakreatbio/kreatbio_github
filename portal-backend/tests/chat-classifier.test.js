@@ -14,6 +14,7 @@ test("accepts short bioinformatics tool and QC questions", () => {
 test("uses web mode for current bioinformatics information", () => {
   assert.equal(classifyChatQuestion("What is the latest fastp version?"), "web");
   assert.equal(classifyChatQuestion("Find the current DADA2 documentation"), "web");
+  assert.equal(classifyChatQuestion("give me the official website link to download the SILVA classifier"), "web");
 });
 
 test("keeps report-linked research questions in mixed mode", () => {

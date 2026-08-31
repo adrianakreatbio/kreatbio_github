@@ -14,7 +14,6 @@ function fixture(options = {}) {
   const store = new ChatQuotaStore({
     databasePath: path.join(directory, "quota.sqlite"),
     secret: SECRET,
-    defaultLimit: 100_000,
     now: () => now,
     ...options
   });
@@ -32,8 +31,8 @@ test("provisions a lifetime allowance without storing the report code", () => {
   const context = fixture();
   try {
     const quota = context.store.add(CODE);
-    assert.equal(quota.tokenLimit, 100_000);
-    assert.equal(quota.tokensRemaining, 100_000);
+    assert.equal(quota.tokenLimit, 500_000);
+    assert.equal(quota.tokensRemaining, 500_000);
     assert.equal(quota.codeLast4, "0000");
     assert.notEqual(quota.reportKey, CODE);
     assert.equal(context.store.authenticate(CODE).reportKey, quota.reportKey);
@@ -107,6 +106,59 @@ test("administration can increase, disable, enable, and reset an allowance", () 
     assert.throws(() => context.store.authenticate(CODE), /not enabled/);
     assert.equal(context.store.setEnabled(CODE, true).enabled, true);
     assert.equal(context.store.reset(CODE).tokensRemaining, 3_000);
+  } finally {
+    context.cleanup();
+  }
+});
+
+test("raise-all preserves usage, reservations, enabled state, and higher limits", () => {
+  const context = fixture();
+  try {
+    const first = context.store.add(CODE, 2_000);
+    const reservation = context.store.reserve(first.reportKey, 200, 200);
+    context.store.setEnabled(CODE, false);
+    const otherCode = "120000001";
+    context.store.add(otherCode, 8_000);
+
+    const raised = context.store.raiseAllLimits(5_000);
+    assert.deepEqual(raised, { minimumTokenLimit: 5_000, changedReports: 1, totalReports: 2 });
+    const updated = context.store.status(CODE);
+    assert.equal(updated.tokenLimit, 5_000);
+    assert.equal(updated.tokensReserved, 400);
+    assert.equal(updated.enabled, false);
+    assert.equal(context.store.status(otherCode).tokenLimit, 8_000);
+    assert.equal(context.store.raiseAllLimits(5_000).changedReports, 0);
+    context.store.release(reservation.reservationId);
+  } finally {
+    context.cleanup();
+  }
+});
+
+test("records content-free usage telemetry and summarizes recent requests", () => {
+  const context = fixture();
+  try {
+    const quota = context.store.add(CODE);
+    context.store.recordUsage(quota.reportKey, {
+      profile: "beta_statistics",
+      origin: "openai",
+      contextBytes: 1600,
+      inputTokens: 900,
+      cachedTokens: 500,
+      cacheWriteTokens: 100,
+      outputTokens: 200,
+      reasoningTokens: 40,
+      totalTokens: 1100,
+      fallback: true
+    });
+    context.store.recordUsage(quota.reportKey, { profile: "study_design", origin: "local" });
+    const usage = context.store.usage(CODE, 10);
+    assert.equal(usage.summary.requests, 2);
+    assert.equal(usage.summary.totalTokens, 1100);
+    assert.equal(usage.summary.maximumTotalTokens, 1100);
+    assert.equal(usage.summary.fallbackRequests, 1);
+    assert.equal(usage.recent[0].origin, "local");
+    assert.equal(usage.recent[1].cachedTokens, 500);
+    assert.equal("message" in usage.recent[1], false);
   } finally {
     context.cleanup();
   }

@@ -25,7 +25,7 @@ Activate a newly released report:
 bash activate-report.sh 120000000
 ```
 
-This enables the default 30 portal openings for 60 days and a 100,000-token lifetime chat allowance. Optional custom values are accepted in this order:
+This enables the default 30 portal openings for 60 days and a 500,000-token lifetime chat allowance. Optional custom values are accepted in this order:
 
 ```bash
 bash activate-report.sh REPORT_CODE OPENINGS DAYS CHAT_TOKENS
@@ -66,7 +66,7 @@ Only requests from `https://kreatbio.com` and `https://www.kreatbio.com` are acc
 
 ## Chat Allowance
 
-The VPS stores chat usage in `/var/lib/kreatbio-portal/chat-quota.sqlite`. Each activated report receives 100,000 lifetime OpenAI tokens by default. The limit covers input context, conversation history, reasoning, web-search context, and model output.
+The VPS stores chat usage in `/var/lib/kreatbio-portal/chat-quota.sqlite`. Each activated report receives 500,000 lifetime OpenAI tokens by default. The limit covers input context, conversation history, reasoning, web-search context, and model output. High-confidence group and sample-count answers are generated locally and use no OpenAI tokens.
 
 Administrative commands run on the VPS as the service user:
 
@@ -77,11 +77,11 @@ sudo -u kreatbio-portal env \
   npm run quota -- status REPORT_CODE
 ```
 
-Other supported operations are `add`, `increase`, `disable`, `enable`, and `reset`. There is no public administration endpoint.
+Other supported operations are `add`, `increase`, `disable`, `enable`, `reset`, and `usage`. To raise every existing report below 500,000 without resetting usage, enabled state, or reservations, run `npm run quota -- raise-all 500000`. There is no public administration endpoint.
 
 ## Report Q&A Context
 
-After report tables load, the portal builds structured context from the data already available to that report. It includes chart titles, values, statistical results, interpretations, and tables—not only chart images. The context is sent with the current question and is not written back to GCS.
+After report tables load, the portal builds structured context from the data already available to that report. The backend selects a focused evidence profile for each question, such as PERMANOVA statistics without unrelated PCoA coordinates. Ambiguous follow-ups inherit the recent topic; if the focused profile is insufficient, it can be broadened once. The context is not written back to GCS.
 
 GPT-5.6 Luna must answer report questions from the supplied evidence. Related biology or genomics questions may use OpenAI web search and return citations. Unrelated general web questions are declined.
 
@@ -136,6 +136,8 @@ Important Hostinger variables:
 - `CHAT_TOKEN_LIMIT`: default lifetime allowance for a new report.
 - `CHAT_MAX_OUTPUT_TOKENS`: maximum output for one answer.
 - `CHAT_QUOTA_DB`: persistent SQLite quota ledger.
+
+The `usage` administration command reports recent request profiles, context bytes, input/cached/cache-write/output/reasoning/total tokens, web-search use, and fallback use. It does not store questions, answers, or report context.
 
 ## Local Checks
 

@@ -12,6 +12,7 @@ EnvironmentFile=/etc/kreatbio-portal/runtime.env
 Environment=SESSION_SECRET_FILE=/etc/kreatbio-portal/session-secret
 Environment=OPENAI_API_KEY_FILE=/etc/kreatbio-portal/openai-api-key
 Environment=CHAT_QUOTA_DB=/var/lib/kreatbio-portal/chat-quota.sqlite
+Environment=CHAT_TOKEN_LIMIT=500000
 # Shared server startup requires a writable fallback ledger; Nginx does not expose report routes.
 Environment=REPORT_ACCESS_DB=/var/lib/kreatbio-portal/report-access.sqlite
 StateDirectory=kreatbio-portal

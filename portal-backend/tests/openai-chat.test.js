@@ -16,7 +16,8 @@ test("builds a private structured-output request for report questions", () => {
     model: "gpt-5.6-luna",
     maxOutputTokens: 700,
     reasoningEffort: "low",
-    safetyIdentifier: "report-hmac"
+    safetyIdentifier: "report-hmac",
+    promptCacheKey: "stable-report-key"
   });
 
   assert.equal(body.model, "gpt-5.6-luna");
@@ -24,6 +25,7 @@ test("builds a private structured-output request for report questions", () => {
   assert.equal(body.max_output_tokens, 700);
   assert.deepEqual(body.reasoning, { effort: "low" });
   assert.equal(body.safety_identifier, "report-hmac");
+  assert.equal(body.prompt_cache_key, "stable-report-key");
   assert.equal(body.text.format.type, "json_schema");
   assert.equal(body.text.format.strict, true);
   assert.equal(body.tools, undefined);
@@ -47,16 +49,33 @@ test("parses report JSON and actual OpenAI token usage", () => {
       type: "message",
       content: [{
         type: "output_text",
-        text: JSON.stringify({ answer: "fastp was used.", report_source_ids: ["methods", "versions"] }),
+        text: JSON.stringify({ answer: "fastp was used.", report_source_ids: ["methods", "versions"], context_sufficient: true }),
         annotations: []
       }]
     }],
-    usage: { total_tokens: 432 }
+    usage: {
+      input_tokens: 300,
+      input_tokens_details: { cached_tokens: 200 },
+      cache_write_tokens: 20,
+      output_tokens: 132,
+      output_tokens_details: { reasoning_tokens: 40 },
+      total_tokens: 432
+    }
   });
 
   assert.equal(result.answer, "fastp was used.");
   assert.deepEqual(result.reportSourceIds, ["methods", "versions"]);
   assert.equal(result.totalTokenCount, 432);
+  assert.equal(result.contextSufficient, true);
+  assert.equal(result.webSearchUsed, false);
+  assert.deepEqual(result.usage, {
+    inputTokens: 300,
+    cachedTokens: 200,
+    cacheWriteTokens: 20,
+    outputTokens: 132,
+    reasoningTokens: 40,
+    totalTokens: 432
+  });
   assert.deepEqual(result.webSources, []);
 });
 
@@ -88,6 +107,7 @@ test("extracts and deduplicates OpenAI web citations", () => {
   }, { useWebSearch: true });
 
   assert.equal(result.answer, "fastp performs read preprocessing.");
+  assert.equal(result.webSearchUsed, true);
   assert.deepEqual(result.webSources, [
     { title: "fastp documentation", url: "https://example.org/fastp" },
     { title: "fastp paper", url: "https://example.org/paper" }

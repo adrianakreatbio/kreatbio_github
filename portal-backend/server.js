@@ -5,6 +5,13 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { Storage } from "@google-cloud/storage";
 import { classifyChatQuestion } from "./chat-classifier.js";
+import {
+  answerLocalReportQuestion,
+  projectChatContext,
+  reasoningEffortForChat,
+  selectChatContextProfile,
+  shouldRetryChatContext
+} from "./chat-context.js";
 import { createGcsSignedUrl } from "./gcs-signer.js";
 import { GcsReportAccessStore } from "./gcs-report-access-store.js";
 import {
@@ -29,7 +36,7 @@ const SESSION_SECRET = environmentSecret("SESSION_SECRET");
 const SESSION_TTL_SECONDS = Number(process.env.SESSION_TTL_SECONDS || 60 * 60 * 8);
 const DATA_TEXT_LIMIT = Number(process.env.DATA_TEXT_LIMIT || 5 * 1024 * 1024);
 const CHAT_CONTEXT_LIMIT = Number(process.env.CHAT_CONTEXT_LIMIT || 80 * 1024);
-const CHAT_TOKEN_LIMIT = Number(process.env.CHAT_TOKEN_LIMIT || 100_000);
+const CHAT_TOKEN_LIMIT = Number(process.env.CHAT_TOKEN_LIMIT || 500_000);
 const CHAT_MAX_OUTPUT_TOKENS = Number(process.env.CHAT_MAX_OUTPUT_TOKENS || 1_000);
 const CHAT_RESERVATION_TTL_SECONDS = Number(process.env.CHAT_RESERVATION_TTL_SECONDS || 15 * 60);
 const OPENAI_API_KEY = environmentSecret("OPENAI_API_KEY");
@@ -326,9 +333,6 @@ app.post("/api/chat/session", requirePortalChatOrigin, (req, res, next) => {
 app.post("/api/chat", requirePortalChatOrigin, requireChatSession, async (req, res, next) => {
   let reservation = null;
   try {
-    if (!OPENAI_API_KEY) {
-      throw httpError(503, "OpenAI chat is not configured on the portal backend.");
-    }
     const message = String(req.body?.message || "").trim();
     if (!message) {
       throw httpError(400, "Missing chat message.");
@@ -349,32 +353,81 @@ app.post("/api/chat", requirePortalChatOrigin, requireChatSession, async (req, r
       });
       return;
     }
-    const prompt = buildChatPrompt({ reportContext, message, currentView, history, mode });
+
+    const profile = selectChatContextProfile(message, history, currentView);
+    const localAnswer = mode === "report" ? answerLocalReportQuestion(message, reportContext) : null;
+    if (localAnswer) {
+      recordChatUsage(req.chatSession.reportKey, {
+        profile: localAnswer.profile,
+        origin: "local",
+        contextBytes: Buffer.byteLength(JSON.stringify(reportContext.study_design || {}), "utf8")
+      });
+      res.json({
+        reply: localAnswer.answer,
+        mode,
+        profile: localAnswer.profile,
+        report_sources: reportSourcesForResponse(reportContext, localAnswer.reportSourceIds, true),
+        web_sources: [],
+        ...publicChatQuota(chatQuotaStore.authenticate(reportCode))
+      });
+      return;
+    }
+
+    if (!OPENAI_API_KEY) {
+      throw httpError(503, "OpenAI chat is not configured on the portal backend.");
+    }
+
     const useWebSearch = mode === "web" || mode === "mixed";
-    const providerOptions = {
-      useWebSearch,
-      safetyIdentifier: req.chatSession.reportKey
+    const runProvider = async (expanded = false) => {
+      const projectedContext = projectChatContext(reportContext, profile, { message, expanded });
+      const prompt = buildChatPrompt({ reportContext: projectedContext, message, currentView, history, mode, profile });
+      const providerOptions = {
+        useWebSearch,
+        safetyIdentifier: req.chatSession.reportKey,
+        promptCacheKey: `kreatbio-${req.chatSession.reportKey}`,
+        reasoningEffort: reasoningEffortForChat(profile, mode, OPENAI_REASONING_EFFORT)
+      };
+      const promptTokens = await countOpenAIInputTokens(prompt, providerOptions);
+      reservation = chatQuotaStore.reserve(req.chatSession.reportKey, promptTokens, CHAT_MAX_OUTPUT_TOKENS);
+      const generated = await callOpenAI(prompt, {
+        ...providerOptions,
+        maxOutputTokens: reservation.maximumOutputTokens
+      });
+      const actualTokens = Number.isSafeInteger(generated.totalTokenCount)
+        ? generated.totalTokenCount
+        : reservation.reservedTokens;
+      const quota = chatQuotaStore.settle(
+        reservation.reservationId,
+        actualTokens
+      );
+      reservation = null;
+      recordChatUsage(req.chatSession.reportKey, {
+        profile,
+        origin: "openai",
+        contextBytes: Buffer.byteLength(JSON.stringify(projectedContext), "utf8"),
+        ...generated.usage,
+        totalTokens: actualTokens,
+        webSearch: generated.webSearchUsed,
+        fallback: expanded || (mode === "report" && generated.contextSufficient === false)
+      });
+      return { generated, projectedContext, quota };
     };
-    const promptTokens = await countOpenAIInputTokens(prompt, providerOptions);
-    reservation = chatQuotaStore.reserve(req.chatSession.reportKey, promptTokens, CHAT_MAX_OUTPUT_TOKENS);
-    const generated = await callOpenAI(prompt, {
-      ...providerOptions,
-      maxOutputTokens: reservation.maximumOutputTokens
-    });
-    const quota = chatQuotaStore.settle(
-      reservation.reservationId,
-      Number.isSafeInteger(generated.totalTokenCount) ? generated.totalTokenCount : reservation.reservedTokens
-    );
-    reservation = null;
+
+    let result = await runProvider(false);
+    if (shouldRetryChatContext(mode, result.generated, false)) {
+      result = await runProvider(true);
+    }
+
     const reportSources = mode === "web"
       ? []
-      : reportSourcesForResponse(reportContext, generated.reportSourceIds, mode === "mixed");
+      : reportSourcesForResponse(result.projectedContext, result.generated.reportSourceIds, mode === "mixed");
     res.json({
-      reply: generated.answer,
+      reply: result.generated.answer,
       mode,
+      profile,
       report_sources: reportSources,
-      web_sources: generated.webSources,
-      ...publicChatQuota(quota)
+      web_sources: result.generated.webSources,
+      ...publicChatQuota(result.quota)
     });
   } catch (err) {
     if (reservation?.reservationId) {
@@ -2036,15 +2089,15 @@ function normalizeChatCurrentView(input) {
 
 function normalizeChatHistory(input) {
   if (!Array.isArray(input)) return [];
-  return input.slice(-6).map((item) => ({
+  return input.slice(-4).map((item) => ({
     role: item?.role === "user" ? "user" : "assistant",
-    text: String(item?.text || "").trim().slice(0, 1200)
+    text: String(item?.text || "").trim().slice(0, 800)
   })).filter((item) => item.text);
 }
 
-function buildChatPrompt({ reportContext, message, currentView, history, mode }) {
+function buildChatPrompt({ reportContext, message, currentView, history, mode, profile }) {
   const outputInstruction = mode === "report"
-    ? "Return JSON with keys answer and report_source_ids. report_source_ids must contain only source IDs present in REPORT_CONTEXT.sources."
+    ? "Return JSON with answer, report_source_ids, and context_sufficient. Use context_sufficient=false only when the supplied profile lacks evidence required to answer; report_source_ids must contain only IDs present in REPORT_CONTEXT.sources."
     : "Return only the answer text. Do not add a separate source list; verified web and report sources are displayed by the portal.";
   const systemInstruction = [
     "You are the KreatBio bioinformatics report assistant for a client-facing scientific report.",
@@ -2060,18 +2113,20 @@ function buildChatPrompt({ reportContext, message, currentView, history, mode })
     "Never turn visual separation, colour, a raw p-value, or a biological hypothesis into statistical support.",
     "Predicted functions are hypotheses and do not prove gene expression or biochemical activity.",
     "If the requested value or test is missing, say it is unavailable instead of estimating it.",
+    "For report-only questions, set context_sufficient=false when a broader report evidence profile is needed; do not invent the missing evidence.",
     "If an exact biological quantity depends on an unspecified species or condition, ask the client to specify it.",
     "Use plain language, lead with the answer, and keep the response concise.",
     outputInstruction
   ].join("\n");
   const prompt = [
     "QUESTION_MODE: " + mode,
+    "CONTEXT_PROFILE: " + String(profile || "overview"),
     "CURRENT_VIEW:",
-    JSON.stringify(currentView || {}, null, 2),
+    JSON.stringify(currentView || {}),
     "RECENT_CONVERSATION:",
-    JSON.stringify(history || [], null, 2),
+    JSON.stringify(history || []),
     "REPORT_CONTEXT:",
-    JSON.stringify(reportContext, null, 2),
+    JSON.stringify(reportContext),
     "CLIENT_QUESTION:",
     message
   ].join("\n\n");
@@ -2094,7 +2149,7 @@ async function callOpenAI(chatPrompt, options = {}) {
   const body = buildOpenAIResponseBody(chatPrompt, {
     ...options,
     model: OPENAI_MODEL,
-    reasoningEffort: OPENAI_REASONING_EFFORT
+    reasoningEffort: options.reasoningEffort || OPENAI_REASONING_EFFORT
   });
   const res = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -2113,7 +2168,7 @@ async function countOpenAIInputTokens(chatPrompt, options = {}) {
   const body = buildOpenAIInputTokenBody(chatPrompt, {
     ...options,
     model: OPENAI_MODEL,
-    reasoningEffort: OPENAI_REASONING_EFFORT
+    reasoningEffort: options.reasoningEffort || OPENAI_REASONING_EFFORT
   });
   const res = await fetch("https://api.openai.com/v1/responses/input_tokens", {
     method: "POST",
@@ -2128,6 +2183,14 @@ async function countOpenAIInputTokens(chatPrompt, options = {}) {
   const count = Number(data?.input_tokens);
   if (!Number.isSafeInteger(count) || count < 0) throw httpError(502, "OpenAI token count was unavailable.");
   return count;
+}
+
+function recordChatUsage(reportKey, event) {
+  try {
+    chatQuotaStore.recordUsage(reportKey, event);
+  } catch (err) {
+    console.error("Could not record chat usage telemetry.", err);
+  }
 }
 
 function openAIHeaders() {
