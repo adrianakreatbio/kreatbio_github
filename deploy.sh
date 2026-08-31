@@ -146,6 +146,11 @@ release_id="$3"
 release_commit="$4"
 backup_dir="/opt/kreatbio-portal-backups/$release_id"
 
+if [[ ! -s /etc/kreatbio-portal/openai-api-key ]]; then
+  printf 'Missing /etc/kreatbio-portal/openai-api-key; install the OpenAI API key before deploying.\n' >&2
+  exit 1
+fi
+
 install -d -m 700 "$backup_dir"
 for file in "$vps_app_dir"/*.js "$vps_app_dir"/package.json "$vps_app_dir"/package-lock.json; do
   [[ -e "$file" ]] && cp -a "$file" "$backup_dir/"

@@ -7,6 +7,11 @@ import { Storage } from "@google-cloud/storage";
 import { classifyChatQuestion } from "./chat-classifier.js";
 import { createGcsSignedUrl } from "./gcs-signer.js";
 import { GcsReportAccessStore } from "./gcs-report-access-store.js";
+import {
+  buildOpenAIInputTokenBody,
+  buildOpenAIResponseBody,
+  parseOpenAIChatResponse
+} from "./openai-chat.js";
 import { ChatQuotaStore } from "./quota-store.js";
 import { ReportAccessStore } from "./report-access-store.js";
 
@@ -27,8 +32,9 @@ const CHAT_CONTEXT_LIMIT = Number(process.env.CHAT_CONTEXT_LIMIT || 80 * 1024);
 const CHAT_TOKEN_LIMIT = Number(process.env.CHAT_TOKEN_LIMIT || 100_000);
 const CHAT_MAX_OUTPUT_TOKENS = Number(process.env.CHAT_MAX_OUTPUT_TOKENS || 1_000);
 const CHAT_RESERVATION_TTL_SECONDS = Number(process.env.CHAT_RESERVATION_TTL_SECONDS || 15 * 60);
-const GEMINI_API_KEY = environmentSecret("GEMINI_API_KEY");
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
+const OPENAI_API_KEY = environmentSecret("OPENAI_API_KEY");
+const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5.6-luna";
+const OPENAI_REASONING_EFFORT = process.env.OPENAI_REASONING_EFFORT || "low";
 const PORTAL_ORIGIN = process.env.PORTAL_ORIGIN || "*";
 const PORTAL_ORIGINS = PORTAL_ORIGIN.split(",").map((origin) => origin.trim()).filter(Boolean);
 const PORTAL_API_BASE = cleanUrl(process.env.PORTAL_API_BASE || "");
@@ -320,8 +326,8 @@ app.post("/api/chat/session", requirePortalChatOrigin, (req, res, next) => {
 app.post("/api/chat", requirePortalChatOrigin, requireChatSession, async (req, res, next) => {
   let reservation = null;
   try {
-    if (!GEMINI_API_KEY) {
-      throw httpError(503, "Gemini chat is not configured on the portal backend.");
+    if (!OPENAI_API_KEY) {
+      throw httpError(503, "OpenAI chat is not configured on the portal backend.");
     }
     const message = String(req.body?.message || "").trim();
     if (!message) {
@@ -344,11 +350,15 @@ app.post("/api/chat", requirePortalChatOrigin, requireChatSession, async (req, r
       return;
     }
     const prompt = buildChatPrompt({ reportContext, message, currentView, history, mode });
-    const useGoogleSearch = mode === "web" || mode === "mixed";
-    const promptTokens = await countGeminiTokens(prompt, { useGoogleSearch });
+    const useWebSearch = mode === "web" || mode === "mixed";
+    const providerOptions = {
+      useWebSearch,
+      safetyIdentifier: req.chatSession.reportKey
+    };
+    const promptTokens = await countOpenAIInputTokens(prompt, providerOptions);
     reservation = chatQuotaStore.reserve(req.chatSession.reportKey, promptTokens, CHAT_MAX_OUTPUT_TOKENS);
-    const generated = await callGemini(prompt, {
-      useGoogleSearch,
+    const generated = await callOpenAI(prompt, {
+      ...providerOptions,
       maxOutputTokens: reservation.maximumOutputTokens
     });
     const quota = chatQuotaStore.settle(
@@ -2045,6 +2055,8 @@ function buildChatPrompt({ reportContext, message, currentView, history, mode })
     "Treat a short software, method, or acronym question as a request for a plain-language definition, but do not imply that it was used in this report unless REPORT_CONTEXT says so.",
     "When asked whether a tool was used, rely on REPORT_CONTEXT.sections.overview.pipeline_methods. If it is absent, say it is not listed in the loaded methods rather than claiming it was never used.",
     "When a question asks both whether a tool was used and what it is, answer the report-specific part first, then give the plain-language definition.",
+    "Honor the client's requested format. If a table is requested, return a Markdown pipe table with a header row and separator row.",
+    "For a whole-method or workflow table, use one row per major stage and include Stage, Tool/version, What was done, and Output; include available QC, feature inference, taxonomy, diversity/statistics, and functional-prediction stages.",
     "Never turn visual separation, colour, a raw p-value, or a biological hypothesis into statistical support.",
     "Predicted functions are hypotheses and do not prove gene expression or biochemical activity.",
     "If the requested value or test is missing, say it is unavailable instead of estimating it.",
@@ -2066,31 +2078,6 @@ function buildChatPrompt({ reportContext, message, currentView, history, mode })
   return { systemInstruction, prompt };
 }
 
-function parseGeminiChatPayload(text) {
-  const raw = String(text || "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
-  try {
-    const parsed = JSON.parse(raw);
-    return {
-      answer: String(parsed.answer || "").trim() || "No response was returned.",
-      reportSourceIds: Array.isArray(parsed.report_source_ids) ? parsed.report_source_ids.map(String).slice(0, 8) : []
-    };
-  } catch {
-    return { answer: raw || "No response was returned.", reportSourceIds: [] };
-  }
-}
-
-function extractGroundedWebSources(data) {
-  const chunks = data?.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
-  const sources = [];
-  for (const chunk of chunks) {
-    const web = chunk?.web;
-    if (!web?.uri || !/^https?:\/\//i.test(web.uri)) continue;
-    if (sources.some((source) => source.url === web.uri)) continue;
-    sources.push({ title: String(web.title || "Web source").slice(0, 180), url: web.uri });
-  }
-  return sources.slice(0, 8);
-}
-
 function reportSourcesForResponse(context, requestedIds, useFallback = false) {
   const available = Array.isArray(context?.sources) ? context.sources : [];
   const wanted = new Set((requestedIds || []).map(String));
@@ -2103,75 +2090,51 @@ function reportSourcesForResponse(context, requestedIds, useFallback = false) {
   }));
 }
 
-async function callGemini(chatPrompt, options = {}) {
-  const url = new URL(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:generateContent`);
-  url.searchParams.set("key", GEMINI_API_KEY);
-  const body = geminiRequestBody(chatPrompt, options);
-  const res = await fetch(url, {
+async function callOpenAI(chatPrompt, options = {}) {
+  const body = buildOpenAIResponseBody(chatPrompt, {
+    ...options,
+    model: OPENAI_MODEL,
+    reasoningEffort: OPENAI_REASONING_EFFORT
+  });
+  const res = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: openAIHeaders(),
     body: JSON.stringify(body)
   });
   if (!res.ok) {
-    throw httpError(502, "Gemini request failed.");
+    console.error("OpenAI response request failed.", res.status, res.headers.get("x-request-id") || "");
+    throw httpError(502, "OpenAI request failed.");
   }
   const data = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("").trim() || "";
-  const parsed = options.useGoogleSearch
-    ? { answer: text || "No response was returned.", reportSourceIds: [] }
-    : parseGeminiChatPayload(text);
-  const totalTokenCount = Number(data?.usageMetadata?.totalTokenCount);
-  return {
-    ...parsed,
-    webSources: extractGroundedWebSources(data),
-    totalTokenCount: Number.isSafeInteger(totalTokenCount) && totalTokenCount >= 0 ? totalTokenCount : null
-  };
+  return parseOpenAIChatResponse(data, options);
 }
 
-async function countGeminiTokens(chatPrompt, options = {}) {
-  const url = new URL(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:countTokens`);
-  url.searchParams.set("key", GEMINI_API_KEY);
-  const request = geminiRequestBody(chatPrompt, options);
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      generateContentRequest: {
-        model: `models/${GEMINI_MODEL}`,
-        ...request
-      }
-    })
+async function countOpenAIInputTokens(chatPrompt, options = {}) {
+  const body = buildOpenAIInputTokenBody(chatPrompt, {
+    ...options,
+    model: OPENAI_MODEL,
+    reasoningEffort: OPENAI_REASONING_EFFORT
   });
-  if (!res.ok) throw httpError(502, "Gemini token count failed.");
+  const res = await fetch("https://api.openai.com/v1/responses/input_tokens", {
+    method: "POST",
+    headers: openAIHeaders(),
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    console.error("OpenAI token count request failed.", res.status, res.headers.get("x-request-id") || "");
+    throw httpError(502, "OpenAI token count failed.");
+  }
   const data = await res.json();
-  const count = Number(data?.totalTokens ?? data?.total_tokens);
-  if (!Number.isSafeInteger(count) || count < 0) throw httpError(502, "Gemini token count was unavailable.");
+  const count = Number(data?.input_tokens);
+  if (!Number.isSafeInteger(count) || count < 0) throw httpError(502, "OpenAI token count was unavailable.");
   return count;
 }
 
-function geminiRequestBody(chatPrompt, options = {}) {
-  const body = {
-    system_instruction: { parts: [{ text: chatPrompt.systemInstruction }] },
-    contents: [{ role: "user", parts: [{ text: chatPrompt.prompt }] }],
-    generationConfig: {
-      temperature: 0.15,
-      maxOutputTokens: Math.max(1, Number(options.maxOutputTokens) || 1_000)
-    }
+function openAIHeaders() {
+  return {
+    Authorization: `Bearer ${OPENAI_API_KEY}`,
+    "Content-Type": "application/json"
   };
-  if (options.useGoogleSearch) {
-    body.tools = [{ google_search: {} }];
-  } else {
-    body.generationConfig.responseMimeType = "application/json";
-    body.generationConfig.responseSchema = {
-      type: "OBJECT",
-      properties: {
-        answer: { type: "STRING" },
-        report_source_ids: { type: "ARRAY", items: { type: "STRING" } }
-      },
-      required: ["answer", "report_source_ids"]
-    };
-  }
-  return body;
 }
 
 function httpError(statusCode, message) {

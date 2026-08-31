@@ -43,7 +43,7 @@ test("provisions a lifetime allowance without storing the report code", () => {
   }
 });
 
-test("reserves atomically and settles using Gemini's actual total", () => {
+test("reserves atomically and settles using the provider's actual total", () => {
   const context = fixture();
   try {
     const quota = context.store.add(CODE, 5_000);

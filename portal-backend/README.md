@@ -4,7 +4,7 @@ The client portal uses four small components:
 
 - **GitHub Pages** serves `https://kreatbio.com/client-portal`.
 - **Cloud Run** validates report codes, enforces the access window, reads private report files from GCS, and returns short-lived signed file links.
-- **Hostinger VPS** handles Gemini chat and its per-report token allowance.
+- **Hostinger VPS** handles GPT-5.6 Luna chat and its per-report token allowance.
 - **GCS** stores private reports under `clients26/` and access records under `_portal_state/report-access/`.
 
 The browser never receives a permanent GCS credential. Report files remain private.
@@ -66,7 +66,7 @@ Only requests from `https://kreatbio.com` and `https://www.kreatbio.com` are acc
 
 ## Chat Allowance
 
-The VPS stores chat usage in `/var/lib/kreatbio-portal/chat-quota.sqlite`. Each activated report receives 100,000 lifetime Gemini tokens by default. The limit covers input context, conversation history, and model output.
+The VPS stores chat usage in `/var/lib/kreatbio-portal/chat-quota.sqlite`. Each activated report receives 100,000 lifetime OpenAI tokens by default. The limit covers input context, conversation history, reasoning, web-search context, and model output.
 
 Administrative commands run on the VPS as the service user:
 
@@ -83,7 +83,7 @@ Other supported operations are `add`, `increase`, `disable`, `enable`, and `rese
 
 After report tables load, the portal builds structured context from the data already available to that report. It includes chart titles, values, statistical results, interpretations, and tables—not only chart images. The context is sent with the current question and is not written back to GCS.
 
-Gemini must answer report questions from the supplied evidence. Related biology or genomics questions may use Google Search grounding and return citations. Unrelated general web questions are declined.
+GPT-5.6 Luna must answer report questions from the supplied evidence. Related biology or genomics questions may use OpenAI web search and return citations. Unrelated general web questions are declined.
 
 ## GCS Report Layout
 
@@ -109,7 +109,15 @@ If `manifest.json` is absent, the backend infers supported portal files from the
 
 Cloud Run's non-secret settings are in `deploy/cloud-run/env.yaml`. Its session secret is stored in Secret Manager as `kreatbio-report-session-secret`.
 
-The Hostinger service files are in `deploy/hostinger/`. Its runtime secret and Gemini key remain on the VPS under `/etc/kreatbio-portal/` and are never committed.
+The Hostinger service files are in `deploy/hostinger/`. Its runtime secret and OpenAI key remain on the VPS under `/etc/kreatbio-portal/` and are never committed. Store the API key in `/etc/kreatbio-portal/openai-api-key` with permissions restricted to the service account.
+
+Before the first OpenAI-backed deployment, install the key on the VPS from a secure local file:
+
+```bash
+sudo install -o root -g kreatbio-portal -m 0640 /secure/path/openai-api-key /etc/kreatbio-portal/openai-api-key
+```
+
+`deploy.sh` stops before restarting the chatbot when that secret file is absent or empty.
 
 Important Cloud Run variables:
 
@@ -122,7 +130,8 @@ Important Cloud Run variables:
 
 Important Hostinger variables:
 
-- `GEMINI_MODEL`: Gemini model name.
+- `OPENAI_MODEL`: OpenAI model name; defaults to `gpt-5.6-luna`.
+- `OPENAI_REASONING_EFFORT`: reasoning level; defaults to `low` for interactive latency and cost.
 - `CHAT_CONTEXT_LIMIT`: maximum structured report context size.
 - `CHAT_TOKEN_LIMIT`: default lifetime allowance for a new report.
 - `CHAT_MAX_OUTPUT_TOKENS`: maximum output for one answer.
