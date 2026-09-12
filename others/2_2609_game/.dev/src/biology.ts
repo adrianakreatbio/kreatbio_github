@@ -1,0 +1,17 @@
+export const NUTRIENTS = ['N', 'P', 'K'] as const;
+export type Nutrient = typeof NUTRIENTS[number];
+export type NutrientTotals = Record<Nutrient, number>;
+export const emptyTotals = (): NutrientTotals => ({ N: 0, P: 0, K: 0 });
+export const PLANT_TARGET = 12;
+export const NUTRIENT_INFO = {
+  N: { name: 'Nitrogen', color: '#d4ff70', role: 'Builds proteins and chlorophyll.', detail: 'Plants use nitrogen to build proteins and the chlorophyll involved in photosynthesis. Greener leaves here illustrate one role; nutrient effects overlap.', source: 'https://extension.umd.edu/sites/extension.umd.edu/files/2021-04/IPNI_FCHH%20Vol.3_RR.pdf' },
+  P: { name: 'Phosphorus', color: '#72eadc', role: 'Part of DNA and ATP, the energy-transfer molecule.', detail: 'Phosphorus is part of DNA, RNA and ATP. Plants take it up as phosphate. Our root-growth animation illustrates plant development, not a function exclusive to phosphorus.', source: 'https://swroc.cfans.umn.edu/research/soil-water/phosphorus-cycle' },
+  K: { name: 'Potassium', color: '#b78aff', role: 'Helps regulate water and activate enzymes.', detail: 'Potassium helps regulate the opening and closing of leaf pores and activates enzymes. The upright plant illustrates water regulation; potassium is not a substitute for watering.', source: 'https://extension.umd.edu/sites/extension.umd.edu/files/2021-04/organic%20N%2C%20P%20%26%20K_ipni.pdf' },
+} as const;
+export const SAMPLE_IDS = ['root-partner', 'phosphorus-helper', 'root-risk'] as const;
+export type SampleId = typeof SAMPLE_IDS[number];
+export const MICROBES: Record<SampleId, { name: string; role: string; short: string; detail: string; condition: string; nutrient: Nutrient | null; source: string }> = {
+  'root-partner': { name: 'Rhizobium leguminosarum', role: 'Root partner', short: 'Compatible strains partner with peas in root nodules to fix nitrogen.', detail: 'In a compatible pea–bacterium partnership, bacteria in root nodules convert nitrogen gas to forms the plant can use. Finding related DNA is a clue, not proof of active nitrogen fixation. The paired soil survey maps existing N deposits; the DNA match does not measure nitrogen levels.', condition: 'Supportive root conditions', nutrient: 'N', source: 'https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2017.02249/full' },
+  'phosphorus-helper': { name: 'Bacillus subtilis', role: 'Phosphorus helper', short: 'Some strains help release phosphorus into forms plants can take up.', detail: 'Experiments with particular strains show increased phosphorus availability and plant uptake. This ability varies by strain and environment: a species match alone does not establish function. The paired soil survey maps existing P deposits; the DNA match does not measure phosphorus levels.', condition: 'Supportive nutrient conditions', nutrient: 'P', source: 'https://onlinelibrary.wiley.com/doi/full/10.1111/ppl.14338' },
+  'root-risk': { name: 'Fusarium oxysporum species complex', role: 'Potential plant pathogen', short: 'Some strains cause root disease or wilt; others do not.', detail: 'This is a fungus, not a bacterium. The complex includes pathogenic and nonpathogenic strains. A DNA match flags a reason to investigate, not a diagnosis. In this fictional patch, stressed roots provide another clue. The marked route avoids gameplay hazards; it does not cure disease.', condition: 'Stressed roots · investigate disease risk', nutrient: null, source: 'https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2021.737820/full' },
+};

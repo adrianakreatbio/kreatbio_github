@@ -1,0 +1,36 @@
+import { build } from 'esbuild';
+import { chromium } from 'playwright';
+import assert from 'node:assert/strict';
+const bundled = await build({ entryPoints: ['src/simulation.ts'], bundle: true, write: false, format: 'esm', platform: 'node' });
+const { newGame } = await import('data:text/javascript;base64,' + Buffer.from(bundled.outputFiles[0].text).toString('base64'));
+const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome', args: ['--no-sandbox'] });
+try {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1050 } });
+  const s = newGame(2609); s.player.y = 74; s.player.health = 190; s.player.energy = 420; s.upgrades = { digestion: 2, energy: 2, storage: 2, membrane: 2 };
+  for (let y = 3; y <= 74; y++) s.world.tiles[y * 40 + 20] = 0;
+  s.world.tiles[74 * 40 + 21] = 5; s.world.tiles[75 * 40 + 21] = 5; s.world.tiles[75 * 40 + 19] = 4;
+  s.world.tiles[74 * 40 + 23] = 0; s.world.enemies.push({ x: 23, y: 74, dir: 2, timer: 0 });
+  await page.addInitScript(state => localStorage.setItem('kreatbio.microload.save', JSON.stringify({ version: 3, state })), s);
+  await page.goto(process.env.BASE_URL || 'http://localhost:5173'); await page.getByRole('button', { name: 'Continue culture' }).click();
+  await page.waitForTimeout(1200); await page.screenshot({ path: 'test-results/deep-layer.png', fullPage: true });
+  await page.keyboard.down('d'); await page.waitForTimeout(150); await page.keyboard.up('d');
+  assert.notEqual(await page.locator('#health-text').innerText(), '190 / 190');
+  await page.keyboard.press('Escape'); await page.screenshot({ path: 'test-results/hazard-paused.png', fullPage: true });
+  const shop = await browser.newPage({ viewport: { width: 1440, height: 1050 } });
+  const funded = newGame(2609); funded.bank = 1000;
+  await shop.addInitScript(state => localStorage.setItem('kreatbio.microload.save', JSON.stringify({ version: 3, state })), funded);
+  await shop.goto(process.env.BASE_URL || 'http://localhost:5173'); await shop.getByRole('button', { name: 'Continue culture' }).click(); await shop.getByRole('button', { name: 'Upgrade at colony' }).click();
+  await shop.locator('[data-buy="energy"]').click();
+  const purchased = await shop.evaluate(() => JSON.parse(localStorage.getItem('kreatbio.microload.save')).state);
+  assert.equal(purchased.upgrades.energy, 1); assert.equal(purchased.bank, 900); assert.equal(purchased.player.energy, 270);
+  await shop.screenshot({ path: 'test-results/shop-purchased.png', fullPage: true });
+  const ending = await browser.newPage({ viewport: { width: 1440, height: 1050 } });
+  const fragment = newGame(2609); fragment.deposited = {N:12,P:12,K:12}; fragment.scans = fragment.world.samples.map(site => site.id); fragment.world.tiles[97 * 40 + 20] = 0; fragment.player.y = 4; fragment.world.tiles[4 * 40 + 20] = 0;
+  await ending.addInitScript(state => localStorage.setItem('kreatbio.microload.save', JSON.stringify({ version: 3, state })), fragment);
+  await ending.goto(process.env.BASE_URL || 'http://localhost:5173'); await ending.getByRole('button', { name: 'Continue culture' }).click();
+  await ending.keyboard.down('w'); await ending.waitForTimeout(250); await ending.keyboard.up('w');
+  await ending.getByText('PEA PLANT RESTORED').waitFor();
+  assert.equal(await ending.evaluate(() => JSON.parse(localStorage.getItem('kreatbio.microload.save')).state.won), true);
+  await ending.screenshot({ path: 'test-results/victory-fixture.png', fullPage: true });
+  console.log('Visual fixtures passed: deep-layer rendering, toxin contact, purchase effects and immediate save.');
+} finally { await browser.close(); }

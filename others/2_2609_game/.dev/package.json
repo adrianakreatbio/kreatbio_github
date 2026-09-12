@@ -1,0 +1,20 @@
+{
+  "name": "microload",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build && node publish-static.mjs",
+    "test": "vitest run",
+    "test:browser": "node tests/run-browser.mjs",
+    "test:expedition": "node tests/expedition.mjs",
+    "test:production": "node tests/production.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.55.0",
+    "typescript": "~5.9.3",
+    "vite": "^6.4.1",
+    "vitest": "^4.1.11"
+  }
+}

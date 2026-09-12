@@ -582,11 +582,14 @@ section[id]{ scroll-margin-top:92px; }
 /* homepage promotions */
 .promo-section{ background:var(--bg-soft); }
 .promo-section .eyebrow{ color:var(--teal); }
-.promo-section .sec-center h2{ color:var(--navy); }
+.promo-heading{ display:flex; align-items:baseline; justify-content:center; gap:.35em; }
+.promo-heading .eyebrow{ margin:0; }
+.promo-heading a{ color:var(--teal); font-size:.86rem; font-weight:700; letter-spacing:.04em; text-underline-offset:4px; }
 .promo-carousel{ position:relative; margin-top:clamp(24px,4vw,40px); padding-inline:56px; }
-.promo-viewport{ height:clamp(432px,60vw,768px); overflow:hidden; border:1px solid var(--grey); border-radius:var(--r-card); background:var(--white); box-shadow:0 18px 48px rgba(7,27,58,.08); }
+.promo-viewport{ height:clamp(388.8px,54vw,691.2px); overflow:hidden; border:1px solid var(--grey); border-radius:var(--r-card); background:var(--white); box-shadow:0 18px 48px rgba(7,27,58,.08); }
 .promo-track{ display:flex; align-items:stretch; height:100%; transition:transform .45s var(--ease); will-change:transform; }
 .promo-slide{ flex:0 0 100%; min-width:0; height:100%; display:flex; align-items:center; justify-content:center; margin:0; padding:clamp(10px,2vw,22px); }
+.promo-slide > a{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
 .promo-slide img{ display:block; width:auto; max-width:100%; height:auto; max-height:100%; border:1px solid var(--grey); border-radius:12px; box-shadow:0 14px 36px rgba(7,27,58,.12); }
 .promo-controls{ display:block; margin-top:14px; text-align:center; }
 .promo-arrow{ position:absolute; top:calc(50% - 38px); z-index:2; width:42px; height:42px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--grey); border-radius:50%; background:var(--white); color:var(--navy); font:inherit; font-size:1.25rem; line-height:1; cursor:pointer; box-shadow:0 5px 16px rgba(7,27,58,.06); transition:border-color .15s var(--ease),color .15s var(--ease),background .15s var(--ease); }
@@ -1950,6 +1953,55 @@ input[type=checkbox],input[type=radio]{ width:auto; height:auto; flex:0 0 auto; 
 .aly-cat li{ position:relative; padding-left:20px; font-size:.92rem; color:var(--muted); line-height:1.45; }
 .aly-cat li::before{ content:''; position:absolute; left:2px; top:.55em; width:7px; height:7px; border-radius:2px; background:var(--teal); }
 @media (max-width:760px){ .aly-cats{ grid-template-columns:1fr; } }
+
+/* ===== Events ===== */
+#page-events .hero--text{ background-image:linear-gradient(90deg,rgba(7,27,58,.9) 0%,rgba(7,27,58,.76) 46%,rgba(7,27,58,.28) 100%),url('supplements/15_events_1.png'); background-position:center; background-size:cover; }
+#page-events .hero--text .eyebrow{ color:var(--aqua); }
+#page-events .hero--text .tline{ background:var(--aqua); }
+#page-events .hero--text h1{ color:#fff; }
+#page-events .hero--text .lead{ color:#dbe6ee; }
+#page-events .section-head{ max-width:100%; }
+.event-grid{ display:block; margin-top:28px; border-top:1px solid var(--grey); }
+.event-card{ width:100%; min-height:0; display:grid; grid-template-columns:minmax(180px,220px) minmax(0,1fr); column-gap:clamp(30px,5vw,64px); row-gap:9px; align-items:start; text-align:left; padding:30px 0; border:0; border-bottom:1px solid var(--grey); border-radius:0; background:transparent; color:var(--navy); font:inherit; cursor:pointer; box-shadow:none; transition:background .18s var(--ease); }
+.event-card:hover:not(:disabled){ transform:none; border-color:var(--grey); background:linear-gradient(90deg,transparent,rgba(0,124,120,.035),transparent); box-shadow:none; }
+.event-card:hover:not(:disabled) h3{ color:var(--teal); }
+.event-card:disabled{ cursor:default; opacity:.68; }
+.event-card-top{ grid-column:1; grid-row:1 / span 5; display:block; }
+.event-date{ color:var(--teal); font-size:.86rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
+.event-card h3,.event-card p,.event-fee,.event-tags,.event-register{ grid-column:2; }
+.event-card h3{ margin:0; font-size:1.35rem; transition:color .18s var(--ease); }
+.event-card p{ max-width:760px; margin:0; color:var(--muted); line-height:1.6; }
+.event-fee{ margin-top:3px; color:var(--navy); font-size:.92rem; font-weight:700; }
+.event-tags{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; color:var(--muted); font-size:.84rem; }
+.event-register{ margin-top:7px; color:var(--teal); font-weight:700; }
+.event-empty{ margin-top:28px; padding:clamp(34px,6vw,64px) 24px; border:1px dashed #b8cacd; border-radius:var(--r-card); background:var(--bg-soft); text-align:center; }
+.event-empty svg{ width:42px; height:42px; color:var(--teal); margin-bottom:14px; }
+.event-empty h3{ margin:0 0 8px; color:var(--navy); }
+.event-empty p{ max-width:540px; margin:0 auto 20px; color:var(--muted); line-height:1.6; }
+.past-events{ list-style:none; margin:24px 0 0; padding:0; border-top:1px solid var(--grey); }
+.past-event{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:18px; padding:18px 0; border-bottom:1px solid var(--grey); }
+.past-event h3{ margin:0 0 5px; color:var(--navy); font-size:1rem; }
+.past-event-meta{ color:var(--muted); font-size:.86rem; }
+.event-dialog{ width:min(620px,calc(100% - 32px)); max-height:calc(100vh - 32px); margin:auto; padding:0; border:0; border-radius:18px; color:var(--navy); box-shadow:0 28px 90px rgba(7,27,58,.3); }
+.event-dialog::backdrop{ background:rgba(7,27,58,.68); }
+.event-dialog[open]{ animation:event-dialog-in .18s var(--ease); }
+@keyframes event-dialog-in{ from{ opacity:0; transform:translateY(8px) scale(.985); } }
+.event-dialog-inner{ padding:clamp(24px,5vw,38px); }
+.event-dialog-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom:24px; }
+.event-dialog-head h2{ margin:5px 0 0; font-size:clamp(1.6rem,4vw,2.15rem); }
+.event-dialog-close{ flex:0 0 auto; width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--grey); border-radius:50%; background:#fff; color:var(--navy); font:inherit; font-size:1.35rem; cursor:pointer; }
+.event-dialog-close:hover{ border-color:var(--teal); color:var(--teal); }
+.event-form{ display:grid; gap:16px; }
+.event-form label{ display:grid; gap:7px; color:var(--navy); font-size:.9rem; font-weight:600; }
+.event-form input,.event-form textarea{ width:100%; border:1px solid #c8d5d8; border-radius:9px; padding:12px 13px; background:#fff; color:var(--navy); font:inherit; }
+.event-form textarea{ min-height:120px; resize:vertical; }
+.event-form input:focus,.event-form textarea:focus{ outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(0,124,120,.12); }
+.event-form-note{ margin:0; color:var(--muted); font-size:.84rem; line-height:1.5; }
+.event-form-status{ min-height:1.35em; margin:0; color:var(--teal); font-size:.88rem; }
+.event-form-status.is-error{ color:#b42318; }
+.event-hp{ position:absolute !important; left:-10000px !important; width:1px !important; height:1px !important; overflow:hidden !important; }
+@media(max-width:700px){ #page-events .hero .wrap{ grid-template-columns:1fr; } .event-card{ grid-template-columns:1fr; gap:9px; padding:26px 0; } .event-card-top{ grid-column:1; grid-row:auto; margin-bottom:5px; } .event-card h3,.event-card p,.event-fee,.event-tags,.event-register{ grid-column:1; } .past-event{ grid-template-columns:1fr; gap:6px; } }
+@media(prefers-reduced-motion:reduce){ .event-card,.event-dialog[open]{ transition:none; animation:none; } }
 </style>
 </head>
 <body>
@@ -1981,7 +2033,7 @@ input[type=checkbox],input[type=radio]{ width:auto; height:auto; flex:0 0 auto; 
       <li class="has-mega">
         <button class="mega-toggle" data-href="#resources" aria-expanded="false">Resource <svg class="caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="0.8" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5"/></svg></button>
         <div class="mega mega--right"><div class="mega-inner">
-          <div class="mega-col"><h4>Resources</h4><a href="#insights"><strong>Insights</strong><span>Our views on the field</span></a><a href="#protocols"><strong>Protocols</strong><span>Versioned KodaPure methods</span></a><a href="#resources/databases"><strong>Databases &amp; tools</strong><span>Curated public resources</span></a></div>
+          <div class="mega-col"><h4>Resources</h4><a href="#events"><strong>Events</strong><span>Webinars and workshops</span></a><a href="#insights"><strong>Insights</strong><span>Our views on the field</span></a><a href="#protocols"><strong>Protocols</strong><span>Versioned KodaPure methods</span></a><a href="#resources/databases"><strong>Databases &amp; tools</strong><span>Curated public resources</span></a></div>
           <div class="mega-col"><h4>Support</h4><a href="#contact"><strong>Contact us</strong><span>Reach the team</span></a><a href="#quote"><strong>Request a quote</strong><span>Kits and projects</span></a><a href="#quality"><strong>Quality &amp; compliance</strong><span>QC and traceability</span></a></div>
           
         </div></div>
@@ -1995,16 +2047,16 @@ input[type=checkbox],input[type=radio]{ width:auto; height:auto; flex:0 0 auto; 
 <template id="promotions-template">
   <section class="section section--tight section--line promo-section" aria-labelledby="promotions-title">
     <div class="wrap">
-      <div class="sec-center">
-        <p class="eyebrow">What&rsquo;s on</p>
-        <h2 id="promotions-title">Promotions &amp; Events</h2>
+      <div class="promo-heading">
+        <p class="eyebrow" id="promotions-title">What&rsquo;s on.</p>
+        <a href="#events">View all events <span class="arr">&rarr;</span></a>
       </div>
       <div class="promo-carousel" data-promo-carousel role="region" aria-roledescription="carousel" aria-label="KreatBio promotions and events">
         <div class="promo-viewport">
           <div class="promo-track">
             <!-- Keep promotion slides numbered; the carousel sorts by data-promo-number. -->
             <figure class="promo-slide" data-promo-number="1" role="group" aria-roledescription="slide" aria-label="1 of 10">
-              <img src="supplements/promotions/1_2608.png" alt="Merdeka Month sequencing special from RM220 per sample and live portal demonstration on 23 September 2026">
+              <a href="#events" aria-label="View KreatBio events"><img src="supplements/promotions/1_2608.png" alt="Merdeka Month sequencing special from RM220 per sample and live portal demonstration on 23 September 2026"></a>
             </figure>
             <figure class="promo-slide" data-promo-number="2" role="group" aria-roledescription="slide" aria-label="2 of 10">
               <img src="supplements/promotions/2_2608.png" alt="KreatBio sequencing insights portal sign-in screen with the message View your data, understand what it means">
@@ -2129,6 +2181,184 @@ input[type=checkbox],input[type=radio]{ width:auto; height:auto; flex:0 0 auto; 
     </section>
   </main>
 </div>
+<div class="page layout-catalog" id="page-events">
+  <main>
+    <nav class="crumbs" aria-label="Breadcrumb"><div class="wrap"><a href="#home">Home</a><span class="sep">/</span><span class="cur">Events</span></div></nav>
+    <section class="hero hero--text">
+      <div class="wrap">
+        <div class="hero-copy">
+          <p class="eyebrow">Events</p>
+          <div class="tline"></div>
+          <h1 style="margin-top:18px;">Learn, ask, and work through it together</h1>
+          <p class="lead">Upcoming KreatBio webinars and workshops for researchers, students, and laboratory teams.</p>
+        </div>
+      </div>
+    </section>
+    <section class="section section--line section--tight" aria-labelledby="upcoming-events-title">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <p class="eyebrow">What&rsquo;s next</p>
+          <h2 id="upcoming-events-title">Upcoming events</h2>
+          <p>Join us for focused, practical learning through free and paid workshops, each designed to build your understanding.</p>
+        </div>
+        <div class="event-grid reveal" id="upcoming-events" hidden>
+          <button class="event-card" type="button"
+            data-event-id="ikodaseq-introduction-2026-09-23"
+            data-event-title="i-KodaSeq Introduction"
+            data-event-type="Online workshop"
+            data-event-date="23 September 2026, 3:00 PM MYT"
+            data-event-date-iso="2026-09-23T15:00:00+08:00"
+            data-event-end-iso="2026-09-23T16:30:00+08:00"
+            data-event-mode="Online"
+            data-event-price="Free"
+            data-event-audience="Researchers, students, and laboratory teams"
+            data-event-description="Learn to filter, group, and explore amplicon data in i-KodaSeq, with an introduction to interpreting alpha and beta diversity."
+            data-event-status="Open">
+            <span class="event-card-top"><span class="event-date">23 September 2026<br>3:00 PM MYT</span></span>
+            <h3>i-KodaSeq Introduction</h3>
+            <p>Learn to filter, group, and explore amplicon data, with an introduction to interpreting alpha and beta diversity.</p>
+            <span class="event-fee">Fee: Free</span>
+            <span class="event-tags"><span>Online workshop</span><span>&middot;</span><span>1.5 hours</span></span>
+            <span class="event-register">Register interest <span class="arr">&rarr;</span></span>
+          </button>
+          <button class="event-card" type="button"
+            data-event-id="basic-bioinfo-1-2026-10-10"
+            data-event-title="Basic Bioinformatics Workshop 1: Primer Trimming and Read QC"
+            data-event-type="Online workshop"
+            data-event-date="10 October 2026, 10:00 AM MYT"
+            data-event-date-iso="2026-10-10T10:00:00+08:00"
+            data-event-end-iso="2026-10-10T11:00:00+08:00"
+            data-event-mode="Online"
+            data-event-price="Free"
+            data-event-audience="Researchers and students new to amplicon bioinformatics"
+            data-event-description="Learn the first processing steps for amplicon reads: primer trimming and essential sequence quality checks. Sample FASTQ files will be provided."
+            data-event-status="Open">
+            <span class="event-card-top"><span class="event-date">10 October 2026<br>10:00 AM MYT</span></span>
+            <h3>Basic Bioinformatics Workshop 1</h3>
+            <p>Primer trimming and essential quality checks for amplicon sequencing reads. Sample FASTQ files will be provided.</p>
+            <span class="event-fee">Fee: Free</span>
+            <span class="event-tags"><span>Online workshop</span><span>&middot;</span><span>1 hour</span></span>
+            <span class="event-register">Register interest <span class="arr">&rarr;</span></span>
+          </button>
+          <button class="event-card" type="button"
+            data-event-id="basic-bioinfo-2-2026-10-24"
+            data-event-title="Basic Bioinformatics Workshop 2: Taxonomic Identification Using NCBI BLAST"
+            data-event-type="Online workshop"
+            data-event-date="24 October 2026, 10:00 AM MYT"
+            data-event-date-iso="2026-10-24T10:00:00+08:00"
+            data-event-end-iso="2026-10-24T11:00:00+08:00"
+            data-event-mode="Online"
+            data-event-price="Free"
+            data-event-audience="Researchers and students new to sequence identification"
+            data-event-description="Use NCBI BLAST to investigate the likely taxonomic identity of amplicon sequences and understand the limits of species-level identification. Cleaned example sequences will be provided."
+            data-event-status="Open">
+            <span class="event-card-top"><span class="event-date">24 October 2026<br>10:00 AM MYT</span></span>
+            <h3>Basic Bioinformatics Workshop 2</h3>
+            <p>Investigate taxonomic identity using NCBI BLAST and understand the limits of species-level identification.</p>
+            <span class="event-fee">Fee: Free</span>
+            <span class="event-tags"><span>Online workshop</span><span>&middot;</span><span>1 hour</span></span>
+            <span class="event-register">Register interest <span class="arr">&rarr;</span></span>
+          </button>
+          <button class="event-card" type="button"
+            data-event-id="basic-bioinfo-3-2026-11-07"
+            data-event-title="Basic Bioinformatics Workshop 3: Creating and Interpreting Abundance Bar Charts"
+            data-event-type="Online workshop"
+            data-event-date="7 November 2026, 10:00 AM MYT"
+            data-event-date-iso="2026-11-07T10:00:00+08:00"
+            data-event-end-iso="2026-11-07T11:00:00+08:00"
+            data-event-mode="Online"
+            data-event-price="Free"
+            data-event-audience="Researchers and students working with amplicon results"
+            data-event-description="Create a clear abundance bar chart from taxonomy and abundance files, then learn how to interpret composition patterns without over-reading the result. Sample tables will be provided."
+            data-event-status="Open">
+            <span class="event-card-top"><span class="event-date">7 November 2026<br>10:00 AM MYT</span></span>
+            <h3>Basic Bioinformatics Workshop 3</h3>
+            <p>Create an abundance bar chart from taxonomy and abundance files, then interpret the resulting composition patterns.</p>
+            <span class="event-fee">Fee: Free</span>
+            <span class="event-tags"><span>Online workshop</span><span>&middot;</span><span>1 hour</span></span>
+            <span class="event-register">Register interest <span class="arr">&rarr;</span></span>
+          </button>
+          <button class="event-card" type="button"
+            data-event-id="basic-bioinfo-4-2026-11-21"
+            data-event-title="Basic Bioinformatics Workshop 4: Amplicon Primer Design Clinic"
+            data-event-type="Online workshop"
+            data-event-date="21 November 2026, 10:00 AM MYT"
+            data-event-date-iso="2026-11-21T10:00:00+08:00"
+            data-event-end-iso="2026-11-21T11:30:00+08:00"
+            data-event-mode="Online"
+            data-event-price="Paid &middot; MYR 50 per participant"
+            data-event-capacity="15"
+            data-event-audience="Researchers planning an amplicon experiment"
+            data-event-description="Learn the basics of designing an effective primer. Example target sequences will be provided."
+            data-event-status="Open">
+            <span class="event-card-top"><span class="event-date">21 November 2026<br>10:00 AM MYT</span></span>
+            <h3>Basic Bioinformatics Workshop 4</h3>
+            <p>Learn the basics of designing an effective primer.</p>
+            <span class="event-fee">Fee: RM 50 per participant</span>
+            <span class="event-tags"><span>Online workshop</span><span>&middot;</span><span>1.5 hours</span><span>&middot;</span><span>Maximum 15 participants</span></span>
+            <span class="event-register">Register interest <span class="arr">&rarr;</span></span>
+          </button>
+          <!--
+          Add confirmed events as buttons using this structure. Keep them in chronological order.
+          <button class="event-card" type="button"
+            data-event-id="unique-event-id"
+            data-event-title="Event title"
+            data-event-type="Online workshop"
+            data-event-date="25 September 2026, 2:00 PM MYT"
+            data-event-date-iso="2026-09-25T14:00:00+08:00"
+            data-event-mode="Online"
+            data-event-price="Paid &middot; MYR 100"
+            data-event-audience="Researchers and students"
+            data-event-description="A short, useful summary."
+            data-event-status="Open">
+            <span class="event-card-top"><span class="event-date">25 September 2026<br>2:00 PM MYT</span></span>
+            <h3>Event title</h3><p>A short, useful summary.</p>
+            <span class="event-fee">Fee: RM 100 per participant</span>
+            <span class="event-tags"><span>Online workshop</span><span>&middot;</span><span>Online</span><span>&middot;</span><span>Researchers and students</span></span>
+            <span class="event-register">Register interest <span class="arr">&rarr;</span></span>
+          </button>
+          Use "Fee: Free" for free events. Add disabled to full or cancelled events.
+          -->
+        </div>
+        <div class="event-empty reveal" id="events-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+          <h3>New events are coming soon</h3>
+          <p>We are preparing the next webinar and workshop schedule. Check back here, or contact us if there is a topic you would like us to cover.</p>
+          <a class="btn btn--secondary" href="mailto:team@kreatbio.com?subject=KreatBio%20event%20topic%20suggestion">Suggest a topic <span class="arr">&rarr;</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="section section--line section--tight section--soft" id="past-events-section" aria-labelledby="past-events-title" hidden>
+      <div class="wrap">
+        <div class="section-head reveal"><h2 id="past-events-title">Past events</h2></div>
+        <ul class="past-events reveal" id="past-events">
+          <!-- Keep past events simple and non-clickable. Newest first.
+          <li class="past-event"><div><h3>Event title</h3><div class="past-event-meta">Webinar &middot; Online &middot; Free</div></div><time datetime="2026-08-20">20 August 2026</time></li>
+          -->
+        </ul>
+      </div>
+    </section>
+  </main>
+  <dialog class="event-dialog" id="event-registration" aria-labelledby="event-dialog-title">
+    <div class="event-dialog-inner">
+      <div class="event-dialog-head">
+        <div><p class="eyebrow">Register your interest</p><h2 id="event-dialog-title">Event registration</h2></div>
+        <button class="event-dialog-close" type="button" data-event-close aria-label="Close registration form">&times;</button>
+      </div>
+      <form class="event-form" id="event-registration-form">
+        <input type="hidden" id="event-form-event" name="event">
+        <input class="event-hp" type="text" id="event-form-website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label>Name<input type="text" id="event-form-name" name="name" autocomplete="name" required></label>
+        <label>Email address<input type="email" id="event-form-email" name="email" autocomplete="email" required></label>
+        <label>Research topic<textarea id="event-form-topic" name="research-topic" placeholder="Briefly tell us about your research area or what you hope to learn." required></textarea></label>
+        <p class="event-form-note" id="event-payment-note" hidden>This is a paid event. KreatBio will contact you with invoice and payment instructions after receiving your registration.</p>
+        <p class="event-form-note">Your details will be emailed securely to KreatBio for this registration enquiry.</p>
+        <button class="btn btn--secondary" id="event-form-submit" type="submit">Send Email</button>
+        <p class="event-form-status" id="event-form-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </dialog>
+</div>
 <footer class="site-footer">
   <div class="wrap">
     <div class="foot-top">
@@ -2148,7 +2378,7 @@ input[type=checkbox],input[type=radio]{ width:auto; height:auto; flex:0 0 auto; 
       </div>
       <div class="foot-col">
         <h4>Company</h4>
-        <a href="#company">About</a><a href="#quality">Quality &amp; compliance</a><a href="#careers">Careers</a><a href="#contact">Become a distributor</a><a href="#resources">Resource centre</a>
+        <a href="#company">About</a><a href="#quality">Quality &amp; compliance</a><a href="#careers">Careers</a><a href="#contact">Become a distributor</a><a href="#resources">Resource centre</a><a href="#events">Events</a>
       </div>
       <div class="foot-col">
         <h4>Contact</h4>
@@ -2161,7 +2391,7 @@ input[type=checkbox],input[type=radio]{ width:auto; height:auto; flex:0 0 auto; 
       <div class="foot-map">
         <div class="foot-col"><h4>Products</h4><a href="#kodapure">KodaPure</a><a href="#kodaseq">KodaSeq Illumina</a><a href="#kodaseq-nanopore">KodaSeq Nanopore</a><a href="#kodaseq-hifi">KodaSeq HiFi</a><a href="#kodaxtract">Laboratory</a><a href="#kodaaly">Data Analysis</a><a href="#reagents">Reagents &amp; consumables</a></div>
         <div class="foot-col"><h4>Applications</h4><a href="#app-microbiome">Microbiome &amp; microbial</a><a href="#app-plant-soil">Plant &amp; soil</a><a href="#app-animal">Animal &amp; tissue</a><a href="#app-food-env">Food &amp; environment</a><a href="#app-insects">Insects &amp; vectors</a><a href="#app-wildlife">Wildlife &amp; conservation</a><a href="#app-aquaculture">Aquaculture &amp; fisheries</a><a href="#app-wastewater">Wastewater &amp; surveillance</a></div>
-        <div class="foot-col"><h4>Knowledge</h4><a href="#resources">Resource centre</a><a href="#insights">Insights</a><a href="#protocols">Protocols</a><a href="#resources/databases">Databases &amp; tools</a></div>
+        <div class="foot-col"><h4>Knowledge</h4><a href="#resources">Resource centre</a><a href="#events">Events</a><a href="#insights">Insights</a><a href="#protocols">Protocols</a><a href="#resources/databases">Databases &amp; tools</a></div>
         <div class="foot-col"><h4>Company</h4><a href="#company">About</a><a href="#quality">Quality &amp; compliance</a><a href="#careers">Careers</a><a href="#contact">Contact</a><a href="#quote">Request a quote</a></div>
         <div class="foot-col"><h4>Legal</h4><a href="#privacy">Privacy policy</a></div>
       </div>
@@ -2173,8 +2403,9 @@ input[type=checkbox],input[type=radio]{ width:auto; height:auto; flex:0 0 auto; 
 </footer>
 <script>
 (function(){
-  var pages=['home','products','resources','protocols','kodapure-protocols','kodapure','kit-microbe','kit-microbe-dirty','kit-animal','kit-soil','kit-plant','kodaxtract','kodaseq','kodaseq-nanopore','kodaseq-hifi','company','contact','quality','kodaaly','careers','privacy','app-microbiome','app-plant-soil','app-animal','app-food-env','app-insects','app-wildlife','app-aquaculture','app-wastewater','quote','insights','insight-1','insight-2','insight-3','insight-4','insight-5','insight-6','insight-7','insight-8','insight-9','insight-10','job-1','job-2','job-3','job-4','job-5','job-6','job-7','job-8','reagents'];
+  var pages=['home','products','resources','events','protocols','kodapure-protocols','kodapure','kit-microbe','kit-microbe-dirty','kit-animal','kit-soil','kit-plant','kodaxtract','kodaseq','kodaseq-nanopore','kodaseq-hifi','company','contact','quality','kodaaly','careers','privacy','app-microbiome','app-plant-soil','app-animal','app-food-env','app-insects','app-wildlife','app-aquaculture','app-wastewater','quote','insights','insight-1','insight-2','insight-3','insight-4','insight-5','insight-6','insight-7','insight-8','insight-9','insight-10','job-1','job-2','job-3','job-4','job-5','job-6','job-7','job-8','reagents'];
   var META={"protocols": ["KodaPure TNA protocol versions \u2014 KreatBio", "Versioned KodaPure DNA protocols by catalogue number and sample type."], "kodapure-protocols": ["KodaPure TNA protocol versions \u2014 KreatBio", "Protocol versions for KodaPure DNA kits, with direct document pages and downloads."], "app-insects": ["Insects and vectors \u2014 KreatBio", "Mosquitoes, ticks, and crop pests spread disease and damage harvests. Clean DNA from a single tiny insect lets you name the species and find the pathogens it carries."], "app-wildlife": ["Wildlife and conservation \u2014 KreatBio", "Studying wildlife often means a tiny, precious, or non-invasive sample &mdash; hair, dung, a feather, or water. KodaPure recovers usable DNA from all of them."], "app-aquaculture": ["Aquaculture and fisheries \u2014 KreatBio", "Fish and shrimp farming needs fast, reliable DNA from tissue and water &mdash; to catch disease early and to breed better stock."], "app-wastewater": ["Wastewater and pathogen surveillance \u2014 KreatBio", "Wastewater tells you what is spreading in a community before people show up sick. The hard part is pulling clean nucleic acids out of a very dirty sample &mdash; which is exactly what KodaPure is built for."], "kodaseq-nanopore": ["KodaSeq Nanopore \u2014 Oxford Nanopore long-read sequencing | KreatBio", "Long-read DNA sequencing on Oxford Nanopore \u2014 complete bacterial genomes, full-length 16S/ITS to species level, structural variants, and native methylation, with a clear report."], "kodaseq-hifi": ["KodaSeq HiFi \u2014 PacBio HiFi long-read sequencing | KreatBio", "PacBio HiFi long-read sequencing \u2014 highly accurate (Q30) reads for de novo assembly, structural variants, full-length 16S to species level, and full-length transcripts, with a clear report."], "reagents": ["Reagents & consumables \u2014 KreatBio", "DNA ladders, gel loading dye, RNase A, and Proteinase K for everyday molecular-biology workflows."], "kit-microbe": ["KodaPure Microbe kit — KreatBio", "Magnetic-bead extraction kit: the KodaPure Microbe kit (KBTNA-M-26) for bacteria and fungi in pure culture, 50 reactions per kit."], "kit-microbe-dirty": ["KodaPure Microbe (dirty samples) kit — KreatBio", "Magnetic-bead extraction kit: the KodaPure Microbe kit for dirty samples (KBTNA-MD-26) for faeces and inhibitor-rich samples, 50 reactions per kit."], "kit-animal": ["KodaPure Animal kit — KreatBio", "Magnetic-bead extraction kit: the KodaPure Animal kit (KBTNA-A-26) for tissue, organs, and cultured cells, 50 reactions per kit."], "kit-soil": ["KodaPure Soil kit — KreatBio", "Magnetic-bead extraction kit: the KodaPure Soil kit (KBTNA-S-26) for soil and fertilizer, 50 reactions per kit."], "kit-plant": ["KodaPure Plant kit — KreatBio", "Magnetic-bead extraction kit: the KodaPure Plant kit (KBTNA-P-26) for leaves, seed, and fibrous tissue, 50 reactions per kit."], "products": ["Products & services — KreatBio", "KodaPure magnetic-bead extraction kits plus KreatBio DNA extraction, quantification, sequencing, and bioinformatics services for research laboratories."], "home": ["KreatBio \u2014 magnetic-bead DNA extraction kits & sequencing", "KodaPure magnetic-bead DNA and RNA extraction kits plus DNA extraction, quantification, sequencing, and bioinformatics services for research labs."], "kodapure": ["KodaPure \u2014 magnetic-bead DNA and RNA extraction kits \u2014 KreatBio", "Magnetic-bead total nucleic-acid extraction kits, one per sample type (microbe, animal, soil, plant), 50 reactions per kit."], "kodaxtract": ["Laboratory services \u2014 KreatBio", "Extraction, DNA and RNA quantification, and KodaAmp PCR pathogen screening services for research samples."], "kodaseq": ["KodaSeq Illumina \u2014 sequencing service \u2014 KreatBio", "Amplicon (16S, ITS, COXI) and whole-genome DNA sequencing, delivered as quality-controlled data with bioinformatics reporting."], "kodaaly": ["Data Analysis and Bioinfo \u2014 KreatBio", "KodaAly sequencing data analysis and KodaGeno learning support for bioinformatics workflows."], "resources": ["Resources \u2014 protocols, notes & databases \u2014 KreatBio", "Protocols and safety data, articles, and reference databases and tools, plus a curated set of public sequence and analysis databases."], "quality": ["Quality & compliance \u2014 KreatBio", "Documented reagent lots, release testing, and end-to-end traceability for research-use kits and services."], "company": ["Company \u2014 about KreatBio", "KreatBio designs magnetic-bead extraction chemistry and runs sequencing services so labs across Southeast Asia can go from sample to sequence."], "contact": ["Contact & support \u2014 KreatBio", "Ask a scientist about kits, an extraction or sequencing project, or a method question \u2014 a real person replies within 1\u20132 working days."], "quote": ["Request a quote \u2014 KreatBio", "Tell us your products, sample types, and rough numbers and we send an itemised, no-obligation quote, usually within 1\u20132 working days."], "careers": ["Careers \u2014 KreatBio", "No current opening roles at KreatBio. Learn about the team and email us if you would like to be part of it."], "insights": ["Insights \u2014 our views on molecular science \u2014 KreatBio", "Short pieces on timing, access, responsibility, and precision in molecular science, from sample to decision."], "privacy": ["Privacy policy \u2014 KreatBio", "How KreatBio handles the information you share through our contact form, quote requests, and updates."], "app-microbiome": ["Microbiome & microbial genomics \u2014 KreatBio", "Clean, amplifiable DNA from cultures, stool, and low-biomass swabs for 16S/ITS amplicon and shotgun microbiome sequencing."], "app-plant-soil": ["Plant & soil genomics \u2014 KreatBio", "DNA from leaf, seed, and inhibitor-rich soil \u2014 past polyphenols and humic acids \u2014 for barcoding, genotyping, and sequencing."], "app-animal": ["Animal & tissue genomics \u2014 KreatBio", "Intact, high-purity DNA from tissue, organs, and cultured cells for PCR, genotyping, and whole-genome sequencing."], "app-food-env": ["Food & environmental testing \u2014 KreatBio", "Species ID, authenticity, pathogen and resistance-gene screening, and environmental surveillance from messy, low-biomass samples."], "insight-1": ["Molecular information should arrive before the crisis \u2014 KreatBio Insights", "Read the sample early \u2014 sample-to-data capability should be everyday infrastructure, not something assembled during an emergency."], "insight-2": ["Sustainable science starts with small design choices \u2014 KreatBio Insights", "Cutting avoidable waste in the lab is a cost and quality issue as much as an environmental one, and it starts at the bench."], "insight-3": ["Computation must serve the biology \u2014 KreatBio Insights", "Automation should speed the repetitive work, but high-impact results still need a scientist who understands the data\u2019s limits."], "insight-4": ["Biological data needs security by design \u2014 KreatBio Insights", "Protect biological data before there is a problem \u2014 security should be built into how samples, files, and results are handled."], "insight-5": ["Neglected biological threats do not stay neglected forever \u2014 KreatBio Insights", "Slow-moving infections and resistance stay under-monitored until they are hard to control; early evidence is more affordable than late crisis."], "insight-6": ["Careers in science should move sideways as well as upward \u2014 KreatBio Insights", "Strong teams are built by people who cross boundaries; good science careers move sideways as well as upward."], "insight-7": ["Trust in testing depends on clear evidence standards \u2014 KreatBio Insights", "A test result carries weight, so the evidence behind it must be clear \u2014 claims should match the validation."], "insight-8": ["Genomic surveillance should look beyond the obvious sample \u2014 KreatBio Insights", "Biological signals show up in wastewater, livestock, soil, and surfaces before they are obvious; look beyond the patient."], "insight-9": ["Access to molecular science is a business issue \u2014 KreatBio Insights", "Widening access to molecular tools is market-building, not charity \u2014 it strengthens research across the whole region."], "insight-10": ["Precision starts with asking a better biological question \u2014 KreatBio Insights", "Precision begins before the sequencer \u2014 with a clearly defined biological question and the right workflow to answer it."], "job-1": ["R&D Scientist \u2014 Extraction Chemistry \u2014 Careers at KreatBio", "Role at KreatBio: R&D Scientist \u2014 Extraction Chemistry. Selangor, Malaysia. Read the full description and email us."], "job-2": ["NGS Laboratory Scientist \u2014 Sequencing \u2014 Careers at KreatBio", "Role at KreatBio: NGS Laboratory Scientist \u2014 Sequencing. Selangor, Malaysia. Read the full description and email us."], "job-3": ["Bioinformatics Scientist \u2014 Careers at KreatBio", "Role at KreatBio: Bioinformatics Scientist. Selangor, Malaysia. Read the full description and email us."], "job-4": ["Bioinformatics Software Engineer \u2014 Careers at KreatBio", "Role at KreatBio: Bioinformatics Software Engineer. Singapore. Read the full description and email us."], "job-5": ["Quality & Compliance Specialist \u2014 Careers at KreatBio", "Role at KreatBio: Quality & Compliance Specialist. Selangor, Malaysia. Read the full description and email us."], "job-6": ["Laboratory Operations Coordinator \u2014 Careers at KreatBio", "Role at KreatBio: Laboratory Operations Coordinator. Selangor, Malaysia. Read the full description and email us."], "job-7": ["Field Application Scientist \u2014 Southeast Asia \u2014 Careers at KreatBio", "Role at KreatBio: Field Application Scientist \u2014 Southeast Asia. Singapore. Read the full description and email us."], "job-8": ["Business Development Manager \u2014 Southeast Asia \u2014 Careers at KreatBio", "Role at KreatBio: Business Development Manager \u2014 Southeast Asia. Singapore. Read the full description and email us."]};
+  META.events=["Events — webinars and workshops — KreatBio", "Upcoming KreatBio webinars, online workshops, and learning activities for researchers, students, and laboratory teams."];
   function setMetaTags(name){
     var mt=META[name]||META.home;
     document.title=mt[0];
@@ -2193,7 +2424,7 @@ input[type=checkbox],input[type=radio]{ width:auto; height:auto; flex:0 0 auto; 
     var idx=-1;
     if(/^(kodapure|kodapure-protocols|kodaxtract|kodaseq|kodaseq-nanopore|kodaseq-hifi|kodaaly)$/.test(name)) idx=0;
     else if(name.indexOf('app-')===0) idx=1;
-    else if(/^(resources|protocols|insights|quality|contact|quote|privacy)$/.test(name)||name.indexOf('insight-')===0) idx=2;
+    else if(/^(resources|events|protocols|insights|quality|contact|quote|privacy)$/.test(name)||name.indexOf('insight-')===0) idx=2;
     else if(name==='careers'||name.indexOf('job-')===0) idx=3;
     var lis=document.querySelectorAll('.nav-links > .has-mega');
     for(var i=0;i<lis.length;i++){ lis[i].classList[i===idx?'add':'remove']('current'); }
@@ -2363,6 +2594,149 @@ input[type=checkbox],input[type=radio]{ width:auto; height:auto; flex:0 0 auto; 
   });
 })();
 (function(){
+  var page=document.getElementById('page-events');
+  var dialog=document.getElementById('event-registration');
+  var form=document.getElementById('event-registration-form');
+  if(!page||!dialog||!form) return;
+  var upcoming=document.getElementById('upcoming-events');
+  var empty=document.getElementById('events-empty');
+  var past=document.getElementById('past-events');
+  var pastSection=document.getElementById('past-events-section');
+  var cards=[].slice.call(upcoming.querySelectorAll('.event-card'));
+  var pastItems=[].slice.call(past.querySelectorAll('.past-event'));
+  var lastTrigger=null,registrationRequestId=null;
+  var hostedApi=/^(www\.)?kreatbio\.com$/i.test(window.location.hostname)?'https://kreatbio-report-api-716768606050.asia-southeast1.run.app':'http://localhost:8080';
+  var eventApi=String(window.KREATBIO_EVENT_API||hostedApi).replace(/\/+$/,'');
+
+  cards.sort(function(a,b){
+    return String(a.getAttribute('data-event-date-iso')||'').localeCompare(String(b.getAttribute('data-event-date-iso')||''));
+  });
+  cards.forEach(function(card){
+    var status=(card.getAttribute('data-event-status')||'Open').toLowerCase();
+    if(status!=='open') card.disabled=true;
+    upcoming.appendChild(card);
+  });
+  pastItems.sort(function(a,b){
+    var ad=a.querySelector('time'),bd=b.querySelector('time');
+    return String(bd&&bd.getAttribute('datetime')||'').localeCompare(String(ad&&ad.getAttribute('datetime')||''));
+  });
+  pastItems.forEach(function(item){ past.appendChild(item); });
+  upcoming.hidden=cards.length===0;
+  empty.hidden=cards.length!==0;
+  pastSection.hidden=pastItems.length===0;
+
+  function field(id){ return document.getElementById(id); }
+  function closeDialog(){
+    if(typeof dialog.close==='function'&&dialog.open) dialog.close();
+    else dialog.removeAttribute('open');
+    if(lastTrigger) lastTrigger.focus();
+  }
+  function openDialog(card){
+    lastTrigger=card;
+    form.reset();
+    var controls=form.querySelectorAll('input,textarea');
+    for(var i=0;i<controls.length;i++) controls[i].disabled=false;
+    registrationRequestId=null;
+    var title=card.getAttribute('data-event-title')||'Event registration';
+    field('event-form-event').value=card.getAttribute('data-event-id')||'';
+    field('event-dialog-title').textContent=title;
+    field('event-form-status').textContent='';
+    field('event-form-status').classList.remove('is-error');
+    field('event-form-submit').disabled=false;
+    field('event-form-submit').textContent='Send Email';
+    var price=card.getAttribute('data-event-price')||'Free';
+    var capacity=card.getAttribute('data-event-capacity')||'';
+    var paymentNote=field('event-payment-note');
+    paymentNote.hidden=!(/paid|myr|rm\s*\d/i.test(price));
+    if(!paymentNote.hidden){
+      paymentNote.textContent='This is a paid event'+(capacity?' limited to '+capacity+' participants':'')+'. Your seat is confirmed after KreatBio replies and payment is completed; later registrations may be waitlisted.';
+    }
+    if(typeof dialog.showModal==='function') dialog.showModal();
+    else dialog.setAttribute('open','');
+    field('event-form-name').focus();
+  }
+  cards.forEach(function(card){
+    card.addEventListener('click',function(){ if(!card.disabled) openDialog(card); });
+  });
+  var closeButtons=dialog.querySelectorAll('[data-event-close]');
+  for(var i=0;i<closeButtons.length;i++) closeButtons[i].addEventListener('click',closeDialog);
+  dialog.addEventListener('click',function(e){ if(e.target===dialog) closeDialog(); });
+  dialog.addEventListener('cancel',function(e){ e.preventDefault(); closeDialog(); });
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    if(!form.checkValidity()){ form.reportValidity(); return; }
+    var submit=field('event-form-submit'),status=field('event-form-status');
+    submit.disabled=true;
+    submit.textContent='Sending…';
+    status.textContent='';
+    status.classList.remove('is-error');
+    if(!registrationRequestId){
+      registrationRequestId=window.crypto&&typeof window.crypto.randomUUID==='function'?window.crypto.randomUUID():'event-'+Date.now()+'-'+Math.random().toString(36).slice(2);
+    }
+    var controller=typeof AbortController==='function'?new AbortController():null;
+    var timeout=controller?setTimeout(function(){controller.abort();},12000):null;
+    try{
+      var response=await fetch(eventApi+'/api/events/register',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          eventId:field('event-form-event').value.trim(),
+          name:field('event-form-name').value.trim(),
+          email:field('event-form-email').value.trim(),
+          researchTopic:field('event-form-topic').value.trim(),
+          website:field('event-form-website').value,
+          requestId:registrationRequestId
+        }),
+        signal:controller?controller.signal:undefined
+      });
+      var result=await response.json().catch(function(){return {};});
+      if(!response.ok||!result.ok) throw new Error(result.error||'Email could not be sent.');
+      submit.textContent='Email successfully sent!';
+      status.textContent="Thank you for your interest and we'll contact you soon.";
+      var controls=form.querySelectorAll('input,textarea');
+      for(var j=0;j<controls.length;j++) controls[j].disabled=true;
+    }catch(error){
+      submit.disabled=false;
+      submit.textContent='Send Email';
+      status.classList.add('is-error');
+      status.textContent=error&&error.name==='AbortError'?'Sending took too long. Please try again.':"We couldn't send your email. Please try again shortly.";
+    }finally{
+      if(timeout) clearTimeout(timeout);
+    }
+  });
+
+  if(cards.length){
+    var events=cards.map(function(card){
+      var mode=card.getAttribute('data-event-mode')||'Online';
+      var status=(card.getAttribute('data-event-status')||'Open').toLowerCase();
+      var endDate=card.getAttribute('data-event-end-iso')||'';
+      var priceText=card.getAttribute('data-event-price')||'Free';
+      var priceMatch=priceText.match(/(?:MYR|RM)\s*(\d+(?:\.\d+)?)/i);
+      var item={
+        '@context':'https://schema.org',
+        '@type':'Event',
+        name:card.getAttribute('data-event-title')||'',
+        startDate:card.getAttribute('data-event-date-iso')||'',
+        description:card.getAttribute('data-event-description')||'',
+        eventStatus:status==='cancelled'?'https://schema.org/EventCancelled':'https://schema.org/EventScheduled',
+        eventAttendanceMode:mode.toLowerCase()==='online'?'https://schema.org/OnlineEventAttendanceMode':'https://schema.org/OfflineEventAttendanceMode',
+        organizer:{'@type':'Organization',name:'KreatBio Sdn. Bhd.',url:'https://kreatbio.com/'},
+        url:'https://kreatbio.com/#events'
+      };
+      if(endDate) item.endDate=endDate;
+      item.offers={'@type':'Offer',price:priceMatch?priceMatch[1]:'0',priceCurrency:'MYR',availability:status==='open'?'https://schema.org/InStock':'https://schema.org/SoldOut',url:'https://kreatbio.com/#events'};
+      var capacity=Number(card.getAttribute('data-event-capacity'));
+      if(capacity>0) item.maximumAttendeeCapacity=capacity;
+      item.location=mode.toLowerCase()==='online'?{'@type':'VirtualLocation',url:'https://kreatbio.com/#events'}:{'@type':'Place',name:card.getAttribute('data-event-location')||mode};
+      return item;
+    });
+    var schema=document.createElement('script');
+    schema.type='application/ld+json';
+    schema.textContent=JSON.stringify(events);
+    document.head.appendChild(schema);
+  }
+})();
+(function(){
   var f=document.getElementById('site-search'); if(!f) return;
   var input=document.getElementById('site-search-input');
   var clearBtn=document.getElementById('hsearch-clear');
@@ -2371,6 +2745,7 @@ input[type=checkbox],input[type=radio]{ width:auto; height:auto; flex:0 0 auto; 
   var rescue=document.getElementById('hsp-rescue');
   var termEl=document.getElementById('hsp-term');
   var routes=[
+    ['events',['event','events','webinar','webinars','workshop','workshops','training','activities','activity']],
     ['kodaxtract',['pcr','qpcr','q pcr','rt pcr','rt-pcr','rt qpcr','rt-qpcr','kodaamp','pathogen screening','pathogen test','screening','quantification','quantify','kodaquant','nanodrop','qubit','lab service','laboratory','send sample','sample service','extraction service']],
     ['kodaseq-nanopore',['nanopore','oxford nanopore','ont','minion','promethion','long read','long-read','longread']],
     ['kodaseq-hifi',['pacbio','pac bio','hifi','hi-fi','smrt','revio','iso-seq','isoseq','ccs']],

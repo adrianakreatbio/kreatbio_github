@@ -1,0 +1,1 @@
+These scripts document earlier UI revisions and are not the active regression suite. Run npm run test:browser for the current consolidated checks. Their old selectors are retained for historical reference.
