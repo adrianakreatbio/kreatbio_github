@@ -17,6 +17,7 @@ import {
 } from "./chat-context.js";
 import { createGcsSignedUrl } from "./gcs-signer.js";
 import { GcsReportAccessStore } from "./gcs-report-access-store.js";
+import { parseEventRegistration, sendEventRegistration } from "./event-registration.js";
 import {
   buildOpenAIInputTokenBody,
   buildOpenAIResponseBody,
@@ -57,6 +58,11 @@ const REPORT_ACCESS_DAYS = Number(process.env.REPORT_ACCESS_DAYS || 60);
 const ALLOW_CLIENT_DOWNLOADS = /^(1|true|yes)$/i.test(process.env.ALLOW_CLIENT_DOWNLOADS || "");
 const SESSION_ATTEMPT_LIMIT = Number(process.env.SESSION_ATTEMPT_LIMIT || 10);
 const SESSION_ATTEMPT_WINDOW_SECONDS = Number(process.env.SESSION_ATTEMPT_WINDOW_SECONDS || 15 * 60);
+const EVENT_REGISTRATION_LIMIT = Number(process.env.EVENT_REGISTRATION_LIMIT || 10);
+const EVENT_REGISTRATION_WINDOW_SECONDS = Number(process.env.EVENT_REGISTRATION_WINDOW_SECONDS || 15 * 60);
+const RESEND_API_KEY = environmentSecret("RESEND_API_KEY");
+const EVENT_EMAIL_FROM = process.env.EVENT_EMAIL_FROM || "KreatBio Events <events@kreatbio.com>";
+const EVENT_EMAIL_TO = process.env.EVENT_EMAIL_TO || "team@kreatbio.com";
 const FIGURE_PREFIXES = [
   "output/o6_figures/",
   "output/o4_diversity/"
@@ -94,6 +100,9 @@ if (Boolean(GCS_HMAC_ACCESS_ID) !== Boolean(GCS_HMAC_SECRET)) {
 if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
   console.warn("SESSION_SECRET should be set to a random value with at least 32 characters.");
 }
+if (!RESEND_API_KEY) {
+  console.warn("RESEND_API_KEY is not set. Direct event registration email is unavailable.");
+}
 
 const storage = new Storage();
 const chatQuotaStore = new ChatQuotaStore({
@@ -118,6 +127,7 @@ const reportAccessStore = REPORT_ACCESS_GCS_PREFIX
     });
 const app = express();
 const sessionAttemptBuckets = new Map();
+const eventRegistrationBuckets = new Map();
 
 app.disable("x-powered-by");
 app.set("trust proxy", true);
@@ -141,6 +151,25 @@ if (fs.existsSync(repoClientSupplementsDir)) {
 
 app.get(["/healthz", "/api/health"], (req, res) => {
   res.json({ ok: true, service: "kreatbio-client-portal" });
+});
+
+app.post("/api/events/register", requirePortalOrigin, limitEventRegistrations, async (req, res, next) => {
+  try {
+    const registration = parseEventRegistration({
+      ...req.body,
+      requestId: req.body?.requestId || crypto.randomUUID()
+    });
+    if (!registration.suppressed) {
+      await sendEventRegistration(registration, {
+        apiKey: RESEND_API_KEY,
+        from: EVENT_EMAIL_FROM,
+        to: EVENT_EMAIL_TO
+      });
+    }
+    res.status(201).json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.post("/api/session", requirePortalOrigin, limitSessionAttempts, async (req, res, next) => {
@@ -538,6 +567,27 @@ function limitSessionAttempts(req, res, next) {
   if (bucket.attempts > SESSION_ATTEMPT_LIMIT) {
     res.setHeader("Retry-After", String(Math.max(1, Math.ceil((bucket.startedAt + windowMs - now) / 1000))));
     next(httpError(429, "Too many report access attempts. Please try again later."));
+    return;
+  }
+  next();
+}
+
+function limitEventRegistrations(req, res, next) {
+  const now = Date.now();
+  const windowMs = EVENT_REGISTRATION_WINDOW_SECONDS * 1000;
+  const key = String(req.ip || req.socket?.remoteAddress || "unknown");
+  for (const [address, bucket] of eventRegistrationBuckets) {
+    if (bucket.startedAt + windowMs <= now) eventRegistrationBuckets.delete(address);
+  }
+  let bucket = eventRegistrationBuckets.get(key);
+  if (!bucket || bucket.startedAt + windowMs <= now) {
+    bucket = { startedAt: now, attempts: 0 };
+    eventRegistrationBuckets.set(key, bucket);
+  }
+  bucket.attempts += 1;
+  if (bucket.attempts > EVENT_REGISTRATION_LIMIT) {
+    res.setHeader("Retry-After", String(Math.max(1, Math.ceil((bucket.startedAt + windowMs - now) / 1000))));
+    next(httpError(429, "Too many event registration attempts. Please try again later."));
     return;
   }
   next();

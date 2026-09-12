@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#071B3A">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script id="portal-config">window.KREATBIO_PORTAL_API = "";</script>
 <style>
 :root{
@@ -42,7 +42,7 @@
   --shadow-2:0 2px 6px rgba(7,27,58,.06),0 30px 80px -48px rgba(7,27,58,.5);
   --ease:cubic-bezier(.22,.61,.36,1);
   --mono:"Spline Sans Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --display:"Bricolage Grotesque","Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --display:"DM Sans","Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --sans:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -147,49 +147,50 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .topbar-in{height:100%;display:grid;grid-template-columns:292px minmax(0,1fr) auto;align-items:center;gap:18px;padding:0 28px;transition:grid-template-columns .22s var(--ease)}
 .top-l,.top-r,.top-center{display:flex;align-items:center;gap:14px;min-width:0}
 .top-center{justify-content:center}
-.report-chip,.assay-chip{display:inline-flex;align-items:center;gap:10px;min-height:40px;padding:0 16px;border:1px solid #DCE7F1;border-radius:999px;background:#FBFDFF;font-size:.86rem;font-weight:700;color:var(--navy);box-shadow:0 1px 2px rgba(7,27,58,.04)}
-.assay-chip .badge-live{font-size:.62rem;letter-spacing:.12em;font-weight:700;color:var(--muted-2);background:none;padding:0;text-transform:uppercase}
-.assay-chip select{border:none;background:none;font-weight:700;color:var(--navy);cursor:pointer;max-width:30vw;text-overflow:ellipsis}
+.top-report-text{min-width:0;max-width:24vw;overflow:hidden;color:var(--navy);font-size:.86rem;font-weight:700;text-overflow:ellipsis;white-space:nowrap}
+.topbar-divider{width:1px;height:20px;flex:0 0 1px;background:#C9D2D9}
+.top-assay-select{max-width:34vw;padding:3px 18px 3px 0;border:0;background-color:transparent;color:var(--navy);font-size:.86rem;font-weight:700;text-overflow:ellipsis;cursor:pointer}
+.top-assay-select:focus-visible{outline:2px solid #AEB7BC;outline-offset:4px;border-radius:0}
 .top-help{display:inline-grid;place-items:center;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;color:var(--navy);background:#fff}
 .top-help.glossary-help{border-color:var(--brand-green);color:#fff;background:var(--brand-green)}
 .top-help.metric-guide-help{border-color:#BFD5E8;color:var(--blue);background:#F2F7FD}
 .top-help.glossary-help:hover{border-color:var(--brand-green-dark);background:var(--brand-green-dark)}
 .top-help.metric-guide-help:hover{border-color:var(--blue);background:#EAF2FB}
-.avatar{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#1F5CA8;color:#fff;font-weight:800}
-.client-menu{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--navy);font-size:.86rem}
+#exit-btn{border-color:#BE2D35;background:#BE2D35;color:#fff}
+#exit-btn:hover{border-color:#982129;background:#982129;color:#fff}
 
 .shell{position:relative;display:grid;grid-template-columns:292px 1fr;align-items:start;margin-top:76px;transition:grid-template-columns .22s var(--ease)}
-.rail{position:fixed;left:0;top:76px;bottom:0;z-index:35;width:292px;height:auto;overflow:auto;overscroll-behavior:contain;border-right:1px solid rgba(7,27,58,.18);padding:18px 22px 24px;background:linear-gradient(180deg,#071B3A 0%,#0C2C4A 100%);display:flex;flex-direction:column;color:#fff;transition:transform .22s var(--ease),padding .22s var(--ease),border-color .22s var(--ease),opacity .18s var(--ease)}
+.rail{position:fixed;left:0;top:76px;bottom:0;z-index:35;width:292px;height:auto;overflow:auto;overscroll-behavior:contain;border-right:1px solid rgba(0,0,0,.28);padding:18px 22px 24px;background:linear-gradient(180deg,#242628 0%,#34373A 100%);display:flex;flex-direction:column;color:#fff;transition:transform .22s var(--ease),padding .22s var(--ease),border-color .22s var(--ease),opacity .18s var(--ease)}
 .app.rail-collapsed .topbar-in{grid-template-columns:auto minmax(0,1fr) auto}
 .app.rail-collapsed .shell{grid-template-columns:0 1fr}
 .app.rail-collapsed .rail{transform:translateX(-100%);opacity:0;pointer-events:none;padding-left:0;padding-right:0;border-right-color:transparent}
-.rail-edge-toggle{position:fixed;top:94px;left:276px;z-index:55;width:32px;height:46px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.36);border-radius:0 8px 8px 0;color:#fff;background:var(--navy);box-shadow:0 12px 28px -18px rgba(7,27,58,.75);transition:left .22s var(--ease),transform .22s var(--ease),background .18s}
-.rail-edge-toggle:hover{background:var(--navy-2)}
+.rail-edge-toggle{position:fixed;top:94px;left:276px;z-index:55;width:32px;height:46px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.3);border-radius:0 8px 8px 0;color:#fff;background:#2B2E30;box-shadow:0 12px 28px -18px rgba(0,0,0,.8);transition:left .22s var(--ease),transform .22s var(--ease),background .18s}
+.rail-edge-toggle:hover{background:#424649}
 .rail-edge-toggle .icon{width:18px;height:18px;transition:transform .22s var(--ease)}
 .app.rail-collapsed .rail-edge-toggle{left:0}
 .app.rail-collapsed .rail-edge-toggle .icon{transform:rotate(180deg)}
 .rail-head{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:center;padding:0 0 14px}
 .rail-badge{width:38px;height:38px;border-radius:12px;background:#fff;display:grid;place-items:center;color:var(--navy)}
 .rail-head .r-title{font-family:var(--display);font-size:.94rem;font-weight:800;letter-spacing:-.2px;color:#fff}
-.rail-head .r-sub{font-size:.78rem;color:#C5D4E3;margin-top:2px}
+.rail-head .r-sub{font-size:.78rem;color:#C8CBCE;margin-top:2px}
 .progress-wrap{margin:8px 0 22px}
 .progress-track{height:6px;border-radius:999px;background:rgba(255,255,255,.18);overflow:hidden}
 .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#4FC6BC,#8FC7FF);border-radius:999px;transition:width .5s var(--ease)}
-.progress-label{margin-top:10px;font-size:.78rem;color:#DCE9F7}
+.progress-label{margin-top:10px;font-size:.78rem;color:#D7D9DB}
 .nav{display:grid;gap:7px}
 .nav-sec{display:none}
-.nav-item{display:grid;grid-template-columns:34px 1fr;align-items:center;gap:13px;padding:11px 12px;border-radius:12px;text-align:left;color:#EEF3F8;border:1px solid transparent;position:relative;transition:background .15s,color .15s}
+.nav-item{display:grid;grid-template-columns:34px 1fr;align-items:center;gap:13px;padding:11px 12px;border-radius:12px;text-align:left;color:#F1F1F1;border:1px solid transparent;position:relative;transition:background .15s,color .15s}
 .nav-item:hover{background:rgba(255,255,255,.08)}
 .nav-item.on{background:#fff;border-color:rgba(255,255,255,.7);box-shadow:0 14px 30px -22px rgba(0,0,0,.55);color:var(--navy)}
 .nav-item.on::before{content:"";position:absolute;left:-22px;top:8px;bottom:8px;width:4px;border-radius:999px;background:#7FD1CB}
-.nav-item .n-ic{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.08);color:#DCE9F7}
+.nav-item .n-ic{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.08);color:#D8DADD}
 .nav-item.on .n-ic{background:#EAF8F7;color:var(--teal)}
 .nav-item[data-nav-id="metrics"] b,.nav-item[data-nav-id="metrics"] .n-ic{color:#8FC7FF}
 .nav-item[data-nav-id="glossary"] b,.nav-item[data-nav-id="glossary"] .n-ic{color:#9BE4AD}
 .nav-item.on[data-nav-id="metrics"] b,.nav-item.on[data-nav-id="metrics"] .n-ic{color:var(--blue)}
 .nav-item.on[data-nav-id="glossary"] b,.nav-item.on[data-nav-id="glossary"] .n-ic{color:var(--green)}
 .nav-item b{display:block;font-size:.9rem;font-weight:600;line-height:1.15}
-.nav-item small{display:block;font-size:.73rem;color:#C5D4E3;margin-top:1px}
+.nav-item small{display:block;font-size:.73rem;color:#C2C5C8;margin-top:1px}
 .nav-item.on small{color:var(--muted)}
 .nav-item .n-check,.nav-num{display:none}
 .rail-help{margin-top:auto;width:100%;padding-top:22px;border-top:1px solid rgba(255,255,255,.16);display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:center;color:#fff;text-align:left}
@@ -197,7 +198,7 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .rail-help:hover b{color:#fff}
 .rail-help .top-help{width:34px;height:34px}
 .rail-help b{font-size:.86rem}
-.rail-help span{display:block;font-size:.76rem;color:#C5D4E3}
+.rail-help span{display:block;font-size:.76rem;color:#C8CBCE}
 .rail-help .top-help{display:inline-grid;color:#fff;background:var(--brand-green);border-color:var(--brand-green)}
 
 .main{grid-column:2;--main-pad:clamp(20px,3vw,44px);min-width:0;padding:22px var(--main-pad) 80px;background:transparent}
@@ -221,16 +222,13 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .section-head::before{content:"";position:absolute;left:0;top:0;bottom:0;width:12px;background:linear-gradient(180deg,#0E8F98 0%,#2A93B5 100%);pointer-events:none}
 .section-head::after{content:"";position:absolute;right:0;top:0;bottom:0;width:min(34%,340px);clip-path:polygon(28% 0,100% 0,100% 100%,0 100%);background:repeating-linear-gradient(135deg,rgba(14,143,152,.28) 0 10px,rgba(42,147,181,.18) 10px 20px,transparent 20px 32px),linear-gradient(135deg,rgba(14,143,152,.14),rgba(42,147,181,.04));border-left:1px solid rgba(14,143,152,.18);pointer-events:none}
 .section-head-copy{position:relative;z-index:1;min-width:0}
-.section-head .kicker{display:flex;align-items:center;gap:10px;width:100%;flex-wrap:wrap}
-.section-head .eyebrow{display:inline-flex;align-items:center;gap:8px;min-height:28px;padding:0 11px;border:1px solid #B9E4E2;border-radius:999px;background:#F0FBFA;color:#0E8F98;font-size:.68rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
-.section-head h1{margin-top:12px;max-width:min(900px,78%);font-family:var(--display);font-weight:800;font-size:clamp(1.85rem,3vw,2.8rem);line-height:1.04;color:#123B62;letter-spacing:-.01em;text-wrap:balance}
+.section-head h1{margin-top:0;max-width:min(900px,78%);font-family:var(--display);font-weight:800;font-size:clamp(1.85rem,3vw,2.8rem);line-height:1.04;color:#123B62;letter-spacing:-.01em;text-wrap:balance}
 .section-head .dek{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:10px;max-width:min(820px,76%);font-size:1rem;line-height:1.42;color:var(--muted)}
 .section-body-shell{width:100%;max-width:100%;padding:clamp(16px,2vw,24px);background:rgba(255,255,255,.72);border:1px solid rgba(214,227,240,.72);border-radius:22px;box-shadow:0 30px 80px -58px rgba(7,27,58,.55);backdrop-filter:blur(10px);min-width:0;overflow:hidden}
 .section-body-shell > :first-child{margin-top:0}
 .content[class*="theme-"] .section-head{height:auto;min-height:118px;margin-bottom:14px;padding:22px 4px;border:0;border-radius:0;background:transparent;box-shadow:none}
 .content[class*="theme-"] .section-head::before{content:none}
 .content[class*="theme-"] .section-head::after{content:none}
-.content[class*="theme-"] .section-head .eyebrow{border-color:rgba(185,228,226,.86);background:rgba(14,143,152,.94);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.34),0 16px 34px -20px rgba(0,0,0,.95)}
 .content[class*="theme-"] .section-head h1{max-width:100%;color:#fff;font-size:clamp(2.1rem,3.35vw,3.15rem);text-shadow:0 2px 4px rgba(0,0,0,.92),0 7px 18px rgba(0,0,0,.78),0 22px 44px rgba(0,0,0,.52)}
 .content[class*="theme-"] .section-head .dek{max-width:100%;color:#fff;font-weight:700;text-shadow:0 2px 5px rgba(0,0,0,.9),0 8px 18px rgba(0,0,0,.72)}
 .glossary-popover{position:fixed;top:88px;right:24px;z-index:120;width:min(430px,calc(100vw - 32px));max-height:min(680px,calc(100vh - 112px));display:none;background:#F1FAFF;border:0;border-radius:16px;box-shadow:0 26px 70px -42px rgba(7,27,58,.8);overflow:hidden}
@@ -778,6 +776,139 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .alpha-stat-definitions div{padding:8px 0}
 .alpha-stat-definitions dt{color:var(--navy);font-size:.78rem;font-weight:800}
 .alpha-stat-definitions dd{margin-top:4px;color:var(--muted);font-size:.8rem;line-height:1.48}
+.alpha-view-bar{display:inline-flex;align-items:center;justify-content:flex-start;gap:14px;max-width:100%;margin:0 0 20px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.alpha-view-tabs{display:inline-grid;grid-template-columns:repeat(2,minmax(120px,1fr));gap:4px;flex:0 0 auto;padding:4px;border:0;border-radius:10px;background:#202224}
+.alpha-view-tab{min-height:40px;padding:8px 18px;border:0;border-radius:7px;background:transparent;color:#D5D7D9;font-size:.86rem;font-weight:850;transition:background .15s,color .15s,box-shadow .15s}
+.alpha-view-tab:hover{background:#363A3D;color:#fff}
+.alpha-view-tab[aria-selected="true"]{background:#F2F2F2;color:#25282A;box-shadow:0 7px 18px -12px rgba(0,0,0,.85)}
+.alpha-view-tab:focus-visible{outline:3px solid #BFC3C6;outline-offset:2px}
+.alpha-view-hint{display:flex;align-items:center;color:#fff;font-size:.84rem;font-weight:800;line-height:1.35;text-shadow:0 1px 3px rgba(0,0,0,.78)}
+.alpha-learning-shell{display:grid;gap:18px}
+.alpha-learning-metric-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.alpha-learning-metric-head>div:first-child{min-width:0;max-width:100%}
+.alpha-learning-metrics{display:inline-grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,max-content);width:max-content;max-width:100%;overflow-x:auto;border:0;border-radius:0;background:#EEF0F1;box-shadow:none}
+.alpha-learning-scenarios{display:flex;flex-wrap:wrap;gap:10px 24px}
+.alpha-learning-section-label{display:block;margin-bottom:9px;color:var(--navy);font-size:.76rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
+.alpha-learning-metric{position:relative;min-height:52px;padding:11px 18px;border:0;border-radius:0;background:transparent;color:#485158;font-size:.82rem;font-weight:850;line-height:1.2;white-space:nowrap;transition:background .15s,color .15s,box-shadow .15s}
+.alpha-learning-metric+.alpha-learning-metric{border-left:1px solid #BFC6CB}
+.alpha-learning-metric:hover{background:#DDE0E2;color:#17191A}
+.alpha-learning-metric[aria-selected="true"]{background:linear-gradient(180deg,#424649,#2E3133);color:#fff;box-shadow:inset 0 -4px 0 #AEB4B8}
+.alpha-learning-metric:focus-visible{z-index:2;outline:3px solid rgba(46,49,51,.28);outline-offset:-3px}
+.alpha-learning-scenario{--scenario-color:#176B9A;min-height:0;padding:4px 0;border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:var(--scenario-color);font-size:.82rem;font-weight:750;transition:border-color .15s,color .15s,opacity .15s}
+.alpha-learning-scenario:nth-child(2){--scenario-color:#18734A}
+.alpha-learning-scenario:nth-child(3){--scenario-color:#A55A13}
+.alpha-learning-scenario:hover{border-bottom-color:var(--scenario-color);color:var(--scenario-color);opacity:.76}
+.alpha-learning-scenario[aria-pressed="true"]{border-bottom-color:var(--scenario-color);background:transparent;color:var(--scenario-color);opacity:1}
+.alpha-story-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.alpha-story-scene{position:relative;min-width:0;min-height:190px;padding:20px 19px 18px;border-radius:14px;background:#fff;box-shadow:var(--shadow-1);overflow:hidden}
+.alpha-story-scene::before{content:attr(data-scene);display:grid;width:34px;height:34px;place-items:center;margin-bottom:28px;border-radius:50%;background:#DDF3FF;color:#145E90;font-family:var(--mono);font-size:.82rem;font-weight:900}
+.alpha-story-scene:nth-child(2){background:#EAF8F6}.alpha-story-scene:nth-child(2)::before{background:#C8EFEB;color:#075D62}
+.alpha-story-scene:nth-child(3){background:#FFF5E7}.alpha-story-scene:nth-child(3)::before{background:#FFE1AD;color:#77500A}
+.alpha-story-scene span{display:block;color:#627382;font-size:.69rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.alpha-story-scene h3{margin-top:7px;color:var(--navy);font-size:1.02rem;line-height:1.25}
+.alpha-story-scene p{margin-top:9px;color:#425466;font-size:.88rem;line-height:1.52}
+.alpha-story-board.is-image-story{display:grid;grid-template-columns:minmax(0,3fr) minmax(170px,1fr);gap:14px;width:80%;max-width:100%;align-items:stretch}
+.alpha-story-main{min-width:0;margin:0;overflow:hidden;border-radius:14px;background:#fff;box-shadow:var(--shadow-1)}
+.alpha-story-main img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain}
+.alpha-story-thumbs{display:grid;grid-template-rows:repeat(3,minmax(0,1fr));gap:10px;height:100%;align-self:stretch}
+.alpha-story-thumb{display:block;width:100%;height:100%;min-height:0;padding:0;overflow:hidden;border:2px solid transparent;border-radius:8px;background:#fff;opacity:.64;transition:border-color .15s,opacity .15s,transform .15s}
+.alpha-story-thumb:hover{opacity:1;transform:translateX(-2px)}
+.alpha-story-thumb[aria-pressed="true"]{border-color:#2F3437;opacity:1}
+.alpha-story-thumb:focus-visible{outline:3px solid rgba(47,52,55,.28);outline-offset:2px}
+.alpha-story-thumb img{display:block;width:100%;height:100%;object-fit:contain}
+.alpha-simulator-heading{display:block;margin-bottom:16px}
+.alpha-simulator-heading h3{color:var(--navy);font-family:var(--display);font-size:1.18rem;font-weight:700;letter-spacing:-.01em}
+.alpha-simulator-heading p{width:100%;max-width:none;margin-top:5px;color:var(--muted);font-size:.87rem;line-height:1.48}
+.alpha-learning-card{padding:22px;border:0;border-radius:14px;background:#fff;box-shadow:none}
+.alpha-learning-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}
+.alpha-learning-card-head h3{color:var(--navy);font-size:1.12rem}
+.alpha-learning-card-head p{max-width:72ch;margin-top:5px;color:var(--muted);font-size:.87rem;line-height:1.45}
+.alpha-learning-controls-section{margin-top:20px;padding-top:20px;border-top:0}
+.alpha-learning-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin-top:16px;padding:18px;background:#D8EFEA}
+.alpha-learning-sample-controls{display:grid;gap:12px;padding:0;border-radius:0;background:transparent}
+.alpha-learning-sample-controls+.alpha-learning-sample-controls{padding:0;border:0}
+.alpha-learning-sample-controls h4{color:var(--navy);font-size:.88rem}
+.alpha-learning-control{display:grid;grid-template-columns:minmax(120px,1fr) minmax(120px,1.4fr) 48px;gap:10px;align-items:center}
+.alpha-learning-control label{color:#526272;font-size:.78rem;font-weight:750}
+.alpha-learning-control input{width:100%;accent-color:#0E8F98}
+.alpha-learning-control output{text-align:right;color:var(--navy);font-family:var(--mono);font-size:.78rem;font-weight:900}
+.alpha-learning-stage{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;border-top:0}
+.alpha-learning-sample{min-width:0;padding:20px 0;border:0;border-radius:0;background:transparent}
+.alpha-learning-sample+.alpha-learning-sample{padding:20px 0;border:0}
+.alpha-learning-sample h4{color:var(--navy);font-size:.96rem}
+.alpha-learning-sample-sub{display:block;margin:0;color:var(--muted);font-size:.75rem}
+.alpha-learning-bar{display:flex;width:100%;height:58px;margin-top:18px;overflow:hidden;border:1px solid #C8D6E2;border-radius:9px;background:#E8EEF3}
+.alpha-learning-segment{display:grid;min-width:2px;height:100%;place-items:center;overflow:hidden;border-right:1px solid rgba(255,255,255,.72);color:#071B3A;font-size:.68rem;font-weight:900;text-shadow:0 1px rgba(255,255,255,.45);transition:width .32s var(--ease)}
+.alpha-learning-segment:last-child{border-right:0}
+.alpha-learning-segment span{padding:2px;white-space:nowrap}
+.alpha-learning-score{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:14px;padding-top:0;border-top:0;color:#526272;font-size:.8rem}
+.alpha-learning-score-copy{display:grid;gap:2px}
+.alpha-learning-score-label{display:block}
+.alpha-learning-score strong{color:var(--navy);font-family:var(--mono);font-size:1.32rem}
+.alpha-meaning-grid{display:grid;gap:0;margin-top:0}
+.alpha-meaning-grid.is-live{grid-template-columns:1fr;border-top:0;border-bottom:1px solid #AEB7BC}
+.alpha-meaning-grid.is-live .alpha-meaning-card{display:block}
+.alpha-meaning-grid.is-live .alpha-meaning-card b{display:inline}
+.alpha-meaning-grid.is-live .alpha-meaning-card p{display:inline;margin:0 0 0 8px}
+.alpha-learning-comparison-mark{display:inline;margin-right:8px;color:#096D78;font-family:var(--mono);font-size:1.02rem;font-weight:900;white-space:nowrap}
+.alpha-meaning-grid.is-fixed{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px;margin-top:20px;padding-top:20px;border-top:1px solid #AEB7BC}
+.alpha-meaning-card{min-width:0;padding:18px 0;border:0;border-radius:0;background:transparent;color:#31495A}
+.alpha-meaning-card+.alpha-meaning-card{padding-left:0;border:0}
+.alpha-meaning-card[data-kind="importance"]{background:transparent;color:#23444A}
+.alpha-meaning-card[data-kind="boundary"]{padding-right:0;background:transparent;color:#61440E}
+.alpha-meaning-card b{display:block;color:var(--navy);font-size:.72rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
+.alpha-meaning-card[data-kind="importance"] b{color:#075D62}.alpha-meaning-card[data-kind="boundary"] b{color:#77500A}
+.alpha-meaning-card p{margin-top:7px;font-size:.86rem;line-height:1.5}
+.alpha-learning-metric-detail{margin-top:4px;color:#3E4D55;font-size:.86rem;line-height:1.55}
+.alpha-learning-report-row{display:flex;align-items:stretch;gap:12px}
+.alpha-learning-report-bridge{display:flex;min-width:0;flex:1;align-items:center;padding:12px 16px;border-left:4px solid #E68A17;border-radius:0;background:#FFF5E7;color:#61440E;font-size:.86rem;line-height:1.4;white-space:nowrap;overflow-x:auto}
+.alpha-learning-report-bridge span{max-width:none}.alpha-learning-report-bridge b{color:#523500}
+.alpha-learning-report-button{flex-shrink:0;min-height:40px;padding:9px 16px;border:1px solid #77500A;border-radius:9px;background:#77500A;color:#fff;font-size:.8rem;font-weight:850;white-space:nowrap}
+.alpha-learning-report-button:hover{background:#523500;border-color:#523500}
+.alpha-faith-stage{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.alpha-faith-tree{display:block;width:50%;height:auto;margin:10px auto 0;border-radius:10px;background:#F3F7FA}
+.alpha-faith-tree path{fill:none;stroke:#C3CFD9;stroke-width:4;stroke-linecap:round;transition:stroke .25s,stroke-width .25s}
+.alpha-faith-tree path.on{stroke:#0E8F98;stroke-width:6}
+.alpha-faith-tree circle{fill:#fff;stroke:#9DAFBE;stroke-width:2;transition:fill .25s,stroke .25s}
+.alpha-faith-tree circle.on{fill:#FBE36B;stroke:#071B3A}
+.alpha-faith-tree text{fill:#425466;font-size:10px;font-weight:800}
+.alpha-rarefaction-chart{width:100%;height:auto;margin-top:12px;border-radius:10px;background:#F3F7FA}
+.alpha-rarefaction-chart .axis{stroke:#91A4B4;stroke-width:1.5}
+.alpha-rarefaction-chart .curve{fill:none;stroke:#0E8F98;stroke-width:4;stroke-linecap:round}
+.alpha-rarefaction-chart .guide{stroke:#B8C6D2;stroke-width:1;stroke-dasharray:4 4}
+.alpha-rarefaction-chart .point{fill:#FBE36B;stroke:#071B3A;stroke-width:3;transition:cx .25s,cy .25s}
+.alpha-rarefaction-chart text{fill:#526272;font-size:10px;font-weight:700}
+.beta-learning-shell .alpha-story-board{grid-template-columns:repeat(3,minmax(0,1fr));gap:0;overflow:hidden;border-radius:14px;background:#fff;box-shadow:var(--shadow-1)}
+.beta-learning-shell .alpha-story-scene{min-height:145px;padding:18px 20px;border-radius:0;background:#fff;box-shadow:none}
+.beta-learning-shell .alpha-story-scene+.alpha-story-scene{border-left:1px solid #D9E2E7}
+.beta-learning-shell .alpha-story-scene:nth-child(2){background:#F2FAF9}.beta-learning-shell .alpha-story-scene:nth-child(3){background:#FFF8ED}
+.beta-learning-shell .alpha-story-scene::before{width:28px;height:28px;margin-bottom:13px;font-size:.74rem}
+.beta-learning-shell .alpha-story-scene h3{font-size:.96rem}
+.beta-learning-shell .alpha-story-scene p{margin-top:6px;font-size:.82rem;line-height:1.42}
+.beta-learning-stage{display:block;padding:18px 0 0}
+.beta-learning-map-card{min-width:0;padding:18px 20px;background:#F4F7F9}
+.beta-learning-map-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px}
+.beta-learning-map-card h4{color:var(--navy);font-size:.96rem}
+.beta-learning-map-card p{margin-top:4px;color:var(--muted);font-size:.78rem}
+.beta-learning-current{flex:0 0 auto;text-align:right}
+.beta-learning-current span{display:block;color:#64747D;font-size:.67rem;font-weight:850;letter-spacing:.07em;text-transform:uppercase}
+.beta-learning-current strong{display:block;margin-top:3px;color:#096D78;font-size:1rem}
+.beta-learning-map{display:block;width:min(100%,760px);height:auto;margin:14px auto 0;border-radius:10px;background:#fff}
+.beta-learning-map .plot-frame{fill:#F7FAFB;stroke:#E2E9ED;stroke-width:1}
+.beta-learning-map .axis{fill:none;stroke:#A9B8C2;stroke-width:1.25}
+.beta-learning-map .zone-a{fill:#DCECF8;stroke:#247DB3}.beta-learning-map .zone-b{fill:#F8DEDE;stroke:#D24B55}
+.beta-learning-map .zone{stroke-width:1.7;stroke-dasharray:7 5;opacity:.62}
+.beta-learning-map .point-a{fill:#247DB3}.beta-learning-map .point-b{fill:#D24B55}
+.beta-learning-map .point{stroke:#fff;stroke-width:2.5}
+.beta-learning-map .axis-title{fill:#3F5360;font-size:12px;font-weight:800;letter-spacing:.01em}
+.beta-learning-legend{display:flex;justify-content:center;gap:18px;margin-top:9px;color:#53636C;font-size:.75rem;font-weight:750}
+.beta-learning-legend span{display:inline-flex;align-items:center;gap:6px}
+.beta-learning-legend i{width:9px;height:9px;border-radius:50%;background:#247DB3}.beta-learning-legend span:last-child i{background:#D24B55}
+.beta-learning-controls{grid-template-columns:1fr;background:#D8EFEA}
+.beta-learning-controls .alpha-learning-sample-controls{max-width:none}
+.beta-learning-shell .alpha-learning-report-bridge{white-space:normal;overflow:visible}
+.beta-learning-pattern-mark{display:inline;margin-right:8px;color:#096D78;font-family:var(--mono);font-size:1rem;font-weight:900;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.alpha-learning-segment,.alpha-story-thumb,.alpha-faith-tree path,.alpha-faith-tree circle,.alpha-rarefaction-chart .point{transition:none}}
 .takeaway-group-medians{color:#16866B;font-weight:800;line-height:1.45}
 .takeaway-stat-line{display:block;color:#354B60;font-weight:700}
 .takeaway-stat-caveat{display:block;margin-top:3px;color:#4D5D6C}
@@ -1200,8 +1331,7 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .content.theme-flow{--topic:#7350C7;--topic-rgb:115,80,199;--topic-soft:#F7F4FD;--topic-line:#D9CEF4;min-height:calc(100vh - 120px);padding:clamp(18px,2.4vw,34px);background:#fff}
 .content.theme-flow .section-head{min-height:0;margin:0 0 22px;padding:0;background:#fff}
 .content.theme-flow .section-head::before,.content.theme-flow .section-head::after{display:none}
-.content.theme-flow .section-head .eyebrow{border-color:#A9DDD9;background:var(--brand-green);box-shadow:none}
-.content.theme-flow .section-head h1{margin-top:12px;color:var(--navy);font-size:clamp(2.1rem,3.35vw,3.15rem);text-shadow:none}
+.content.theme-flow .section-head h1{margin-top:0;color:var(--navy);font-size:clamp(2.1rem,3.35vw,3.15rem);text-shadow:none}
 .content.theme-flow .section-head .dek{color:var(--muted);font-weight:500;text-shadow:none}
 .theme-flow .section-body-shell{padding:0;background:#fff;border:0;border-radius:0;box-shadow:none;backdrop-filter:none;overflow:visible}
 .flow-wrap{display:grid;gap:0}
@@ -1501,6 +1631,11 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
   .takeaway-card:first-child{grid-column:1/-1}
   .takeaway-card{min-height:250px;padding:24px}
   .takeaway-card:first-child{padding-left:28px}
+  .alpha-story-board,.alpha-meaning-grid{grid-template-columns:1fr}
+  .beta-learning-stage{grid-template-columns:1fr}
+  .alpha-story-board.is-image-story{grid-template-columns:minmax(0,3fr) minmax(140px,1fr)}
+  .alpha-meaning-card,.alpha-meaning-card[data-kind="boundary"]{padding:18px 0}
+  .alpha-meaning-card+.alpha-meaning-card{padding-left:0;border:0}
   .overall-grid .overall-detail-row,#overall-composition,#overall-relationship,#overall-variability,#overall-confidence,#overall-whatmatters{grid-column:auto;grid-row:auto;border-right:0!important}
   .overall-grid > *:nth-child(n+2){border-top:1px solid var(--line)!important}
   .overall-detail-row .detail-grid{grid-template-columns:1fr}
@@ -1509,7 +1644,6 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
   .detail-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
   .detail-item{border-left:0;padding:4px 0}
   .topbar-in{grid-template-columns:240px minmax(0,1fr) auto;padding:0 18px}
-  .client-menu{display:none}
   .pipe-detail-in{grid-template-columns:1fr;gap:18px}
   .pipe-side{grid-template-columns:120px minmax(0,1fr);justify-items:start;min-height:0;text-align:left}
   .pipe-glyph,.pipe-glyph svg{width:110px;height:110px}
@@ -1523,10 +1657,13 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
 }
 @media (max-width:920px){
   .topbar{height:64px}
+  .beta-learning-shell .alpha-story-board{grid-template-columns:1fr}
+  .beta-learning-shell .alpha-story-scene+.alpha-story-scene{border-top:1px solid #D9E2E7;border-left:0}
+  .alpha-story-board.is-image-story{width:100%}
   .topbar-in{grid-template-columns:auto 1fr auto}
   .top-center{justify-content:flex-start}
-  .report-chip{display:none}
-  .avatar{display:none}
+  .top-report-text,.topbar-divider{display:none}
+  .top-assay-select{max-width:42vw}
   .gate{grid-template-columns:1fr}
   .gate-visual{min-height:42vh}
   .gate-copy{min-height:70%;width:100%}
@@ -1535,7 +1672,7 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
   .app.rail-collapsed .shell{grid-template-columns:1fr}
   .main{grid-column:1}
   .rail{position:fixed;left:0;top:64px;z-index:45;width:min(320px,86vw);height:calc(100vh - 64px);transform:translateX(-104%);box-shadow:var(--shadow-2);transition:transform .22s var(--ease)}
-  .app.rail-collapsed .rail{transform:translateX(-104%);opacity:1;pointer-events:auto;padding:18px 22px 24px;border-right-color:rgba(7,27,58,.18)}
+  .app.rail-collapsed .rail{transform:translateX(-104%);opacity:1;pointer-events:auto;padding:18px 22px 24px;border-right-color:rgba(0,0,0,.28)}
   .app.rail-collapsed .rail.open{transform:none}
   .rail.open{transform:none}
   .rail-edge-toggle{top:78px;left:0}
@@ -1602,6 +1739,27 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
   .guide-avatar{display:none}
 }
 @media (max-width:560px){
+  .alpha-view-bar{display:flex;align-items:center;gap:9px;width:100%;padding:0}
+  .alpha-view-tabs{width:auto;grid-template-columns:repeat(2,minmax(88px,1fr))}
+  .alpha-view-tab{padding-left:10px;padding-right:10px}
+  .alpha-view-hint{min-width:0;font-size:.74rem;line-height:1.25}
+  .alpha-learning-metric-head{align-items:flex-start;display:grid}
+  .alpha-learning-card{padding:16px 13px}
+  .alpha-learning-card-head{display:grid}
+  .alpha-learning-controls,.alpha-learning-stage,.alpha-faith-stage{grid-template-columns:1fr}
+  .alpha-learning-sample-controls,.alpha-learning-sample-controls+.alpha-learning-sample-controls{padding:0;border:0}
+  .alpha-learning-sample,.alpha-learning-sample+.alpha-learning-sample{padding:18px 0;border:0}
+  .alpha-learning-control{grid-template-columns:minmax(100px,1fr) minmax(90px,1fr) 42px;gap:7px}
+  .alpha-learning-metrics{grid-auto-columns:minmax(150px,max-content)}
+  .alpha-story-board.is-image-story{grid-template-columns:minmax(0,3fr) minmax(88px,1fr);gap:8px}
+  .alpha-story-thumbs{gap:6px}
+  .beta-learning-map-head{display:grid;gap:7px}
+  .beta-learning-current{text-align:left}
+  .beta-learning-map .axis-title{font-size:17px}
+  .beta-learning-map .point{r:8px;stroke-width:3}
+  .alpha-story-scene{min-height:0}.alpha-story-scene::before{margin-bottom:18px}
+  .alpha-learning-report-row{display:grid}
+  .alpha-learning-report-button{width:100%;white-space:normal}
   .diversity-view-toolbar{display:grid;grid-template-columns:34px minmax(0,1fr) 34px auto;gap:8px;width:100%}
   .diversity-view-toolbar.is-single{grid-template-columns:minmax(0,1fr) auto}
   .diversity-view-picker{width:auto;min-width:0}
@@ -1725,9 +1883,7 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
   .files-grid{grid-template-columns:1fr}
   .file-card-head{grid-template-columns:1fr}
   .file-viz{min-height:86px}
-  .assay-chip{max-width:none;width:150px;padding:0 10px}
-  .assay-chip select{max-width:128px}
-  .assay-chip label,.assay-chip .icon{display:none}
+  .top-assay-select{max-width:150px}
   .chart-toolbar select{max-width:100%;flex:1 1 180px}
   .chart-size-control{width:100%}
   .chart-size-control input{flex:1;width:auto}
@@ -1837,16 +1993,9 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
       </div>
 
       <div class="top-center">
-        <div class="report-chip">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/></svg>
-          <span id="top-report-label">Report</span>
-          <svg class="icon" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="m6 9 6 6 6-6"/></svg>
-        </div>
-        <div class="assay-chip">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v18M5 8h14M7 16h10"/></svg>
-          <label for="assay-select" class="mono" style="font-size:.7rem;color:var(--muted);letter-spacing:.05em">Assay</label>
-          <select id="assay-select" aria-label="Choose assay"></select>
-        </div>
+        <span class="top-report-text" id="top-report-label">Report</span>
+        <span class="topbar-divider" aria-hidden="true"></span>
+        <select class="top-assay-select" id="assay-select" aria-label="Choose assay"></select>
       </div>
 
       <div class="top-r">
@@ -1856,8 +2005,6 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
         <button class="top-help glossary-help" type="button" data-glossary-toggle aria-label="Open glossary" title="Glossary">
           <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4.1 1.9c-.9.6-1.6 1.2-1.6 2.3M12 17h.01"/></svg>
         </button>
-        <span class="avatar">K</span>
-        <span class="client-menu">KreatBio Report <svg class="icon" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="m6 9 6 6 6-6"/></svg></span>
         <button class="btn btn-ghost btn-sm" id="exit-btn" type="button">
           <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
           <span>Exit report</span>
@@ -2076,7 +2223,7 @@ function exampleReportCode(){
 function assayLabel(id){var a=ASSAYS[id]||{};return [a.kingdom,a.marker,a.region].filter(Boolean).join(" · ")||"Report";}
 
 /* ---------------- app state ---------------- */
-var state={assay:"",mode:"plain",section:"welcome",pipeStep:0,visited:{},token:"",localExample:false,report:null,reportRefreshPromise:null,apiBase:configuredApiBase(),chatApiBase:configuredChatApiBase(),chatToken:"",chatQuota:null,chatAvailable:false,chatAuthError:"",chartIndex:{taxonomy:0,alpha:0,beta:0,functional:0},chartView:{alpha:"chart",beta:"chart",functional:"chart"},chartWidth:storedChartWidth(),chartZoom:100,metricReturnSection:"",taxonomyRankTables:{},taxonomyRankIndex:0,groupBy:"",functionalDiffFilter:"all",functionalDetailsOpen:false,flowFilter:"diversity",flowQuery:"",filesFilter:"all",metricFilter:"all",glossaryFilter:"all",learningTopic:"all",learningIndex:0,chatMessages:[],chatBusy:false,reportHydrating:false};
+var state={assay:"",mode:"plain",section:"welcome",pipeStep:0,visited:{},token:"",localExample:false,report:null,reportRefreshPromise:null,apiBase:configuredApiBase(),chatApiBase:configuredChatApiBase(),chatToken:"",chatQuota:null,chatAvailable:false,chatAuthError:"",chartIndex:{taxonomy:0,alpha:0,beta:0,functional:0},chartView:{alpha:"chart",beta:"chart",functional:"chart"},alphaView:"report",betaView:"report",chartWidth:storedChartWidth(),chartZoom:100,metricReturnSection:"",taxonomyRankTables:{},taxonomyRankIndex:0,groupBy:"",functionalDiffFilter:"all",functionalDetailsOpen:false,flowFilter:"diversity",flowQuery:"",filesFilter:"all",metricFilter:"all",glossaryFilter:"all",learningTopic:"all",learningIndex:0,chatMessages:[],chatBusy:false,reportHydrating:false};
 function baseDataset(){
   var assay=ASSAYS[state.assay];
   return assay&&DATASETS[assay.data]?DATASETS[assay.data]:emptyReportDataset({code:exampleReportCode()});
@@ -3572,8 +3719,7 @@ function renderNav(){
 
 /* ---------------- section framing ---------------- */
 function head(kick,title,dek){
-  return '<div class="section-head"><div class="section-head-copy"><div class="kicker"><span class="eyebrow">'+esc(kick)+'</span></div>'+
-    '<h1>'+esc(title)+'</h1>'+(dek?'<p class="dek">'+dek+'</p>':'')+'</div></div>';
+  return '<div class="section-head"><div class="section-head-copy"><h1>'+esc(title)+'</h1>'+(dek?'<p class="dek">'+dek+'</p>':'')+'</div></div>';
 }
 function nextBar(){
   var order=availableSectionOrder(),i=order.indexOf(state.section);
@@ -8894,18 +9040,299 @@ function secTaxonomy(){
 
 /* ---------------- SECTION: alpha ---------------- */
 var alphaState={metric:"shannon"};
+var alphaLearningState={metric:"",scenario:"",aRichness:4,bRichness:4,aDominance:0,bDominance:75,aSpread:0,bSpread:100,aDepth:75,bDepth:40,aCurve:"plateau",bCurve:"rising"};
+
+/* ALPHA_LEARNING_CORE_START */
+function alphaLearningClamp(value,min,max){return Math.max(min,Math.min(max,Number(value)||0));}
+function alphaLearningDistribution(richness,dominance){
+  var count=Math.round(alphaLearningClamp(richness,1,8)),pressure=alphaLearningClamp(dominance,0,100)/100;
+  if(count===1)return [1];
+  var equal=1/count,largest=equal+pressure*(.9-equal),other=(1-largest)/(count-1);
+  return Array.from({length:count},function(_,index){return index===0?largest:other;});
+}
+function alphaLearningShannon(values){
+  return (values||[]).reduce(function(total,value){var p=Number(value)||0;return p>0?total-p*Math.log(p):total;},0);
+}
+function alphaLearningSimpson(values){
+  return 1-(values||[]).reduce(function(total,value){var p=Number(value)||0;return total+p*p;},0);
+}
+function alphaLearningObserved(values){return (values||[]).filter(function(value){return Number(value)>0;}).length;}
+function alphaLearningPielou(values){
+  var richness=alphaLearningObserved(values);
+  return richness>1?alphaLearningShannon(values)/Math.log(richness):0;
+}
+function alphaLearningFaithPd(leaves,paths,lengths){
+  var used={};
+  (leaves||[]).forEach(function(leaf){(paths[leaf]||[]).forEach(function(branch){used[branch]=true;});});
+  return Object.keys(used).reduce(function(total,branch){return total+(Number(lengths[branch])||0);},0);
+}
+function alphaLearningRarefaction(depth,curve){
+  var fraction=alphaLearningClamp(depth,0,100)/100;
+  return curve==="rising"?180*(1-Math.exp(-1.35*fraction)):120*(1-Math.exp(-5*fraction));
+}
+/* ALPHA_LEARNING_CORE_END */
+
+var ALPHA_LEARNING_PALETTE=["#79C7C5","#F4C95D","#EE8A78","#91B8E2","#B9A0DC","#91C788","#E8A4C2","#B7C5D3"];
+var ALPHA_FAITH_PATHS={A:["root","ab","a"],B:["root","ab","b"],C:["root","cd","c"],D:["root","cd","d"],E:["root","ef","e"],F:["root","ef","f"],G:["root","gh","g"],H:["root","gh","h"]};
+var ALPHA_FAITH_LENGTHS={root:.5,ab:1,cd:1,ef:1,gh:1,a:.4,b:.4,c:.4,d:.4,e:.4,f:.4,g:.4,h:.4};
+function alphaViewSwitch(){
+  var example=state.alphaView==="example";
+  return '<div class="alpha-view-bar"><div class="alpha-view-tabs" role="tablist" aria-label="Choose alpha-diversity view">'+
+    '<button class="alpha-view-tab" type="button" role="tab" data-alpha-view="example" aria-controls="alpha-example-panel" aria-selected="'+(example?'true':'false')+'" tabindex="'+(example?'0':'-1')+'">Example</button>'+
+    '<button class="alpha-view-tab" type="button" role="tab" data-alpha-view="report" aria-controls="alpha-report-panel" aria-selected="'+(!example?'true':'false')+'" tabindex="'+(!example?'0':'-1')+'">This report</button></div>'+
+    '<p class="alpha-view-hint">New to alpha diversity? Start with Example.</p></div>';
+}
+function alphaLearningMetricOptions(d){
+  var labels={shannon:"Shannon",simpson:"Simpson",observed:"Observed Features",faith:"Faith PD",pielou:"Pielou",rarefaction:"Sampling Depth"},seen={},options=[];
+  (d.alphaMetrics||[]).forEach(function(metric){
+    var id=normalizeAlphaMetricName(metric.id||metric.label);
+    if(labels[id]&&!seen[id]){seen[id]=true;options.push({id:id,label:labels[id]});}
+  });
+  if(releasedFigures("alpha").some(function(file){return /rarefaction/.test(figureText(file));})&&!seen.rarefaction)options.push({id:"rarefaction",label:labels.rarefaction});
+  if(!options.length)options=[{id:"shannon",label:labels.shannon},{id:"simpson",label:labels.simpson},{id:"observed",label:labels.observed}];
+  return options;
+}
+function alphaLearningScenarios(metric){
+  if(metric==="faith")return [{id:"related",label:"Same count, different relatives"},{id:"breadth",label:"Close versus broad branches"},{id:"count",label:"More detected types"}];
+  if(metric==="rarefaction")return [{id:"coverage",label:"Plateau versus still rising"},{id:"depth",label:"Same curve, different depth"},{id:"early",label:"Both sampled too early"}];
+  if(metric==="observed")return [{id:"balance",label:"Same count, different balance"},{id:"richness",label:"Different detected counts"},{id:"single",label:"One type versus many"}];
+  return [{id:"balance",label:"Same richness, different balance"},{id:"richness",label:"More types, same balance"},{id:"tradeoff",label:"More types but one dominates"}];
+}
+function setAlphaLearningScenario(metric,scenario){
+  alphaLearningState.scenario=scenario;
+  if(metric==="faith"){
+    if(scenario==="breadth"){alphaLearningState.aRichness=3;alphaLearningState.bRichness=3;alphaLearningState.aSpread=0;alphaLearningState.bSpread=100;}
+    else if(scenario==="count"){alphaLearningState.aRichness=2;alphaLearningState.bRichness=6;alphaLearningState.aSpread=100;alphaLearningState.bSpread=100;}
+    else{alphaLearningState.aRichness=4;alphaLearningState.bRichness=4;alphaLearningState.aSpread=0;alphaLearningState.bSpread=100;}
+    return;
+  }
+  if(metric==="rarefaction"){
+    if(scenario==="depth"){alphaLearningState.aCurve="plateau";alphaLearningState.bCurve="plateau";alphaLearningState.aDepth=25;alphaLearningState.bDepth=85;}
+    else if(scenario==="early"){alphaLearningState.aCurve="plateau";alphaLearningState.bCurve="rising";alphaLearningState.aDepth=18;alphaLearningState.bDepth=18;}
+    else{alphaLearningState.aCurve="plateau";alphaLearningState.bCurve="rising";alphaLearningState.aDepth=80;alphaLearningState.bDepth=80;}
+    return;
+  }
+  if(scenario==="richness"){alphaLearningState.aRichness=3;alphaLearningState.bRichness=7;alphaLearningState.aDominance=0;alphaLearningState.bDominance=0;}
+  else if(scenario==="tradeoff"){alphaLearningState.aRichness=4;alphaLearningState.bRichness=8;alphaLearningState.aDominance=0;alphaLearningState.bDominance=90;}
+  else if(scenario==="single"){alphaLearningState.aRichness=1;alphaLearningState.bRichness=6;alphaLearningState.aDominance=0;alphaLearningState.bDominance=35;}
+  else{alphaLearningState.aRichness=4;alphaLearningState.bRichness=4;alphaLearningState.aDominance=0;alphaLearningState.bDominance=78;}
+}
+function alphaLearningMetricCopy(metric){
+  if(metric==="simpson")return {title:"Simpson diversity",intro:"Simpson focuses on how strongly one or a few types dominate the community.",detail:"Compared with Shannon, Simpson squares each type's relative abundance (p²), making large shares count disproportionately more, while Shannon uses −p ln(p), which gives rare types more influence. In simpler terms, rare types count less than common types in both metrics, but the gap is smaller in Shannon and much larger in Simpson, so Simpson is more strongly shaped by dominant types. Values closer to 1 mean abundance is less concentrated in one or a few types.",score:"Gini–Simpson (1 − D)"};
+  if(metric==="observed")return {title:"Observed Features",intro:"This is simply the number of detected sequence features. It measures richness, not how evenly abundance is shared.",score:"Detected types"};
+  if(metric==="faith")return {title:"Faith phylogenetic diversity",intro:"Faith PD adds the evolutionary branches needed to connect the detected organisms. Distant relatives can cover more branch length than close relatives.",score:"Toy branch units"};
+  if(metric==="pielou")return {title:"Pielou evenness",intro:"Pielou asks how evenly abundance is shared among the detected types. A perfectly balanced example is 1.",score:"Pielou (0–1)"};
+  if(metric==="rarefaction")return {title:"Sampling depth and rarefaction",intro:"Rarefaction asks whether sequencing discovered most of the detectable variety. A flattening curve suggests that additional reads add relatively few new features.",score:"Features reached"};
+  return {title:"Shannon diversity",intro:"Shannon combines two ideas: how many types were detected and how evenly abundance is shared among them.",score:"Shannon score"};
+}
+function alphaLearningStory(metric){
+  if(metric==="simpson")return {
+    situationTitle:"One type begins to take over",situation:"Both samples contain several microbial types, but one sample is increasingly dominated by a single type.",
+    noticesTitle:"Simpson notices dominance",notices:"Common and dominant types influence this score most. Rare types have less effect than they do in some other diversity measures.",
+    mattersTitle:"It reveals community concentration",matters:"Researchers use Simpson to ask whether a community is broadly shared or concentrated in one or a few dominant types."
+  };
+  if(metric==="observed")return {
+    situationTitle:"One sample contains more detected types",situation:"The samples may have very different abundance patterns, but this question only asks how many distinct sequence features were detected.",
+    noticesTitle:"Observed Features counts types",notices:"Every detected type contributes one to the count. A common type and a rare type each count once.",
+    mattersTitle:"It tracks detected variety",matters:"Researchers use it to ask whether detectable types were gained or lost, while checking that sequencing depth was sufficient."
+  };
+  if(metric==="faith")return {
+    situationTitle:"The same count can cover different branches",situation:"Two samples contain the same number of microbial types. One contains close relatives; the other spans distant parts of the evolutionary tree.",
+    noticesTitle:"Faith PD follows the tree",notices:"The score adds the unique branch lengths connecting the detected types. More evolutionary breadth produces a larger value.",
+    mattersTitle:"It measures lineage breadth",matters:"Researchers use Faith PD when the evolutionary range of a community matters, not merely the number of detected types."
+  };
+  if(metric==="pielou")return {
+    situationTitle:"The types are the same, but their shares differ",situation:"Both samples contain the same microbial types. In one sample their abundance is balanced; in the other, a few types dominate.",
+    noticesTitle:"Pielou isolates balance",notices:"The score approaches 1 when abundance is evenly shared and becomes smaller as the community becomes less balanced.",
+    mattersTitle:"It separates balance from richness",matters:"Researchers use Pielou to ask whether community balance changed without treating the number of detected types as the main result."
+  };
+  if(metric==="rarefaction")return {
+    situationTitle:"More sequencing may still find new types",situation:"As additional reads are examined, newly detected features accumulate. Some samples level off; others continue revealing new features.",
+    noticesTitle:"The curve notices sampling completeness",notices:"A flattening curve means extra reads add relatively few features. A steeply rising curve suggests that variety remains undersampled.",
+    mattersTitle:"It checks whether comparison is fair",matters:"Researchers inspect rarefaction before interpreting richness, because a shallow sample can appear less diverse simply because it was sequenced less completely."
+  };
+  return {
+    situationTitle:"The count is equal, but the balance is not",situation:"Two samples contain the same four microbial types. Sample A is balanced, while one type dominates Sample B.",
+    noticesTitle:"Shannon notices variety and balance",notices:"The score rises when more types are detected, when their abundance is more evenly shared, or when both occur.",
+    mattersTitle:"It reveals broad community change",matters:"Researchers use Shannon to ask whether an environment or treatment changed the overall variety and balance inside each sample."
+  };
+}
+function alphaLearningStoryHtml(metric){
+  var story=alphaLearningStory(metric);
+  var imageSets={
+    shannon:["client_supplements/12_example_shannon_1.png","client_supplements/12_example_shannon_2.png","client_supplements/12_example_shannon_3.png"],
+    observed:["client_supplements/12_example_obsfeat_1.png","client_supplements/12_example_obsfeat_2.png","client_supplements/12_example_obsfeat_3.png"],
+    simpson:["client_supplements/12_example_simpson_1.png","client_supplements/12_example_simpson_2.png","client_supplements/12_example_simpson_3.png"],
+    faith:["client_supplements/12_example_faithpd_1.png","client_supplements/12_example_faithpd_2.png","client_supplements/12_example_faithpd_3.png"]
+  };
+  if(imageSets[metric]){
+    var copy=alphaLearningMetricCopy(metric),storyAlts=["The situation: "+story.situation,"What the metric notices: "+story.notices,"Why researchers use it: "+story.matters];
+    var images=imageSets[metric].map(function(src,index){return {src:src,alt:storyAlts[index]};});
+    return '<div class="alpha-story-board is-image-story" aria-label="'+esc(copy.title)+' story"><figure class="alpha-story-main"><img id="alpha-story-main-image" data-alpha-story-main src="'+esc(images[0].src)+'" alt="'+esc(images[0].alt)+'"></figure><div class="alpha-story-thumbs" role="group" aria-label="Choose a '+esc(copy.title)+' story image">'+images.map(function(image,index){return '<button class="alpha-story-thumb" type="button" data-alpha-story-image data-src="'+esc(image.src)+'" data-alt="'+esc(image.alt)+'" aria-controls="alpha-story-main-image" aria-label="Show story image '+(index+1)+'" aria-pressed="'+(index===0?'true':'false')+'"><img src="'+esc(image.src)+'" alt="" aria-hidden="true"></button>';}).join("")+'</div></div>';
+  }
+  return '<div class="alpha-story-board" aria-label="'+esc(alphaLearningMetricCopy(metric).title)+' story">'+[
+    {n:"1",label:"The situation",title:story.situationTitle,text:story.situation},
+    {n:"2",label:"What the metric notices",title:story.noticesTitle,text:story.notices},
+    {n:"3",label:"Why researchers use it",title:story.mattersTitle,text:story.matters}
+  ].map(function(scene){return '<article class="alpha-story-scene" data-scene="'+scene.n+'"><span>'+esc(scene.label)+'</span><h3>'+esc(scene.title)+'</h3><p>'+esc(scene.text)+'</p></article>';}).join("")+'</div>';
+}
+function alphaLearningSampleLeaves(richness,spread){
+  var order=spread<34?["A","B","C","D","E","F","G","H"]:(spread<67?["A","C","B","E","D","G","F","H"]:["A","C","E","G","B","D","F","H"]);
+  return order.slice(0,Math.round(alphaLearningClamp(richness,1,8)));
+}
+function alphaLearningScore(metric,distribution){
+  if(metric==="simpson")return alphaLearningSimpson(distribution);
+  if(metric==="observed")return alphaLearningObserved(distribution);
+  if(metric==="pielou")return alphaLearningPielou(distribution);
+  return alphaLearningShannon(distribution);
+}
+function alphaLearningScoreText(metric,value){
+  if(metric==="observed"||metric==="rarefaction")return String(Math.round(value));
+  return Number(value).toFixed(2);
+}
+function alphaLearningBarHtml(distribution){
+  var readable=distribution.map(function(value,index){return "Type "+(index+1)+" "+Math.round(value*100)+"%";}).join(", ");
+  return '<div class="alpha-learning-bar" role="img" aria-label="'+esc(readable)+'">'+distribution.map(function(value,index){
+    var pct=value*100,label=pct>=10?Math.round(pct)+"%":"";
+    return '<span class="alpha-learning-segment" style="width:'+pct.toFixed(3)+'%;background:'+ALPHA_LEARNING_PALETTE[index%ALPHA_LEARNING_PALETTE.length]+'"><span>'+label+'</span></span>';
+  }).join("")+'</div>';
+}
+function alphaLearningControl(label,key,value,min,max,suffix){
+  return '<div class="alpha-learning-control"><label for="alpha-learn-'+esc(key)+'">'+esc(label)+'</label><input id="alpha-learn-'+esc(key)+'" type="range" min="'+min+'" max="'+max+'" value="'+value+'" data-alpha-learn-control="'+esc(key)+'"><output data-alpha-learn-output="'+esc(key)+'">'+esc(value+suffix)+'</output></div>';
+}
+function alphaLearningControlsHtml(metric){
+  if(metric==="faith")return '<div class="alpha-learning-controls"><section class="alpha-learning-sample-controls"><h4>Example Sample A</h4>'+alphaLearningControl("Detected types","aRichness",alphaLearningState.aRichness,1,8,"")+alphaLearningControl("Evolutionary spread","aSpread",alphaLearningState.aSpread,0,100,"%")+'</section><section class="alpha-learning-sample-controls"><h4>Example Sample B</h4>'+alphaLearningControl("Detected types","bRichness",alphaLearningState.bRichness,1,8,"")+alphaLearningControl("Evolutionary spread","bSpread",alphaLearningState.bSpread,0,100,"%")+'</section></div>';
+  if(metric==="rarefaction")return '<div class="alpha-learning-controls"><section class="alpha-learning-sample-controls"><h4>Example Sample A</h4>'+alphaLearningControl("Sequencing depth","aDepth",alphaLearningState.aDepth,0,100,"%")+'</section><section class="alpha-learning-sample-controls"><h4>Example Sample B</h4>'+alphaLearningControl("Sequencing depth","bDepth",alphaLearningState.bDepth,0,100,"%")+'</section></div>';
+  return '<div class="alpha-learning-controls"><section class="alpha-learning-sample-controls"><h4>Example Sample A</h4>'+alphaLearningControl("Detected types","aRichness",alphaLearningState.aRichness,1,8,"")+alphaLearningControl("Dominance","aDominance",alphaLearningState.aDominance,0,100,"%")+'</section><section class="alpha-learning-sample-controls"><h4>Example Sample B</h4>'+alphaLearningControl("Detected types","bRichness",alphaLearningState.bRichness,1,8,"")+alphaLearningControl("Dominance","bDominance",alphaLearningState.bDominance,0,100,"%")+'</section></div>';
+}
+function alphaFaithTreeSvg(leaves){
+  var selected={};leaves.forEach(function(leaf){selected[leaf]=true;});
+  function on(items){return items.some(function(item){return selected[item];})?' class="on"':"";}
+  var pairs=[{id:"ab",items:["A","B"],ys:[25,45]},{id:"cd",items:["C","D"],ys:[70,90]},{id:"ef",items:["E","F"],ys:[115,135]},{id:"gh",items:["G","H"],ys:[160,180]}];
+  var paths='<path'+on(leaves)+' d="M18 102H56"/>';
+  pairs.forEach(function(pair){var middle=(pair.ys[0]+pair.ys[1])/2;paths+='<path'+on(pair.items)+' d="M56 102L108 '+middle+' M108 '+pair.ys[0]+'V'+pair.ys[1]+'"/>';pair.items.forEach(function(leaf,index){paths+='<path'+on([leaf])+' d="M108 '+pair.ys[index]+'H170"/>';});});
+  var nodes=pairs.map(function(pair){return pair.items.map(function(leaf,index){return '<circle'+(selected[leaf]?' class="on"':'')+' cx="178" cy="'+pair.ys[index]+'" r="7"/><text x="191" y="'+(pair.ys[index]+4)+'">Type '+leaf+'</text>';}).join("");}).join("");
+  return '<svg class="alpha-faith-tree" viewBox="0 0 250 205" role="img" aria-label="Toy evolutionary tree with selected types '+esc(leaves.join(", "))+'">'+paths+nodes+'</svg>';
+}
+function alphaRarefactionPath(curve){
+  var points=[];for(var depth=0;depth<=100;depth+=5){var x=30+2.45*depth,y=165-alphaLearningRarefaction(depth,curve)/180*125;points.push((depth?'L':'M')+x.toFixed(1)+' '+y.toFixed(1));}return points.join(" ");
+}
+function alphaRarefactionSvg(depth,curve){
+  var x=30+2.45*depth,y=165-alphaLearningRarefaction(depth,curve)/180*125;
+  return '<svg class="alpha-rarefaction-chart" viewBox="0 0 310 200" role="img" aria-label="'+esc(curve==="plateau"?'Curve approaching a plateau':'Curve still rising')+' at '+depth+' percent sequencing depth"><path class="axis" d="M30 20V165H286"/><path class="curve" d="'+alphaRarefactionPath(curve)+'"/><path class="guide" d="M'+x.toFixed(1)+' 165V'+y.toFixed(1)+'"/><circle class="point" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="7"/><text x="34" y="18">Detected features</text><text x="211" y="188">Sequencing depth</text></svg>';
+}
+function alphaLearningComparison(metric,a,b,aMeta,bMeta){
+  var equal=alphaLearningScoreText(metric,a)===alphaLearningScoreText(metric,b),lead="Sample A "+(equal?"=":(a>b?">":"<"))+" B.";
+  if(metric==="observed"){
+    if(aMeta.richness===bMeta.richness)return lead+" Both samples contain "+aMeta.richness+" detected types, so they have the same observed richness even though their abundance balance differs.";
+    return lead+" Sample "+(a>b?"A":"B")+" has more Observed Features because it contains more detected types. It is therefore considered richer by this metric; abundance balance does not enter the count.";
+  }
+  if(metric==="faith")return lead+" "+(equal?"The samples have the same displayed Faith PD score after rounding.":"Sample A is therefore considered to have "+(a>b?"greater":"less")+" evolutionary diversity than Sample B.")+" Faith PD changes with unique branches, not relative abundance.";
+  if(metric==="rarefaction")return (aMeta.curve==="plateau"?"Sample A is approaching a plateau":"Sample A is still rising")+", while "+(bMeta.curve==="plateau"?"Sample B is approaching a plateau":"Sample B is still rising")+". A plateau suggests that additional sequencing is finding relatively few new features.";
+  if(metric==="pielou")return lead+" "+(equal?"The samples have the same displayed Pielou score after rounding.":"Sample A is therefore considered "+(a>b?"more":"less")+" evenly balanced than Sample B.")+" Changing the number of types alone does not guarantee a higher value.";
+  var sameRichness=aMeta.richness===bMeta.richness;
+  return lead+" "+(equal?"They have the same displayed "+alphaLearningMetricCopy(metric).title+" score after rounding. ":"Sample A is therefore considered "+(a>b?"more":"less")+" diverse than Sample B under "+alphaLearningMetricCopy(metric).title+". ")+(sameRichness?"Both contain the same number of types, so any difference comes from how evenly abundance is shared.":"The result reflects the combined effect of detected-type count and dominance.");
+}
+function alphaLearningComparisonHtml(metric,a,b,aMeta,bMeta){
+  var text=alphaLearningComparison(metric,a,b,aMeta,bMeta),match=text.match(/^(Sample A [<>=] B)\.\s*(.*)$/);
+  return match?'<strong class="alpha-learning-comparison-mark">'+esc(match[1])+'</strong><span>'+esc(match[2])+'</span>':esc(text);
+}
+function alphaLearningImportance(metric){
+  if(metric==="simpson")return "A falling Simpson value can reveal that one or a few types are taking over, even when several other types remain detectable.";
+  if(metric==="observed")return "A change in the count can point to a gain or loss of detected variety, which may be relevant after treatment or environmental change.";
+  if(metric==="faith")return "Communities with the same number of types can represent very different evolutionary breadth, so the count alone can miss an important difference.";
+  if(metric==="pielou")return "Community balance can change without gaining or losing types. Pielou makes that balance the main question.";
+  if(metric==="rarefaction")return "A richness comparison is more believable when samples were sequenced deeply enough for their curves to begin flattening.";
+  return "A treatment or environment can change overall community variety or balance even when the same microbial types are still present.";
+}
+function alphaLearningBoundary(metric){
+  if(metric==="rarefaction")return "It does not show that biological groups differ or that the detected community is beneficial. It only checks how completely variety was sampled.";
+  if(metric==="faith")return "It cannot say whether broader evolutionary diversity is beneficial or which lineage caused a report-level difference. That requires the organism results and the group test.";
+  if(metric==="observed")return "More detected types is not automatically better, and sequencing depth or filtering can change the count. Use the group test to see whether a pattern repeats reliably.";
+  return "The score cannot say whether the community is healthier or which organisms caused the change. Use the report's group test to see whether the pattern repeats reliably.";
+}
+function alphaLearningStandardOutput(metric){
+  var aDist=alphaLearningDistribution(alphaLearningState.aRichness,alphaLearningState.aDominance),bDist=alphaLearningDistribution(alphaLearningState.bRichness,alphaLearningState.bDominance);
+  var a=alphaLearningScore(metric,aDist),b=alphaLearningScore(metric,bDist),copy=alphaLearningMetricCopy(metric);
+  var stage='<div class="alpha-learning-stage">'+[
+    {label:"Example Sample A",dist:aDist,score:a},{label:"Example Sample B",dist:bDist,score:b}
+  ].map(function(sample){return '<section class="alpha-learning-sample"><h4>'+sample.label+'</h4>'+alphaLearningBarHtml(sample.dist)+'<div class="alpha-learning-score"><span class="alpha-learning-score-copy"><span class="alpha-learning-sample-sub">'+sample.dist.length+' detected types</span><span class="alpha-learning-score-label">'+esc(copy.score)+'</span></span><strong>'+alphaLearningScoreText(metric,sample.score)+'</strong></div></section>';}).join("")+'</div>';
+  return {stage:stage,a:a,b:b,aMeta:{richness:aDist.length},bMeta:{richness:bDist.length}};
+}
+function alphaLearningFaithOutput(){
+  var aLeaves=alphaLearningSampleLeaves(alphaLearningState.aRichness,alphaLearningState.aSpread),bLeaves=alphaLearningSampleLeaves(alphaLearningState.bRichness,alphaLearningState.bSpread);
+  var a=alphaLearningFaithPd(aLeaves,ALPHA_FAITH_PATHS,ALPHA_FAITH_LENGTHS),b=alphaLearningFaithPd(bLeaves,ALPHA_FAITH_PATHS,ALPHA_FAITH_LENGTHS);
+  var stage='<div class="alpha-faith-stage">'+[{label:"Example Sample A",leaves:aLeaves,score:a},{label:"Example Sample B",leaves:bLeaves,score:b}].map(function(sample){return '<section class="alpha-learning-sample"><h4>'+sample.label+'</h4>'+alphaFaithTreeSvg(sample.leaves)+'<div class="alpha-learning-score"><span class="alpha-learning-score-copy"><span class="alpha-learning-sample-sub">'+sample.leaves.length+' detected types · highlighted branches count</span><span class="alpha-learning-score-label">Toy branch units</span></span><strong>'+alphaLearningScoreText("faith",sample.score)+'</strong></div></section>';}).join("")+'</div>';
+  return {stage:stage,a:a,b:b,aMeta:{},bMeta:{}};
+}
+function alphaLearningRarefactionOutput(){
+  var a=alphaLearningRarefaction(alphaLearningState.aDepth,alphaLearningState.aCurve),b=alphaLearningRarefaction(alphaLearningState.bDepth,alphaLearningState.bCurve);
+  var stage='<div class="alpha-learning-stage">'+[{label:"Example Sample A",depth:alphaLearningState.aDepth,curve:alphaLearningState.aCurve,score:a},{label:"Example Sample B",depth:alphaLearningState.bDepth,curve:alphaLearningState.bCurve,score:b}].map(function(sample){return '<section class="alpha-learning-sample"><h4>'+sample.label+'</h4>'+alphaRarefactionSvg(sample.depth,sample.curve)+'<div class="alpha-learning-score"><span class="alpha-learning-score-copy"><span class="alpha-learning-sample-sub">'+(sample.curve==="plateau"?'Approaching a plateau':'Still rising')+'</span><span class="alpha-learning-score-label">Features reached</span></span><strong>'+alphaLearningScoreText("rarefaction",sample.score)+'</strong></div></section>';}).join("")+'</div>';
+  return {stage:stage,a:a,b:b,aMeta:{curve:alphaLearningState.aCurve},bMeta:{curve:alphaLearningState.bCurve}};
+}
+function alphaLearningOutputHtml(metric){
+  var result=metric==="faith"?alphaLearningFaithOutput():(metric==="rarefaction"?alphaLearningRarefactionOutput():alphaLearningStandardOutput(metric));
+  return result.stage+'<div class="alpha-meaning-grid is-live" aria-live="polite"><article class="alpha-meaning-card" data-kind="observation"><b>Observation:</b><p>'+alphaLearningComparisonHtml(metric,result.a,result.b,result.aMeta,result.bMeta)+'</p></article></div>';
+}
+function alphaLearningFixedMeaningHtml(metric){
+  return '<div class="alpha-meaning-grid is-fixed"><article class="alpha-meaning-card" data-kind="importance"><b>Why it matters</b><p>'+esc(alphaLearningImportance(metric))+'</p></article><article class="alpha-meaning-card" data-kind="boundary"><b>What this alone cannot tell you</b><p>'+esc(alphaLearningBoundary(metric))+'</p></article></div>';
+}
+function alphaLearningBridge(metric){
+  if(metric==="rarefaction")return "Check that the curves flatten before interpreting richness.";
+  if(metric==="observed")return "Check read depth and the matching group test before claiming that groups differ in detected richness.";
+  if(metric==="faith")return "Use the matching group test before claiming that evolutionary breadth differs between groups.";
+  return "Use the matching group test before claiming that "+alphaLearningMetricCopy(metric).title+" differs between groups.";
+}
+function alphaLearningPanel(d){
+  var options=alphaLearningMetricOptions(d),ids=options.map(function(option){return option.id;});
+  if(ids.indexOf(alphaLearningState.metric)<0){alphaLearningState.metric=ids.indexOf(alphaState.metric)>=0?alphaState.metric:ids[0];alphaLearningState.scenario="";}
+  var metric=alphaLearningState.metric,scenarios=alphaLearningScenarios(metric);
+  if(!alphaLearningState.scenario||(alphaLearningState.scenario!=="custom"&&!scenarios.some(function(item){return item.id===alphaLearningState.scenario;})))setAlphaLearningScenario(metric,scenarios[0].id);
+  var copy=alphaLearningMetricCopy(metric);
+  return '<section class="alpha-learning-shell" id="alpha-example-panel" role="tabpanel" aria-label="Interactive alpha-diversity example">'+
+    '<div class="alpha-learning-metric-head"><div><span class="alpha-learning-section-label">Choose a metric to understand</span><div class="alpha-learning-metrics" role="tablist" aria-label="Alpha-diversity lessons">'+options.map(function(option){return '<button id="alpha-learn-tab-'+esc(option.id)+'" class="alpha-learning-metric" type="button" role="tab" data-alpha-learn-metric="'+esc(option.id)+'" aria-controls="alpha-learning-lesson" aria-selected="'+(option.id===metric?'true':'false')+'" tabindex="'+(option.id===metric?'0':'-1')+'">'+esc(option.label)+'</button>';}).join("")+'</div></div></div>'+
+    alphaLearningStoryHtml(metric)+
+    '<article class="alpha-learning-card" id="alpha-learning-lesson" role="tabpanel" aria-labelledby="alpha-learn-tab-'+esc(metric)+'"><header class="alpha-simulator-heading"><h3>Now try changing the communities</h3><p>'+esc(copy.intro)+' Start with a situation below, then move the controls and watch the meaning change.</p></header>'+
+    '<span class="alpha-learning-section-label">Choose a situation</span><div class="alpha-learning-scenarios">'+scenarios.map(function(item){return '<button class="alpha-learning-scenario" type="button" data-alpha-learn-scenario="'+esc(item.id)+'" aria-pressed="'+(item.id===alphaLearningState.scenario?'true':'false')+'">'+esc(item.label)+'</button>';}).join("")+'</div>'+
+    '<div data-alpha-learning-output style="margin-top:18px">'+alphaLearningOutputHtml(metric)+'</div><div class="alpha-learning-controls-section"><span class="alpha-learning-section-label">Change the example yourself</span>'+alphaLearningControlsHtml(metric)+'</div>'+alphaLearningFixedMeaningHtml(metric)+(copy.detail?'<p class="alpha-learning-metric-detail">'+esc(copy.detail)+'</p>':'')+'</article>'+
+    '<div class="alpha-learning-report-row"><div class="alpha-learning-report-bridge"><span><b>Connect this lesson to your data:</b> '+esc(alphaLearningBridge(metric))+'</span></div><button class="alpha-learning-report-button" type="button" data-alpha-learn-report="'+esc(metric)+'">Return</button></div></section>';
+}
+function refreshAlphaLearningOutput(){
+  var root=$("#alpha-example-panel");if(!root)return;
+  var output=$("[data-alpha-learning-output]",root);if(output)output.innerHTML=alphaLearningOutputHtml(alphaLearningState.metric);
+  $$('[data-alpha-learn-output]',root).forEach(function(node){var key=node.dataset.alphaLearnOutput,suffix=/Dominance|Spread|Depth/i.test(key)?"%":"";node.textContent=alphaLearningState[key]+suffix;});
+}
+function openAlphaReportMetric(metric){
+  var targetMetric=metric==="rarefaction"?"observed":metric,choices=diversityFigureChoices("alpha");
+  var choice=choices.filter(function(item){
+    if(metric==="rarefaction")return item.file&&/rarefaction/.test(figureText(item.file));
+    return item.metric===targetMetric;
+  })[0];
+  if((ds().alphaMetrics||[]).some(function(item){return normalizeAlphaMetricName(item.id||item.label)===targetMetric;}))alphaState.metric=targetMetric;
+  state.chartView.alpha="chart";
+  if(choice)state.chartIndex.alpha=choice.index;
+  state.alphaView="report";
+  showSection("alpha");
+  setTimeout(function(){var target=$("#page-chart");if(target)target.scrollIntoView({behavior:"smooth",block:"start"});},0);
+}
 function secAlpha(){
   var d=ds();
   var isWhatNext=state.chartView.alpha==="what-next";
   var primary=defaultAlphaMetric(d);
   if((d.alphaMetrics||[]).map(function(m){return m.id;}).indexOf(alphaState.metric)<0)alphaState.metric=primary;
   primary=alphaState.metric;
-  var html=head("Diversity","Within Samples and Groups",
+  var html=alphaViewSwitch()+head("Diversity","Within Samples and Groups",
     "Diversity within individual samples and comparisons across the selected groups.");
+  if(state.alphaView==="example"){
+    html+=alphaLearningPanel(d);
+    return html;
+  }
+  html+='<div id="alpha-report-panel" role="tabpanel" aria-label="This report alpha-diversity results">';
   html+=groupSelectorPanel("alpha");
   html+=alternateGroupingScopeNotice(d);
   if(reportTablesLoading()){
     html+=reportTablesLoadingPanel("alpha-diversity");
+    html+='</div>';
     html+=nextBar();
     return html;
   }
@@ -8924,6 +9351,7 @@ function secAlpha(){
     var alphaSupplementMetric=selectedAlphaFig?figureAlphaMetric(d,figureText(selectedAlphaFig)):alphaState.metric;
     html+=supplementFigureStack([alphaSupplementFigureForMetric(alphaSupplementMetric)]);
   }
+  html+='</div>';
   html+=nextBar();
   return html;
 }
@@ -9099,16 +9527,128 @@ function betaWhatNextPanel(d,opts){
 }
 /* ---------------- SECTION: beta ---------------- */
 var betaState={metric:"bray"};
+var betaLearningState={metric:"",scenario:"",separation:70,spread:25};
+function betaViewSwitch(){
+  var example=state.betaView==="example";
+  return '<div class="alpha-view-bar"><div class="alpha-view-tabs" role="tablist" aria-label="Choose beta-diversity view">'+
+    '<button class="alpha-view-tab" type="button" role="tab" data-beta-view="example" aria-controls="beta-example-panel" aria-selected="'+(example?'true':'false')+'" tabindex="'+(example?'0':'-1')+'">Example</button>'+
+    '<button class="alpha-view-tab" type="button" role="tab" data-beta-view="report" aria-controls="beta-report-panel" aria-selected="'+(!example?'true':'false')+'" tabindex="'+(!example?'0':'-1')+'">This report</button></div>'+
+    '<p class="alpha-view-hint">New to beta diversity? Start with Example.</p></div>';
+}
+function betaLearningMetricOptions(d){
+  var labels={bray:"Bray–Curtis",unweighted_unifrac:"Unweighted UniFrac",weighted_unifrac:"Weighted UniFrac"},seen={},options=[];
+  (d.betaMetrics||[]).forEach(function(metric){
+    var id=betaMetricFromText(metric.id||metric.label)||(metric.id||"");
+    if(id&&!seen[id]){seen[id]=true;options.push({id:id,label:labels[id]||metric.label||id});}
+  });
+  if(!options.length)options=[{id:"bray",label:labels.bray},{id:"unweighted_unifrac",label:labels.unweighted_unifrac},{id:"weighted_unifrac",label:labels.weighted_unifrac}];
+  return options;
+}
+function betaLearningMetricCopy(metric){
+  if(metric==="unweighted_unifrac")return {title:"Unweighted UniFrac",intro:"Unweighted UniFrac asks whether samples contain the same branches of the microbial family tree. It uses presence or absence—not abundance—so a rare detected lineage can affect the distance.",noticesTitle:"It compares which lineages are present",notices:"It places the detected microbial types on a phylogenetic tree, then measures how much branch length occurs in only one of the two samples. More unique branches produce a larger distance, so the points appear farther apart.",signal:"the samples contain different evolutionary lineages",why:"It can reveal that lineages were gained or lost, including rare lineages whose abundance would contribute little to other metrics."};
+  if(metric==="weighted_unifrac")return {title:"Weighted UniFrac",intro:"Weighted UniFrac asks whether abundance is distributed similarly across the microbial family tree. It considers both evolutionary relatedness and how common each lineage is.",noticesTitle:"It compares lineages and their abundance",notices:"It places the detected microbial types on a phylogenetic tree, then compares abundance along its branches. Larger abundance differences contribute more to the distance, so samples with different dominant lineages appear farther apart.",signal:"abundance is distributed differently across evolutionary lineages",why:"It can reveal shifts among dominant evolutionary groups without treating closely related microbial types as completely unrelated."};
+  return {title:"Bray–Curtis",intro:"Bray–Curtis asks whether the same microbial types occur in similar proportions. It compares relative abundance without using evolutionary relatedness. A distance near 0 means similar profiles; a distance near 1 means very different profiles.",noticesTitle:"It compares every type's abundance",notices:"It compares each microbial type's relative abundance between two samples, then combines all the differences into one distance. Similar abundance profiles produce a smaller distance, so their points appear closer together.",signal:"their overall microbial abundance profiles differ",why:"It can reveal that microbial proportions changed even when both samples still contain many of the same types."};
+}
+function betaLearningScenarios(){
+  return [{id:"overlap",label:"Groups mostly overlap"},{id:"separated",label:"Groups clearly separate"},{id:"spread",label:"Groups vary internally"}];
+}
+function setBetaLearningScenario(scenario){
+  betaLearningState.scenario=scenario;
+  if(scenario==="overlap"){betaLearningState.separation=12;betaLearningState.spread=36;}
+  else if(scenario==="spread"){betaLearningState.separation=58;betaLearningState.spread=92;}
+  else{betaLearningState.separation=76;betaLearningState.spread=24;}
+}
+function betaLearningStoryHtml(metric){
+  var copy=betaLearningMetricCopy(metric),stories=[
+    {n:"1",label:"The situation",title:"Each point is one sample",text:"The distances between every pair of samples are arranged into a simplified two-dimensional map."},
+    {n:"2",label:"What the metric notices",title:copy.noticesTitle,text:copy.notices},
+    {n:"3",label:"How to read the map",title:"Compare the gaps between points",text:"PCoA 1 and PCoA 2 show the two largest patterns in the distance data. An axis percentage tells how much of the pattern that axis displays. Wider gaps between points—not higher axis values—mean more different communities."}
+  ];
+  return '<div class="alpha-story-board" aria-label="'+esc(copy.title)+' beta-diversity story">'+stories.map(function(scene){return '<article class="alpha-story-scene" data-scene="'+scene.n+'"><span>'+esc(scene.label)+'</span><h3>'+esc(scene.title)+'</h3><p>'+esc(scene.text)+'</p></article>';}).join("")+'</div>';
+}
+function betaLearningPattern(){
+  var separation=betaLearningState.separation,spread=betaLearningState.spread;
+  if(separation>=spread+25)return {id:"clear",label:"Clear separation",summary:"The distance between group centres is large relative to the scatter within each group."};
+  if(spread>=72&&separation>=35)return {id:"variable",label:"High internal variation",summary:"The group centres differ, but each group is widely scattered and the sample clouds overlap."};
+  if(separation<=spread+8)return {id:"overlap",label:"Strong overlap",summary:"Within-group scatter is as large as, or larger than, the distance between group centres."};
+  return {id:"mixed",label:"Mixed pattern",summary:"The group centres differ, but the samples also show substantial within-group scatter."};
+}
+function betaLearningMapSvg(metric){
+  var separation=alphaLearningClamp(betaLearningState.separation,0,100),spread=alphaLearningClamp(betaLearningState.spread,0,100),gap=24+separation*1.35,radius=12+spread*.56;
+  var axisPercent=metric==="weighted_unifrac"?[44.8,22.6]:metric==="unweighted_unifrac"?[33.7,19.4]:[38.4,21.7];
+  var centers=[{x:280-gap/2,y:132,cls:"a",angle:-9},{x:280+gap/2,y:138,cls:"b",angle:11}],offsets={a:[[-1.1,-.55],[-.72,.58],[-.25,-.88],[.15,.15],[.58,.82],[1.08,-.22]],b:[[-1.08,.32],[-.62,-.78],[-.12,.82],[.28,-.18],[.72,.55],[1.05,-.65]]},parts=[];
+  centers.forEach(function(group){
+    var zoneRx=radius*1.35+12,zoneRy=radius*.82+10;
+    parts.push('<ellipse class="zone zone-'+group.cls+'" cx="'+group.x.toFixed(1)+'" cy="'+group.y+'" rx="'+zoneRx.toFixed(1)+'" ry="'+zoneRy.toFixed(1)+'" transform="rotate('+group.angle+' '+group.x.toFixed(1)+' '+group.y+')"/>');
+    offsets[group.cls].forEach(function(offset){var x=group.x+offset[0]*radius,y=group.y+offset[1]*radius;parts.push('<circle class="point point-'+group.cls+'" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="7"/>');});
+  });
+  return '<svg class="beta-learning-map" viewBox="0 0 560 300" role="img" aria-label="Simulated PCoA map with a '+separation+' percent separation control setting and '+spread+' percent within-group variation setting"><rect class="plot-frame" x="76" y="24" width="444" height="214" rx="7"/><path class="axis" d="M76 24V238H520"/><text class="axis-title" x="298" y="276" text-anchor="middle">PCoA 1 ('+axisPercent[0]+'%)</text><text class="axis-title" x="24" y="131" text-anchor="middle" transform="rotate(-90 24 131)">PCoA 2 ('+axisPercent[1]+'%)</text>'+parts.join("")+'</svg>';
+}
+function betaLearningObservation(metric){
+  var pattern=betaLearningPattern(),copy=betaLearningMetricCopy(metric);
+  if(pattern.id==="clear")return {label:pattern.label,text:"Samples within each group are closer to one another than to samples in the other group. Under "+copy.title+", this is consistent with the idea that "+copy.signal+". The map alone cannot show whether the pattern is statistically reliable."};
+  if(pattern.id==="variable")return {label:pattern.label,text:"The group centres are apart, but samples within each group are widely scattered and the clouds overlap. The apparent group difference is therefore inconsistent across samples and may be influenced by within-group variation."};
+  if(pattern.id==="overlap")return {label:pattern.label,text:"The group centres are close and samples from Groups A and B occupy much the same area. Under "+copy.title+", no distinct group pattern is visible, although a statistical test is still needed."};
+  return {label:pattern.label,text:"The groups are partly separated, but samples within the same group also differ substantially. The pattern may not repeat consistently across samples."};
+}
+function betaLearningOutputHtml(metric){
+  var pattern=betaLearningPattern(),observation=betaLearningObservation(metric);
+  return '<div class="beta-learning-stage"><section class="beta-learning-map-card"><header class="beta-learning-map-head"><h4>Example group map</h4><div class="beta-learning-current"><span>Current pattern</span><strong>'+esc(pattern.label)+'</strong></div></header>'+betaLearningMapSvg(metric)+'<div class="beta-learning-legend"><span><i></i>Group A</span><span><i></i>Group B</span></div></section></div>'+
+    '<div class="alpha-meaning-grid is-live" aria-live="polite"><article class="alpha-meaning-card" data-kind="observation"><b>Observation:</b><p><strong class="beta-learning-pattern-mark">'+esc(observation.label)+'</strong><span>'+esc(observation.text)+'</span></p></article></div>';
+}
+function betaLearningControl(label,key,value){
+  return '<div class="alpha-learning-control"><label for="beta-learn-'+esc(key)+'">'+esc(label)+'</label><input id="beta-learn-'+esc(key)+'" type="range" min="0" max="100" value="'+value+'" data-beta-learn-control="'+esc(key)+'"><output data-beta-learn-output="'+esc(key)+'">'+value+'%</output></div>';
+}
+function betaLearningControlsHtml(){
+  return '<div class="alpha-learning-controls beta-learning-controls"><section class="alpha-learning-sample-controls"><h4>Move the example groups</h4>'+betaLearningControl("Distance between groups","separation",betaLearningState.separation)+betaLearningControl("Variation within each group","spread",betaLearningState.spread)+'</section></div>';
+}
+function betaLearningFixedMeaningHtml(metric){
+  var copy=betaLearningMetricCopy(metric);
+  return '<div class="alpha-meaning-grid is-fixed"><article class="alpha-meaning-card" data-kind="importance"><b>Why it matters</b><p>'+esc(copy.why)+'</p></article><article class="alpha-meaning-card" data-kind="boundary"><b>What this alone cannot tell you</b><p>A PCoA-style map shows a pattern, not proof of a group difference. PERMANOVA tests whether group labels explain the distances among samples. PERMDISP checks whether groups simply differ in how widely their samples are scattered.</p></article></div>';
+}
+function betaLearningBridge(metric){
+  return "Use the "+betaLearningMetricCopy(metric).title+" map together with its matching PERMANOVA and PERMDISP results before claiming that the groups differ.";
+}
+function betaLearningPanel(d){
+  var options=betaLearningMetricOptions(d),ids=options.map(function(option){return option.id;});
+  if(ids.indexOf(betaLearningState.metric)<0){betaLearningState.metric=ids.indexOf(betaState.metric)>=0?betaState.metric:ids[0];betaLearningState.scenario="";}
+  if(!betaLearningState.scenario)setBetaLearningScenario("separated");
+  var metric=betaLearningState.metric,copy=betaLearningMetricCopy(metric),scenarios=betaLearningScenarios();
+  return '<section class="alpha-learning-shell beta-learning-shell" id="beta-example-panel" role="tabpanel" aria-label="Interactive beta-diversity example">'+
+    '<div class="alpha-learning-metric-head"><div><span class="alpha-learning-section-label">Choose a distance metric to understand</span><div class="alpha-learning-metrics" role="tablist" aria-label="Beta-diversity lessons">'+options.map(function(option){return '<button id="beta-learn-tab-'+esc(option.id)+'" class="alpha-learning-metric" type="button" role="tab" data-beta-learn-metric="'+esc(option.id)+'" aria-controls="beta-learning-lesson" aria-selected="'+(option.id===metric?'true':'false')+'" tabindex="'+(option.id===metric?'0':'-1')+'">'+esc(option.label)+'</button>';}).join("")+'</div></div></div>'+betaLearningStoryHtml(metric)+
+    '<article class="alpha-learning-card" id="beta-learning-lesson" role="tabpanel" aria-labelledby="beta-learn-tab-'+esc(metric)+'"><header class="alpha-simulator-heading"><h3>Now try moving the sample groups</h3><p>'+esc(copy.intro)+' Start with a situation below, then move the controls and watch the interpretation change.</p></header>'+
+    '<span class="alpha-learning-section-label">Choose a situation</span><div class="alpha-learning-scenarios">'+scenarios.map(function(item){return '<button class="alpha-learning-scenario" type="button" data-beta-learn-scenario="'+esc(item.id)+'" aria-pressed="'+(item.id===betaLearningState.scenario?'true':'false')+'">'+esc(item.label)+'</button>';}).join("")+'</div><div data-beta-learning-output style="margin-top:18px">'+betaLearningOutputHtml(metric)+'</div>'+
+    '<div class="alpha-learning-controls-section"><span class="alpha-learning-section-label">Change the example yourself</span>'+betaLearningControlsHtml()+'</div>'+betaLearningFixedMeaningHtml(metric)+'</article>'+
+    '<div class="alpha-learning-report-row"><div class="alpha-learning-report-bridge"><span><b>Connect this lesson to your data:</b> '+esc(betaLearningBridge(metric))+'</span></div><button class="alpha-learning-report-button" type="button" data-beta-learn-report="'+esc(metric)+'">Return</button></div></section>';
+}
+function refreshBetaLearningOutput(){
+  var root=$("#beta-example-panel");if(!root)return;
+  var output=$("[data-beta-learning-output]",root);if(output)output.innerHTML=betaLearningOutputHtml(betaLearningState.metric);
+  $$('[data-beta-learn-output]',root).forEach(function(node){node.textContent=betaLearningState[node.dataset.betaLearnOutput]+"%";});
+}
+function openBetaReportMetric(metric){
+  var d=ds(),choices=diversityFigureChoices("beta"),choice=choices.filter(function(item){return betaMetricForFigure(d,item.file)===metric;})[0];
+  if((d.betaMetrics||[]).some(function(item){return item.id===metric;}))betaState.metric=metric;
+  state.chartView.beta="chart";if(choice)state.chartIndex.beta=choice.index;
+  state.betaView="report";showSection("beta");
+  setTimeout(function(){var target=$("#page-chart");if(target)target.scrollIntoView({behavior:"smooth",block:"start"});},0);
+}
 function secBeta(){
   var d=ds();
   var isWhatNext=state.chartView.beta==="what-next";
   if((d.betaMetrics||[]).map(function(m){return m.id;}).indexOf(betaState.metric)<0)betaState.metric=defaultBetaMetric(d);
-  var html=head("Diversity","Between Samples & Groups",
+  var html=betaViewSwitch()+head("Diversity","Between Samples & Groups",
     "Whole-community differences across samples and selected groups.");
+  if(state.betaView==="example"){
+    html+=betaLearningPanel(d);
+    return html;
+  }
+  html+='<div id="beta-report-panel" role="tabpanel" aria-label="This report beta-diversity results">';
   html+=groupSelectorPanel("beta");
   html+=alternateGroupingScopeNotice(d);
   if(reportTablesLoading()){
     html+=reportTablesLoadingPanel("beta-diversity");
+    html+='</div>';
     html+=nextBar();
     return html;
   }
@@ -9124,6 +9664,7 @@ function secBeta(){
   }
   if(!isWhatNext)html+='<div class="guided-anchor">'+betaSelfExperimentPanel(d)+'</div>';
   if(!isWhatNext)html+=betaSupplementFigurePanel(d,betaState.metric,selectedBetaFig);
+  html+='</div>';
   html+=nextBar();
   return html;
 }
@@ -10133,6 +10674,101 @@ function wireBhCorrectionGuides(){
 function wireSectionButtons(){
   wireReleasedChartLoadState();
   wireBhCorrectionGuides();
+  $$('[data-alpha-view]',$('#content')).forEach(function(button){
+    button.addEventListener('click',function(){
+      state.alphaView=button.dataset.alphaView==='example'?'example':'report';
+      showSection('alpha',{preserveScroll:true});
+    });
+    button.addEventListener('keydown',function(event){
+      if(event.key!=='ArrowLeft'&&event.key!=='ArrowRight'&&event.key!=='Home'&&event.key!=='End')return;
+      event.preventDefault();
+      var next=event.key==='ArrowLeft'||event.key==='Home'?'example':'report';
+      state.alphaView=next;showSection('alpha',{preserveScroll:true});
+      setTimeout(function(){var target=$('[data-alpha-view="'+next+'"]',$('#content'));if(target)target.focus();},0);
+    });
+  });
+  $$('[data-alpha-learn-metric]',$('#content')).forEach(function(button){
+    button.addEventListener('click',function(){
+      alphaLearningState.metric=button.dataset.alphaLearnMetric;
+      alphaLearningState.scenario='';
+      showSection('alpha',{preserveScroll:true});
+    });
+    button.addEventListener('keydown',function(event){
+      var buttons=$$('[data-alpha-learn-metric]',$('#content')),index=buttons.indexOf(button),next=-1;
+      if(event.key==='ArrowRight')next=(index+1)%buttons.length;
+      if(event.key==='ArrowLeft')next=(index-1+buttons.length)%buttons.length;
+      if(event.key==='Home')next=0;
+      if(event.key==='End')next=buttons.length-1;
+      if(next<0)return;
+      event.preventDefault();
+      alphaLearningState.metric=buttons[next].dataset.alphaLearnMetric;alphaLearningState.scenario='';
+      showSection('alpha',{preserveScroll:true});
+      setTimeout(function(){var target=$('[data-alpha-learn-metric="'+alphaLearningState.metric+'"]',$('#content'));if(target)target.focus();},0);
+    });
+  });
+  $$('[data-alpha-learn-scenario]',$('#content')).forEach(function(button){button.addEventListener('click',function(){
+    setAlphaLearningScenario(alphaLearningState.metric,button.dataset.alphaLearnScenario);
+    showSection('alpha',{preserveScroll:true});
+  });});
+  $$('[data-alpha-story-image]',$('#content')).forEach(function(button){button.addEventListener('click',function(){
+    var gallery=button.closest('.is-image-story'),main=gallery&&$('[data-alpha-story-main]',gallery);
+    if(!gallery||!main)return;
+    main.src=button.dataset.src||main.src;
+    main.alt=button.dataset.alt||main.alt;
+    $$('[data-alpha-story-image]',gallery).forEach(function(item){item.setAttribute('aria-pressed',item===button?'true':'false');});
+  });});
+  $$('[data-alpha-learn-report]',$('#content')).forEach(function(button){button.addEventListener('click',function(){
+    openAlphaReportMetric(button.dataset.alphaLearnReport||alphaLearningState.metric);
+  });});
+  $$('[data-alpha-learn-control]',$('#content')).forEach(function(input){input.addEventListener('input',function(){
+    alphaLearningState[input.dataset.alphaLearnControl]=Number(input.value);
+    alphaLearningState.scenario='custom';
+    $$('[data-alpha-learn-scenario]',$('#content')).forEach(function(button){button.setAttribute('aria-pressed','false');});
+    refreshAlphaLearningOutput();
+  });});
+  $$('[data-beta-view]',$('#content')).forEach(function(button){
+    button.addEventListener('click',function(){
+      state.betaView=button.dataset.betaView==='example'?'example':'report';
+      showSection('beta',{preserveScroll:true});
+    });
+    button.addEventListener('keydown',function(event){
+      if(event.key!=='ArrowLeft'&&event.key!=='ArrowRight'&&event.key!=='Home'&&event.key!=='End')return;
+      event.preventDefault();
+      var next=event.key==='ArrowLeft'||event.key==='Home'?'example':'report';
+      state.betaView=next;showSection('beta',{preserveScroll:true});
+      setTimeout(function(){var target=$('[data-beta-view="'+next+'"]',$('#content'));if(target)target.focus();},0);
+    });
+  });
+  $$('[data-beta-learn-metric]',$('#content')).forEach(function(button){
+    button.addEventListener('click',function(){
+      betaLearningState.metric=button.dataset.betaLearnMetric;betaLearningState.scenario='';
+      showSection('beta',{preserveScroll:true});
+    });
+    button.addEventListener('keydown',function(event){
+      var buttons=$$('[data-beta-learn-metric]',$('#content')),index=buttons.indexOf(button),next=-1;
+      if(event.key==='ArrowRight')next=(index+1)%buttons.length;
+      if(event.key==='ArrowLeft')next=(index-1+buttons.length)%buttons.length;
+      if(event.key==='Home')next=0;
+      if(event.key==='End')next=buttons.length-1;
+      if(next<0)return;
+      event.preventDefault();
+      betaLearningState.metric=buttons[next].dataset.betaLearnMetric;betaLearningState.scenario='';
+      showSection('beta',{preserveScroll:true});
+      setTimeout(function(){var target=$('[data-beta-learn-metric="'+betaLearningState.metric+'"]',$('#content'));if(target)target.focus();},0);
+    });
+  });
+  $$('[data-beta-learn-scenario]',$('#content')).forEach(function(button){button.addEventListener('click',function(){
+    setBetaLearningScenario(button.dataset.betaLearnScenario);
+    showSection('beta',{preserveScroll:true});
+  });});
+  $$('[data-beta-learn-control]',$('#content')).forEach(function(input){input.addEventListener('input',function(){
+    betaLearningState[input.dataset.betaLearnControl]=Number(input.value);betaLearningState.scenario='custom';
+    $$('[data-beta-learn-scenario]',$('#content')).forEach(function(button){button.setAttribute('aria-pressed','false');});
+    refreshBetaLearningOutput();
+  });});
+  $$('[data-beta-learn-report]',$('#content')).forEach(function(button){button.addEventListener('click',function(){
+    openBetaReportMetric(button.dataset.betaLearnReport||betaLearningState.metric);
+  });});
   $$('[data-result-next-toggle]',$('#content')).forEach(function(button){
     button.addEventListener('click',function(){
       var panelId=button.getAttribute('aria-controls'),panel=panelId?document.getElementById(panelId):null;

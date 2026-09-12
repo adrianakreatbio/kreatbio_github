@@ -104,6 +104,12 @@ fi
 
 if [[ "$deploy_cloud_run" == true ]]; then
   image="$artifact_image:$release_commit"
+  cloud_run_secrets="SESSION_SECRET=kreatbio-report-session-secret:latest"
+  if gcloud secrets describe kreatbio-resend-api-key --project "$gcp_project" >/dev/null 2>&1; then
+    cloud_run_secrets+=",RESEND_API_KEY=kreatbio-resend-api-key:latest"
+  else
+    printf 'Warning: kreatbio-resend-api-key is not configured; direct event email will remain unavailable.\n'
+  fi
   printf '\nDeploying private-report API to Cloud Run...\n'
   gcloud builds submit "$backend_dir" \
     --project "$gcp_project" \
@@ -123,7 +129,7 @@ if [[ "$deploy_cloud_run" == true ]]; then
     --concurrency 20 \
     --cpu-throttling \
     --env-vars-file "$backend_dir/deploy/cloud-run/env.yaml" \
-    --set-secrets SESSION_SECRET=kreatbio-report-session-secret:latest \
+    --set-secrets "$cloud_run_secrets" \
     --quiet
   curl --retry 8 --retry-all-errors -fsS "$report_api_url/api/health" >/dev/null
 else

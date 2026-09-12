@@ -127,6 +127,22 @@ Important Cloud Run variables:
 - `GCS_SIGNED_URL_TTL_SECONDS`: temporary file-link lifetime.
 - `PORTAL_ORIGIN`: allowed browser origins.
 - `SESSION_SECRET`: supplied from Secret Manager.
+- `RESEND_API_KEY`: sending-only Resend key supplied from Secret Manager as `kreatbio-resend-api-key`.
+- `EVENT_EMAIL_FROM` and `EVENT_EMAIL_TO`: verified sender and registration recipient for website event enquiries.
+
+## Event Registration Email
+
+The public Events page submits registrations to `POST /api/events/register`. The endpoint validates the event against the server-side catalogue, rate-limits requests by address, silently suppresses the honeypot field, and sends a plain-text email to the configured recipient. The participant's address is set as reply-to.
+
+Before deploying direct email for the first time, verify `kreatbio.com` with Resend and create the Cloud Secret Manager secret:
+
+```bash
+printf '%s' 'YOUR_RESEND_SENDING_KEY' | gcloud secrets create kreatbio-resend-api-key \
+  --project project-045c22a7-6787-403c-8c6 \
+  --data-file=-
+```
+
+If the secret already exists, add a new version instead. The normal deployment script attaches the secret when it is available. Without it, the endpoint returns an unavailable response and the website does not display a false success message.
 
 Important Hostinger variables:
 
