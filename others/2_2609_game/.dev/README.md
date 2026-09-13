@@ -44,7 +44,7 @@ This refreshes the four public entries in the parent folder. Generated `game.js`
 
 ## Accessibility and sound
 
-Open **Aa** for larger text, text navigation, assisted return and volume. Text navigation describes nearby tiles and changes movement to one tile per press. R repeats the surroundings. Direction buttons support keyboard activation as well as touch. Menu focus stays within dialogs. Scan results require the explicit × button; incidental clicks and Escape do not dismiss them.
+Open **Aa** for larger text, text navigation, assisted return, direction-pad side and volume. The direction pad overlays the left or right edge of the viewport, vertically centered and inset from the very bottom edge, so held presses can't stray into a device's edge gestures or browser chrome; Aa switches which side it's on. Text navigation describes nearby tiles and changes movement to one tile per press. R repeats the surroundings. Direction buttons support keyboard activation as well as touch. Menu focus stays within dialogs. Scan results require the explicit × button; incidental clicks and Escape do not dismiss them.
 
 The game respects the reduced-motion preference for CSS and canvas effects. Sound uses quiet generated event cues; rapid digging is throttled. Volume and mute persist separately from the game save. A zero volume setting is silent. Text navigation and layouts have browser automation coverage; physical-device comfort, actual screen-reader behavior and subjective listening quality require human testing.
 

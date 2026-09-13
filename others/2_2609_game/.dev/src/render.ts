@@ -146,8 +146,9 @@ export class Renderer {
       c.moveTo(-size * 1.5, -size); c.lineTo(-size * .8, -size * .3); c.moveTo(-size * 1.4, size); c.lineTo(-size * 2, size * 1.4); c.stroke();
       c.strokeStyle = scanned ? '#72eadc' : '#ffc857'; c.lineWidth = 2;
       c.beginPath(); c.arc(0, 0, size * .43, 0, Math.PI * 2); c.stroke();
-      c.fillStyle = '#12262dee'; c.fill(); c.fillStyle = scanned ? '#72eadc' : '#ffc857';
-      c.font = 'bold 13px monospace'; c.textAlign = 'center'; c.fillText(scanned ? '✓' : 'E', 0, 5);
+      c.fillStyle = '#12262dee'; c.fill();
+      if (scanned) { c.fillStyle = '#72eadc'; c.font = 'bold 13px monospace'; c.textAlign = 'center'; c.fillText('✓', 0, 5); }
+      else this.goldBars(size);
       // Stylized rods for bacteria; branching hyphae for the fungal clue.
       // These are illustrations revealed by the scan, not microscopic identification.
       if (scanned) {
@@ -222,6 +223,22 @@ export class Renderer {
       alarm.addColorStop(0, '#ff3d5e00'); alarm.addColorStop(1, `rgba(255,61,94,${(.14 + .2 * urgency) * pulse})`);
       c.fillStyle = alarm; c.fillRect(0, 0, this.width, this.height);
     }
+  }
+  // Unscanned gold markers read as a stack of ingots — a clearer "collect me" cue than a bare letter.
+  goldBars(size: number) {
+    const c = this.ctx, barH = size * .14, gap = size * .03;
+    let bottom = size * .27;
+    for (const w of [size * .58, size * .44, size * .3]) {
+      const top = bottom - barH;
+      c.fillStyle = '#b8860f'; c.strokeStyle = '#6e4c12'; c.lineWidth = 1;
+      c.beginPath(); c.roundRect(-w / 2, top, w, barH, 2); c.fill(); c.stroke();
+      c.fillStyle = '#ffe08a';
+      c.beginPath(); c.roundRect(-w / 2 + 1.2, top + 1, w - 2.4, barH * .4, 1.4); c.fill();
+      bottom = top - gap;
+    }
+    c.strokeStyle = '#fff6d6'; c.lineWidth = 1.1;
+    const sx0 = size * .2, sy0 = -size * .3;
+    c.beginPath(); c.moveTo(sx0 - 3, sy0); c.lineTo(sx0 + 3, sy0); c.moveTo(sx0, sy0 - 3); c.lineTo(sx0, sy0 + 3); c.stroke();
   }
   microbe(x: number, y: number, size: number, time: number, hurt: boolean) {
     const c = this.ctx; c.save(); c.translate(x, y); c.rotate(Math.sin(time * 2) * .06);
