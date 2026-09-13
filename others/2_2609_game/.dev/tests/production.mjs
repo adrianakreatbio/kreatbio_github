@@ -30,14 +30,14 @@ try {
   await page.keyboard.down('s');await page.waitForTimeout(700);await page.keyboard.up('s');
   assert.notEqual(await page.locator('#depth').innerText(), '0 tiles');
   await page.keyboard.press('Escape');
-  const paused = await page.evaluate(() => JSON.parse(localStorage.getItem('kreatbio.microload.save')).state);
+  const paused = await page.evaluate(() => JSON.parse(sessionStorage.getItem('kreatbio.microload.save')).state);
   await page.waitForTimeout(250); await page.keyboard.press('s');
   await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
-  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('kreatbio.microload.save')).state), paused);
+  assert.deepEqual(await page.evaluate(() => JSON.parse(sessionStorage.getItem('kreatbio.microload.save')).state), paused);
   await page.screenshot({ path: 'test-results/production-nested.png', fullPage: true });
   // Denied storage must still permit a new session and movement.
   const blocked = await browser.newPage();
-  await blocked.addInitScript(() => { Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('Blocked', 'SecurityError'); } }); });
+  await blocked.addInitScript(() => { for (const key of ['localStorage', 'sessionStorage']) Object.defineProperty(window, key, { get() { throw new DOMException('Blocked', 'SecurityError'); } }); });
   await blocked.goto(`http://127.0.0.1:5191${mount}`);
   await blocked.getByRole('button', { name: 'Begin the adventure' }).click(); await blocked.getByRole('button', { name: 'Let’s dig' }).click();
   assert.match(await blocked.locator('#save-status').innerText(), /UNAVAILABLE/);

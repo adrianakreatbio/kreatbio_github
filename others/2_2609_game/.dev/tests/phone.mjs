@@ -6,23 +6,27 @@ const {newGame}=await import('data:text/javascript;base64,'+Buffer.from(bundle.o
 const browser=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox']});
 const page=await browser.newPage({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
-const read=()=>page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return JSON.parse(localStorage.getItem('kreatbio.microload.save')).state;});
+const read=()=>page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return JSON.parse(sessionStorage.getItem('kreatbio.microload.save')).state;});
 const seed=newGame(2609);
-await page.addInitScript(s=>{const pending=sessionStorage.getItem('fixture');if(pending){localStorage.setItem('kreatbio.microload.save',pending);sessionStorage.removeItem('fixture');}if(!localStorage.getItem('kreatbio.microload.save'))localStorage.setItem('kreatbio.microload.save',JSON.stringify({version:5,state:s}));},seed);
+await page.addInitScript(s=>{const pending=sessionStorage.getItem('fixture');if(pending){sessionStorage.setItem('kreatbio.microload.save',pending);sessionStorage.removeItem('fixture');}if(!sessionStorage.getItem('kreatbio.microload.save'))sessionStorage.setItem('kreatbio.microload.save',JSON.stringify({version:5,state:s}));},seed);
 const cdp=await page.context().newCDPSession(page);
-const point=async dir=>{const r=await page.locator(`[data-direction=${dir}]`).boundingBox();return {x:r.x+r.width/2,y:r.y+r.height/2,id:1};};
+// The joystick plants at first touch and reads direction from the drag offset, so tests
+// touch down at a fixed anchor in the viewport, then drag away from it to pick a direction.
+const anchor=async()=>{const r=await page.locator('.viewport').boundingBox();return {x:r.x+r.width/2,y:r.y+r.height/2};};
+const drag=(a,dir,dist=60)=>{const d={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[dir];return {x:a.x+d[0]*dist,y:a.y+d[1]*dist,id:1};};
 const touch=async(type,p)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:p?[p]:[]});
 async function fixture(s){await page.evaluate(state=>sessionStorage.setItem('fixture',JSON.stringify({version:5,state})),s);await page.reload();await page.getByRole('button',{name:'Continue culture'}).click();}
 try {
  await page.goto(process.env.BASE_URL||'http://localhost:5174');await page.getByRole('button',{name:'Continue culture'}).click();
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  const bounds=await page.locator('.game-shell').boundingBox();assert.ok(bounds.y+bounds.height<=844);
- await touch('touchStart',await point('down'));await page.waitForTimeout(900);
+ let a=await anchor();
+ await touch('touchStart',{...a,id:1});await touch('touchMove',drag(a,'down'));await page.waitForTimeout(900);
  const moved=await read();assert.ok(moved.player.y>seed.player.y+1,'holding moves repeatedly');
- await touch('touchMove',await point('right'));await page.waitForTimeout(650);const turned=await read();assert.equal(turned.player.cargo.length,0,'unscanned soil cannot yield nutrients');assert.ok(turned.player.x>moved.player.x,'slide turns without lifting');
+ await touch('touchMove',drag(a,'right'));await page.waitForTimeout(650);const turned=await read();assert.equal(turned.player.cargo.length,0,'unscanned soil cannot yield nutrients');assert.ok(turned.player.x>moved.player.x,'slide turns without lifting');
  await touch('touchEnd');const stopped=await read();await page.waitForTimeout(400);assert.deepEqual((await read()).player,stopped.player);
  assert.equal(await page.evaluate(()=>scrollY),0);
- await touch('touchStart',await point('left'));await touch('touchCancel');const cancelled=await read();await page.waitForTimeout(400);assert.deepEqual((await read()).player,cancelled.player);
+ a=await anchor();await touch('touchStart',{...a,id:1});await touch('touchMove',drag(a,'left'));await touch('touchCancel');const cancelled=await read();await page.waitForTimeout(400);assert.deepEqual((await read()).player,cancelled.player);
  await page.screenshot({path:'test-results/phone-hud.png',fullPage:true});
  for(const [width,height] of [[320,568],[844,390]]) {
   await page.setViewportSize({width,height});await page.waitForTimeout(300);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
@@ -32,9 +36,9 @@ try {
  // Assisted-return recall must suppress the still-held touch until a fresh press.
  await page.evaluate(()=>localStorage.setItem('microload.assistReturn','true'));
  const full=newGame(2609);full.scans=full.world.samples.map(s=>s.id);full.player={x:20,y:10,energy:100,health:80,cargo:Array(9).fill('N')};full.world.tiles[10*40+20]=0;full.world.tiles[10*40+21]=3;
- await fixture(full);await touch('touchStart',await point('right'));await page.waitForTimeout(900);const returned=await read();assert.equal(returned.player.y,2);assert.equal(returned.trips,1);assert.equal(returned.deposited.P,1);
- await touch('touchMove',await point('down'));await page.waitForTimeout(350);assert.equal((await read()).player.y,2);await touch('touchEnd');
- await touch('touchStart',await point('down'));await page.waitForTimeout(350);await touch('touchEnd');assert.ok((await read()).player.y>2);
+ await fixture(full);a=await anchor();await touch('touchStart',{...a,id:1});await touch('touchMove',drag(a,'right'));await page.waitForTimeout(900);const returned=await read();assert.equal(returned.player.y,2);assert.equal(returned.trips,1);assert.equal(returned.deposited.P,1);
+ await touch('touchMove',drag(a,'down'));await page.waitForTimeout(350);assert.equal((await read()).player.y,2);await touch('touchEnd');
+ a=await anchor();await touch('touchStart',{...a,id:1});await touch('touchMove',drag(a,'down'));await page.waitForTimeout(350);await touch('touchEnd');assert.ok((await read()).player.y>2);
  await page.evaluate(()=>localStorage.removeItem('microload.assistReturn'));
  // Unknown nutrients become mapped; modal remains until explicit close.
  const sample=newGame(2609),site=sample.world.samples.find(s=>s.id==='root-partner');sample.player.x=site.x;sample.player.y=site.y;sample.world.tiles[(site.y+1)*40+site.x]=2;

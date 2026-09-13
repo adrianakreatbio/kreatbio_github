@@ -9,7 +9,7 @@ const errors = []; page.on('pageerror', e => errors.push(e.message));
 await mkdir('test-results', { recursive: true });
 await page.addInitScript(() => { Date.now = () => 2609; }); // Fix only the generation seed, never simulation time.
 const began = performance.now();
-const read = () => page.evaluate(() => { window.dispatchEvent(new Event('pagehide')); return JSON.parse(localStorage.getItem('kreatbio.microload.save')).state; });
+const read = () => page.evaluate(() => { window.dispatchEvent(new Event('pagehide')); return JSON.parse(sessionStorage.getItem('kreatbio.microload.save')).state; });
 let lastTrips = -1, returning = false, reloaded = false;
 try {
   await page.goto(process.env.BASE_URL || 'http://localhost:5173');
@@ -55,7 +55,7 @@ try {
       await page.keyboard.down(key);
       await page.waitForFunction(({ x, y, deaths, trips, dx, dy }) => {
         window.dispatchEvent(new Event('pagehide'));
-        const s = JSON.parse(localStorage.getItem('kreatbio.microload.save')).state;
+        const s = JSON.parse(sessionStorage.getItem('kreatbio.microload.save')).state;
         return (dx > 0 ? s.player.x >= x : dx < 0 ? s.player.x <= x : dy > 0 ? s.player.y >= y : s.player.y <= y) || s.deaths !== deaths || s.trips !== trips || s.won;
       }, { x, y, deaths, trips, dx, dy }, { polling: 'raf', timeout: 15000 });
       await page.keyboard.up(key); await page.waitForTimeout(20);

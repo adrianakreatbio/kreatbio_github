@@ -26,7 +26,7 @@ This refreshes the four public entries in the parent folder. Generated `game.js`
 
 ## Controls and progression
 
-- Hold the direction pad, WASD or arrows to move/dig. Slide between pad arrows to turn; release to stop. Tap Scan or press E beside a gold marker.
+- Touch anywhere on the world and drag — up, down, left or right — to move/dig, MOBA-joystick style; a floating stick appears wherever you first touch. Or use WASD/arrows on a keyboard. Let go (or release the key) to stop. Tap Scan or press E beside a gold marker. The tutorial screen shows the drag gesture before you start.
 - Ten gold DNA samples, depth-ordered by real ecology. Three surveys (Rhizobium, Bacillus, the Fusarium risk sample) unlock the nutrient areas; seven discoveries (Pseudomonas, Azotobacter, Streptomyces, a mycorrhizal fungus, Trichoderma, Nitrosomonas, a soil archaeon) each pay ✦25 and fill the Field Journal. The gold **◉ COLLECT GOLDS** counter in the header tracks all ten and opens the journal. Winning requires 12 N/P/K delivered plus all ten scans.
 - The first sample sits six digs below HOME; short prompts guide the descent, scanning, collection and the first delivery. Notes contains the complete rules.
 - Before scanning, nutrients look like ordinary soil. Digging preserves their deposits beneath the tunnel. Once that area is scanned, walk over preserved deposits to collect them; no new wall appears, including beneath the player.
@@ -44,7 +44,7 @@ This refreshes the four public entries in the parent folder. Generated `game.js`
 
 ## Accessibility and sound
 
-Open **Aa** for larger text, text navigation, assisted return, direction-pad side and volume. The direction pad overlays the left or right edge of the viewport, vertically centered and inset from the very bottom edge, so held presses can't stray into a device's edge gestures or browser chrome; Aa switches which side it's on. Text navigation describes nearby tiles and changes movement to one tile per press. R repeats the surroundings. Direction buttons support keyboard activation as well as touch. Menu focus stays within dialogs. Scan results require the explicit × button; incidental clicks and Escape do not dismiss them.
+Open **Aa** for larger text, text navigation, assisted return and volume. Text navigation describes nearby tiles and changes movement to one tile per press — press an arrow key once, or drag a short distance and let go; R repeats the surroundings. Menu focus stays within dialogs. Scan results require the explicit × button; incidental clicks and Escape do not dismiss them.
 
 The game respects the reduced-motion preference for CSS and canvas effects. Sound uses quiet generated event cues; rapid digging is throttled. Volume and mute persist separately from the game save. A zero volume setting is silent. Text navigation and layouts have browser automation coverage; physical-device comfort, actual screen-reader behavior and subjective listening quality require human testing.
 
@@ -58,7 +58,7 @@ The depth structure follows real soil science with stated simplifications: organ
 
 ## Saving
 
-Save format v8 uses `kreatbio.microload.save` in browser storage. It includes preserved underground deposits, per-item cargo values, deepest-dive record, optional challenge, terrain, nutrients, scans, upgrades and progress. Saves occur on major events, pause, page exit and every five active seconds. Storage failures permit session-only play. The assisted-return, text-navigation, larger-text and volume preferences persist separately from the game save.
+Progress is intentionally not kept between visits: many different people play from the same shared link, so every fresh visit (new tab, or the tab reopened after being closed) starts a brand-new culture rather than resuming a stranger's world. Save format v8 uses `kreatbio.microload.save` in `sessionStorage`, scoped to that one browser tab — it survives an accidental page refresh mid-session (including preserved underground deposits, per-item cargo values, deepest-dive record, optional challenge, terrain, nutrients, scans, upgrades and progress) but disappears as soon as the tab is closed. Saves occur on major events, pause, page exit and every five active seconds. Storage failures permit session-only play. The assisted-return, text-navigation, larger-text and volume preferences use `localStorage` instead and persist across visits on the same browser, since they're personal comfort settings rather than game progress.
 
 Existing v1–v7 saves migrate without resetting progress; the seven discovery sites and the earthworms are added to older worlds so their expanded goal stays reachable. V3 moves the first sample beside HOME. Older resource layouts are retained; start a new culture to use the strict stratification, deeper first sample, denser pathogens/rocks, deep pockets and waterlogged shortcuts. Previously earned multi-level upgrades keep their effects and can be extended in the shop. V1's original save is backed up when storage permits. Reset requires an explicit confirmation.
 

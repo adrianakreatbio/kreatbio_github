@@ -17,10 +17,10 @@ try {
   assert.notEqual(await page.locator('#depth').innerText(), '0 tiles');
   await page.keyboard.press('Escape');
   assert.match(await page.locator('#overlay').innerText(), /little breather/);
-  const snapshot = await page.evaluate(() => JSON.parse(localStorage.getItem('kreatbio.microload.save')));
+  const snapshot = await page.evaluate(() => JSON.parse(sessionStorage.getItem('kreatbio.microload.save')));
   await page.waitForTimeout(200); await page.reload();
   await page.getByRole('button', { name: 'Continue culture' }).waitFor();
-  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('kreatbio.microload.save'))), snapshot);
+  assert.deepEqual(await page.evaluate(() => JSON.parse(sessionStorage.getItem('kreatbio.microload.save'))), snapshot);
   await page.getByRole('button', { name: 'Continue culture' }).click();
   await page.keyboard.press('m'); assert.match(await page.locator('#mute').innerText(), /OFF/);
   await page.keyboard.press('m'); assert.match(await page.locator('#mute').innerText(), /ON/);
@@ -42,7 +42,7 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: 'test-results/mobile.png', fullPage: true });
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
-  await page.addInitScript(() => localStorage.setItem('kreatbio.microload.save', '{bad'));
+  await page.addInitScript(() => sessionStorage.setItem('kreatbio.microload.save', '{bad'));
   await page.reload(); await page.getByRole('button', { name: 'Begin the adventure' }).waitFor();
   assert.match(await page.locator('#overlay').innerText(), /damaged|could not be read/);
   assert.deepEqual(errors, []);
