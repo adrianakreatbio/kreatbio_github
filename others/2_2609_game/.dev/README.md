@@ -1,6 +1,6 @@
 # Microload — read the soil, help life grow
 
-A short soil exploration game for KreatBio. Scan three soil samples, deliver 12 each of nitrogen, phosphorus and potassium, and return HOME to restore a pea plant.
+A short soil exploration game for KreatBio. Meet ten real soil organisms, deliver 12 each of nitrogen, phosphorus and potassium, and return HOME to restore a pea plant.
 
 ## Open locally
 
@@ -27,14 +27,16 @@ This refreshes the four public entries in the parent folder. Generated `game.js`
 ## Controls and progression
 
 - Hold the direction pad, WASD or arrows to move/dig. Slide between pad arrows to turn; release to stop. Tap Scan or press E beside a gold marker.
-- The first sample is one step down from HOME. Short prompts guide scanning, collection and the first delivery. Notes contains the complete rules.
+- Ten gold DNA samples, depth-ordered by real ecology. Three surveys (Rhizobium, Bacillus, the Fusarium risk sample) unlock the nutrient areas; seven discoveries (Pseudomonas, Azotobacter, Streptomyces, a mycorrhizal fungus, Trichoderma, Nitrosomonas, a soil archaeon) each pay ✦25 and fill the Field Journal. The gold **◉ LEARN THE SOIL** counter in the header tracks all ten and opens the journal. Winning requires 12 N/P/K delivered plus all ten scans.
+- The first sample sits six digs below HOME; short prompts guide the descent, scanning, collection and the first delivery. Notes contains the complete rules.
 - Before scanning, nutrients look like ordinary soil. Digging preserves their deposits beneath the tunnel. Once that area is scanned, walk over preserved deposits to collect them; no new wall appears, including beneath the player.
-- Each new world contains 16 N, 16 P and 16 K across three survey areas, stratified like real soil: the topsoil area is nitrogen-rich, the subsoil area phosphorus-rich, the deepest potassium-rich. Any two areas leave at least one target incomplete. Ten bonus potassium pockets sit below the deepest survey in the C horizon — surplus credits, never required for the plant.
+- Each new world contains 16 N, 16 P and 16 K, strictly stratified like real soil: nitrogen only in the topsoil survey area, phosphorus only in the subsoil area, potassium only in the deepest — every survey is mandatory and every trip has a purpose. Ten bonus potassium pockets sit below the deepest survey in the C horizon — surplus credits, never required for the plant.
+- Pathogen pressure rises with depth: more roamers spawn per band, and deeper ones move faster and hunt from further away. Rock fragments also thicken toward the parent material (4/7/10% by horizon) and render as pale faceted stone, forcing detours that strain the energy budget.
 - A tinted surveyed area and dashed border distinguish mapped from unmapped soil. The compass directs you toward remaining samples. Marked safe routes avoid optional hazard shortcuts. Blue waterlogged pockets in the deep band are passable shortcuts that slowly stress the microbe (low oxygen).
 - Orange food is available without scanning, restores up to 30 energy, and only appears in the topsoil — organic matter declines with depth, so deep trips must be budgeted. HOME fully repairs/refills and deposits.
 - Full cargo stops collection; bring it HOME yourself. The HUD shows a minimum ⚡ estimate for the trip, and the screen edge pulses red at low energy. Assisted return (Aa settings) restores the old automatic delivery, and pairs well with text navigation.
 - Zero energy or health loses the current cargo and returns HOME. In balanced worlds, lost cargo returns to the soil with no credits or plant progress; total supply remains finite.
-- Delivered nutrients earn research credits by the depth they were collected at: ✦10 topsoil, ✦20 subsoil, ✦35 C horizon. Upgrades now have three tiers each (digestion 60/110/180, energy 80/130/190, storage 60/110/180, membrane 50/90/150); the full ladder costs exactly the maximum income of a perfectly harvested world.
+- Delivered nutrients earn research credits by the depth they were collected at: ✦10 topsoil, ✦20 subsoil, ✦35 C horizon. Upgrades have three tiers each (digestion 60/110/220, energy 80/130/240, storage 60/110/220, membrane 50/90/195); the full ladder costs exactly the maximum research income of a perfectly harvested world including all discovery bonuses.
 - The header names the current horizon (A/B/C) with a milestone note on first entry, and the depth readout tracks your deepest dive.
 - Replay cycles optional challenges: explore freely, finish without cargo loss, or use at most four deliveries. The core win condition stays the same. Missing a bonus never blocks restoring the plant. After victory the deep survey stays open: keep harvesting, upgrading and diving.
 
@@ -46,7 +48,7 @@ The game respects the reduced-motion preference for CSS and canvas effects. Soun
 
 ## Science and simplifications
 
-`src/biology.ts` contains nutrient roles, strain/context qualifications and source links. The workflow explicitly separates DNA reading/matching from a soil survey that locates existing deposits. A DNA match alone does not measure fertility, nutrient levels, microbial activity or disease.
+`src/biology.ts` contains nutrient roles, strain/context qualifications and source links for all ten organisms — Rhizobium, Pseudomonas fluorescens, Azotobacter, Streptomyces, Bacillus, the mycorrhizal fungus Rhizophagus, Trichoderma, Nitrosomonas, the Fusarium species complex and the archaeon Nitrososphaera. Every entry states that a DNA match shows presence, not measured activity. The workflow explicitly separates DNA reading/matching from a soil survey that locates existing deposits. A DNA match alone does not measure fertility, nutrient levels, microbial activity or disease.
 
 Rhizobium-related results guide attention to N; Bacillus-related results to P; the potential-pathogen result directs attention to safer routing. These are teaching cues in a stylized world, not diagnostic advice. Named organisms are distinct from fictional contact hazards. Nutrient effects overlap; plant animations and counts are illustrations, not fertilizer rates. No sample files or personal information are uploaded.
 
@@ -54,9 +56,9 @@ The depth structure follows real soil science with stated simplifications: organ
 
 ## Saving
 
-Save format v6 uses `kreatbio.microload.save` in browser storage. It includes preserved underground deposits, per-item cargo values, deepest-dive record, optional challenge, terrain, nutrients, scans, upgrades and progress. Saves occur on major events, pause, page exit and every five active seconds. Storage failures permit session-only play. The assisted-return, text-navigation, larger-text and volume preferences persist separately from the game save.
+Save format v7 uses `kreatbio.microload.save` in browser storage. It includes preserved underground deposits, per-item cargo values, deepest-dive record, optional challenge, terrain, nutrients, scans, upgrades and progress. Saves occur on major events, pause, page exit and every five active seconds. Storage failures permit session-only play. The assisted-return, text-navigation, larger-text and volume preferences persist separately from the game save.
 
-Existing v1–v5 saves migrate without resetting progress. V3 moves the first sample beside HOME. Older resource layouts are retained; start a new culture to use the stratified supplies, deep pockets and waterlogged shortcuts. Previously earned multi-level upgrades keep their effects and can now be extended in the shop. V1's original save is backed up when storage permits. Reset requires an explicit confirmation.
+Existing v1–v6 saves migrate without resetting progress; the seven discovery sites are added to older worlds so their expanded goal stays reachable. V3 moves the first sample beside HOME. Older resource layouts are retained; start a new culture to use the strict stratification, deeper first sample, denser pathogens/rocks, deep pockets and waterlogged shortcuts. Previously earned multi-level upgrades keep their effects and can be extended in the shop. V1's original save is backed up when storage permits. Reset requires an explicit confirmation.
 
 ## Checks and production
 

@@ -51,7 +51,7 @@ try {
   await local.getByRole('button', { name: 'Begin the adventure' }).click();
   await local.getByRole('button', { name: 'Let’s dig' }).click();
   assert.equal(await local.locator('img').evaluateAll(imgs => imgs.every(i => i.complete && i.naturalWidth > 0)), true);
-  await local.keyboard.down('s'); await local.waitForTimeout(1000); await local.keyboard.up('s');
+  await local.keyboard.down('s'); await local.waitForTimeout(3050); await local.keyboard.up('s');
   assert.equal(await local.locator('#scan').isEnabled(), true);
   assert.equal(await local.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight), true);
   await local.screenshot({ path: 'test-results/production-file-phone.png', fullPage: true });

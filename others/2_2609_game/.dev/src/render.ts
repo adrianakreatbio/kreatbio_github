@@ -50,15 +50,22 @@ export class Renderer {
         c.fillStyle = y <= 3 ? '#102b2b' : ['#111e23', '#151c2b', '#201a2e'][l]; c.fillRect(sx, sy, size, size);
         c.strokeStyle = '#ffffff04'; c.strokeRect(sx, sy, size, size);
       } else {
-        c.fillStyle = t === 6 ? '#273039' : ['#29322f', '#2a303c', '#332d41'][l];
+        c.fillStyle = t === 6 ? '#48575f' : ['#29322f', '#2a303c', '#332d41'][l];
         c.beginPath(); c.roundRect(sx + 1, sy + 1, size - 2, size - 2, 4); c.fill();
-        c.strokeStyle = '#ffffff06'; c.stroke();
+        c.strokeStyle = t === 6 ? '#76909c' : '#ffffff06'; c.lineWidth = t === 6 ? 1.5 : 1; c.stroke(); c.lineWidth = 1;
         for (let j = 0; j < 5; j++) {
           const h = ((x * 73856093 ^ y * 19349663 ^ j * 83492791) >>> 0);
           c.fillStyle = j % 2 ? '#00000024' : '#ffffff0c';
           c.fillRect(sx + 4 + h % (size - 8), sy + 4 + (h >>> 8) % (size - 8), j % 2 + 1, 2);
         }
-        if (t === 6) { c.strokeStyle = '#5e6b7044'; c.beginPath(); c.moveTo(sx + 8, sy + 10); c.lineTo(sx + 17, sy + 18); c.lineTo(sx + 10, sy + 30); c.stroke(); }
+        // Rocks read as pale, faceted stone — clearly not diggable soil.
+        if (t === 6) {
+          c.strokeStyle = '#a9c1cc99'; c.lineWidth = 1.6;
+          c.beginPath(); c.moveTo(sx + 8, sy + 10); c.lineTo(sx + 17, sy + 18); c.lineTo(sx + 10, sy + 30); c.stroke();
+          c.beginPath(); c.moveTo(sx + size - 9, sy + 8); c.lineTo(sx + size * .55, sy + size * .5); c.lineTo(sx + size - 7, sy + size - 11); c.stroke();
+          c.fillStyle = '#ffffff1e'; c.beginPath(); c.moveTo(sx + 6, sy + 8); c.lineTo(sx + size * .45, sy + 6); c.lineTo(sx + 8, sy + size * .4); c.closePath(); c.fill();
+          c.lineWidth = 1;
+        }
       }
       if(y>3) {
         const surveyed=nutrientRevealed(s.world,s.scans,y);

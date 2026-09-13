@@ -56,7 +56,7 @@ describe('simulation rules', () => {
     sim.state.player.x = HOME.x; sim.state.player.y = HOME.y;
     let cost = 0;
     for (const track of TRACKS) { for (const price of PRICES[track]) { expect(sim.purchase(track)).toBe(true); cost += price; } expect(sim.purchase(track)).toBe(false); }
-    expect(sim.state.bank).toBe(10010 - cost); expect(cost).toBe(1390); expect(energyMax(sim.state)).toBe(620); expect(cargoMax(sim.state)).toBe(34); expect(healthMax(sim.state)).toBe(250);
+    expect(sim.state.bank).toBe(10010 - cost); expect(cost).toBe(1565); expect(energyMax(sim.state)).toBe(620); expect(cargoMax(sim.state)).toBe(34); expect(healthMax(sim.state)).toBe(250);
     const poor = new Simulation(newGame()); expect(poor.purchase('energy')).toBe(false);
   });
   it('telegraphs toxin tiles, limits contact damage and allows escape', () => {

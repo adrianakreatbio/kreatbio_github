@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research Papers &mdash; KreatBio</title>
+<meta name="description" content="Research papers and published studies from KreatBio.">
+<link rel="canonical" href="https://kreatbio.com/supplements/papers/">
+<meta name="theme-color" content="#071B3A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#071B3A; --teal:#007C78; --aqua:#7FD6CC;
+  --grey:#E6ECEC; --text:#111827; --muted:#4b5a64; --bg-soft:#F8FAF9;
+  --maxw:1240px; --r-card:16px;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ background:#fff; color:var(--text); font-family:"Inter",system-ui,-apple-system,sans-serif;
+  font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+a{ color:var(--teal); text-decoration:none; }
+a:hover{ color:var(--navy); }
+.wrap{ width:100%; max-width:var(--maxw); margin-inline:auto; padding-inline:clamp(20px,5vw,40px); }
+header{ border-bottom:1px solid var(--grey); }
+header .wrap{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding-block:18px; }
+.brand{ font-family:"Bodoni Moda",Georgia,serif; font-weight:500; font-size:1.6rem; }
+.brand .k{ color:var(--navy); } .brand .b{ color:var(--teal); }
+.back{ font-size:.9rem; font-weight:600; }
+.crumbs{ border-bottom:1px solid var(--grey); }
+.crumbs .wrap{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding-block:11px; font-size:.82rem; }
+.crumbs a{ color:var(--muted); } .crumbs a:hover{ color:var(--teal); }
+.crumbs .sep{ color:#c3ccd2; } .crumbs .cur{ color:var(--navy); font-weight:600; }
+.hero{ background:var(--navy); color:#fff; padding-block:clamp(48px,8vw,88px); }
+.eyebrow{ font-size:.8125rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--aqua); }
+.tline{ width:48px; height:3px; background:var(--aqua); margin:14px 0 18px; }
+h1{ font-weight:600; font-size:clamp(2.2rem,5.2vw,3.5rem); line-height:1.08; letter-spacing:-.02em; color:#fff; }
+.lead{ font-size:1.2rem; color:#dbe6ee; margin-top:16px; max-width:640px; }
+main .section{ padding-block:clamp(40px,6vw,72px); background:var(--bg-soft); min-height:40vh; }
+.papers{ list-style:none; display:grid; gap:14px; }
+.papers a{ display:flex; align-items:center; gap:16px; background:#fff; border:1px solid var(--grey);
+  border-radius:var(--r-card); padding:18px 22px; color:var(--navy); font-weight:600; font-size:1.05rem;
+  transition:border-color .2s, transform .15s; }
+.papers a:hover{ border-color:var(--teal); color:var(--teal); transform:translateY(-1px); }
+.papers .ico{ flex:none; font-size:.72rem; font-weight:700; letter-spacing:.06em; color:#fff;
+  background:var(--teal); border-radius:6px; padding:5px 7px; }
+.papers .title{ flex:1; min-width:0; overflow-wrap:anywhere; }
+.papers .arr{ flex:none; color:var(--teal); }
+.empty{ color:var(--muted); }
+footer{ border-top:1px solid var(--grey); }
+footer .wrap{ padding-block:24px; font-size:.85rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a href="../../index.html#home" class="brand" aria-label="KreatBio home"><span class="k">Kreat</span><span class="b">Bio</span></a>
+  <a class="back" href="../../index.html#resources">&larr; Resource centre</a>
+</div></header>
+<nav class="crumbs" aria-label="Breadcrumb"><div class="wrap">
+  <a href="../../index.html#home">Home</a><span class="sep">/</span>
+  <a href="../../index.html#resources">Resources</a><span class="sep">/</span>
+  <span class="cur">Research Papers</span>
+</div></nav>
+<main>
+  <section class="hero"><div class="wrap">
+    <p class="eyebrow">Resources</p>
+    <div class="tline"></div>
+    <h1>Research Papers</h1>
+    <p class="lead">Published studies and papers. Select a title to open the PDF.</p>
+  </div></section>
+  <section class="section"><div class="wrap">
+    <ul class="papers" id="papers"></ul>
+  </div></section>
+</main>
+<footer><div class="wrap">&copy; KreatBio Sdn. Bhd.</div></footer>
+<script>
+  // To add a paper: put the PDF in this folder, then add its exact filename below.
+  // The filename (without .pdf) is shown as the title.
+  var PAPERS = [
+    "DNA Barcoding vs ddRAD Sequencing.pdf"
+  ];
+
+  var list = document.getElementById('papers');
+  if (!PAPERS.length) {
+    list.innerHTML = '<li class="empty">No papers yet.</li>';
+  }
+  PAPERS.forEach(function (file) {
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = encodeURIComponent(file);
+    a.target = '_blank';
+    a.rel = 'noopener';
+    var ico = document.createElement('span'); ico.className = 'ico'; ico.textContent = 'PDF';
+    var t = document.createElement('span'); t.className = 'title'; t.textContent = file.replace(/\.pdf$/i, '');
+    var arr = document.createElement('span'); arr.className = 'arr'; arr.textContent = '→';
+    a.append(ico, t, arr);
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+</script>
+</body>
+</html>

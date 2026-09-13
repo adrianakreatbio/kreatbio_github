@@ -12,14 +12,18 @@ try{
  await page.getByRole('button',{name:'Back to game'}).click();
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  await page.keyboard.down('s');await page.waitForTimeout(650);await page.keyboard.up('s');
- assert.equal((await read()).player.y,3,'text navigation moves only one tile per press');assert.match(await page.locator('#navigation-reader').innerText(),/Sample here/);
+ const first=await read();assert.equal(first.player.y,3,'text navigation moves only one tile per press');assert.match(await page.locator('#navigation-reader').innerText(),/SAMPLE 1\/10/);
  await page.keyboard.press('r');await page.waitForTimeout(200);assert.match(await page.locator('#navigation-reader').innerText(),/up: tunnel/);
- const before=await read();await page.keyboard.press('e');await page.getByRole('button',{name:'Read DNA & survey patch'}).click();
+ // Screen-reader/keyboard activation of a direction button also takes one step.
+ await page.getByRole('button',{name:'Move right',exact:true}).focus();await page.keyboard.press('Space');await page.waitForTimeout(600);assert.equal((await read()).player.x,first.player.x+1);
+ await page.keyboard.down('a');await page.waitForTimeout(650);await page.keyboard.up('a');
+ // The first sample now sits deeper: five more one-step digs down the safe spine.
+ for(let i=0;i<5;i++){await page.keyboard.down('s');await page.waitForTimeout(750);await page.keyboard.up('s');}
+ assert.equal((await read()).player.y,8);assert.match(await page.locator('#navigation-reader').innerText(),/Sample here/);
+ await page.keyboard.press('e');await page.getByRole('button',{name:'Read DNA & survey patch'}).click();
  await page.getByText(/SOIL SURVEY · Locate/).waitFor();await page.getByRole('dialog',{name:'scan-result',exact:true}).waitFor();
  await page.keyboard.press('Escape');assert.equal(await page.getByRole('dialog',{name:'scan-result',exact:true}).isVisible(),true);
  await page.getByRole('button',{name:'Close soil sample'}).click();assert.equal((await read()).scans.length,1);assert.match(await page.locator('#survey-status').innerText(),/SURVEYED/);
- // Screen-reader/keyboard activation of a direction button also takes one step.
- await page.getByRole('button',{name:'Move right',exact:true}).focus();await page.keyboard.press('Space');await page.waitForTimeout(600);assert.equal((await read()).player.x,before.player.x+1);
  await page.screenshot({path:'test-results/accessible-phone.png'});
  await page.reload();await page.getByRole('button',{name:'Continue culture'}).click();assert.equal(await page.locator('body').evaluate(e=>e.classList.contains('large-text')),true);assert.equal(await page.evaluate(()=>localStorage.getItem('microload.volume')),'0.2');
  await page.setViewportSize({width:320,height:568});await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);const bounds=await page.locator('.game-shell').boundingBox();assert.ok(bounds.y+bounds.height<=568);await page.screenshot({path:'test-results/accessible-small-phone.png'});

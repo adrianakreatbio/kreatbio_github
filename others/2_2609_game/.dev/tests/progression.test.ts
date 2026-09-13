@@ -21,5 +21,5 @@ it.each([7, 91, 2609])('completes a varied expedition with normal costs and purc
     if (!d.path.length) throw new Error(`Stuck ${JSON.stringify(sim.state.player)}`);
   }
   console.log(JSON.stringify({ seed: sim.state.world.seed, seconds: sim.state.elapsed, trips: sim.state.trips, deaths: sim.state.deaths, upgrades: sim.state.upgrades, bank: sim.state.bank }));
-  expect(sim.state.won).toBe(true); expect(sim.state.deaths).toBeLessThanOrEqual(4); expect(sim.state.trips).toBeGreaterThanOrEqual(3); expect(sim.state.elapsed).toBeGreaterThan(30); expect(sim.state.elapsed).toBeLessThan(480); expect(sim.state.scans).toHaveLength(3);
+  expect(sim.state.won).toBe(true); expect(sim.state.deaths).toBeLessThanOrEqual(4); expect(sim.state.trips).toBeGreaterThanOrEqual(3); expect(sim.state.elapsed).toBeGreaterThan(30); expect(sim.state.elapsed).toBeLessThan(480); expect(sim.state.scans).toHaveLength(10);
 }, 120000);

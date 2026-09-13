@@ -1,8 +1,8 @@
-import { NUTRIENTS, SAMPLE_IDS, PLANT_TARGET, emptyTotals } from './biology';
+import { NUTRIENTS, SAMPLE_IDS, SURVEY_IDS, PLANT_TARGET, emptyTotals } from './biology';
 import { cargoMax, energyMax, healthMax, TRACKS, type State } from './simulation';
-import { addSamples, addEnergyFood, H, HOME, W, index, tileAt, placeFirstSampleAtHome } from './world';
+import { addSamples, addDiscoverySites, addEnergyFood, H, HOME, W, index, tileAt, placeFirstSampleAtHome } from './world';
 export const SAVE_KEY = 'kreatbio.microload.save';
-export const VERSION = 6;
+export const VERSION = 7;
 export const BACKUP_KEY = `${SAVE_KEY}.v1-backup`;
 export interface StorageLike { getItem(k: string): string | null; setItem(k: string, v: string): void; removeItem(k: string): void; }
 const finite = (n: unknown, min: number, max = Number.MAX_SAFE_INTEGER): n is number => typeof n === 'number' && Number.isFinite(n) && n >= min && n <= max;
@@ -27,10 +27,12 @@ function validState(s: any, legacy = false, food = true): s is State {
   } else {
     if (!s.deposited || !NUTRIENTS.every(n => integer(s.deposited[n], 0, 1e9))) return false;
     if (!Array.isArray(s.scans) || !s.scans.every((id: any) => SAMPLE_IDS.includes(id)) || new Set(s.scans).size !== s.scans.length) return false;
-    if (!Array.isArray(s.world.samples) || s.world.samples.length !== 3 || !SAMPLE_IDS.every(id => s.world.samples.filter((site: any) => site?.id === id).length === 1)) return false;
+    // Pre-v7 worlds carry the three survey sites; current worlds all ten samples.
+    if (!Array.isArray(s.world.samples) || ![3, 10].includes(s.world.samples.length) || !s.world.samples.every((site: any) => SAMPLE_IDS.includes(site?.id)) || new Set(s.world.samples.map((site: any) => site?.id)).size !== s.world.samples.length) return false;
+    if (!SURVEY_IDS.every(id => s.world.samples.some((site: any) => site?.id === id))) return false;
     if (!s.world.samples.every((site: any) => integer(site.x, 1, W - 2) && integer(site.y, 4, H - 2) && tileAt(s.world, site.x, site.y) === 0)) return false;
-    if (new Set(s.world.samples.map((site: any) => index(site.x, site.y))).size !== 3) return false;
-    if (s.won && (!NUTRIENTS.every(n => s.deposited[n] >= PLANT_TARGET) || s.scans.length !== 3)) return false;
+    if (new Set(s.world.samples.map((site: any) => index(site.x, site.y))).size !== s.world.samples.length) return false;
+    if (s.won && (!NUTRIENTS.every(n => s.deposited[n] >= PLANT_TARGET) || !SURVEY_IDS.every(id => s.scans.includes(id)))) return false;
   }
   for (let y = 0; y < H; y++) if (s.world.tiles[index(0, y)] !== 6 || s.world.tiles[index(W - 1, y)] !== 6) return false;
   for (let x = 0; x < W; x++) if (s.world.tiles[index(x, 0)] !== 6 || s.world.tiles[index(x, H - 1)] !== 6) return false;
@@ -48,6 +50,7 @@ export function load(storage: StorageLike): { state: State | null; message: stri
       delete state.fragment;
       state.won = false; state.deposited = emptyTotals(); state.scans = [];
       addSamples(state.world, state.player);
+      addDiscoverySites(state.world, state.player);
       addEnergyFood(state.world, state.player);
       let backedUp = true;
       try { if (!storage.getItem(BACKUP_KEY)) storage.setItem(BACKUP_KEY, raw); } catch { backedUp = false; }
@@ -56,11 +59,13 @@ export function load(storage: StorageLike): { state: State | null; message: stri
     if (data?.version === 2 && validState(data.state, false, false)) {
       addEnergyFood(data.state.world, data.state.player);
       placeFirstSampleAtHome(data.state.world);
+      addDiscoverySites(data.state.world, data.state.player);
       return { state: data.state, message: 'Orange ⚡ food added in the topsoil. Each restores up to 30 energy immediately, even with full cargo. Your progress is kept.' };
     }
-    if (data?.version === 3 && valid(data.state)) { placeFirstSampleAtHome(data.state.world); return { state: data.state, message: 'Scan to reveal nutrients. The first sample is now beside HOME. Your progress is kept.' }; }
-    if (data?.version === 4 && valid(data.state)) return {state:data.state,message:'Hidden nutrients are now preserved when you dig. Your expedition is kept; new cultures use balanced survey supplies.'};
-    if (data?.version === 5 && valid(data.state)) return {state:data.state,message:'Deep survey update: deliver cargo by returning HOME yourself (assisted return is in Aa settings), deeper finds earn more credits, and upgrades now have three tiers. New cultures add deep mineral pockets and low-oxygen water. Your world and progress are kept.'};
+    if (data?.version === 3 && valid(data.state)) { placeFirstSampleAtHome(data.state.world); addDiscoverySites(data.state.world, data.state.player); return { state: data.state, message: 'Scan to reveal nutrients. The first sample is now beside HOME. Your progress is kept.' }; }
+    if (data?.version === 4 && valid(data.state)) { addDiscoverySites(data.state.world, data.state.player); return {state:data.state,message:'Hidden nutrients are now preserved when you dig. Seven new organisms await discovery. Your expedition is kept.'}; }
+    if (data?.version === 5 && valid(data.state)) { addDiscoverySites(data.state.world, data.state.player); return {state:data.state,message:'Deep survey update: deliver cargo by returning HOME yourself (assisted return is in Aa settings), deeper finds earn more credits, and upgrades now have three tiers. Seven new organisms await discovery. Your world and progress are kept.'}; }
+    if (data?.version === 6 && valid(data.state)) { addDiscoverySites(data.state.world, data.state.player); return {state:data.state,message:'Seven new organisms to discover — each scan pays ✦25 and is logged in the Field Journal. Finishing the plant now asks for all 10 scans. Your world and progress are kept.'}; }
     if (data?.version !== VERSION || !valid(data.state)) return { state: null, message: 'This save could not be read. Start a new culture to recover.' };
     return { state: data.state, message: '' };
   } catch { return { state: null, message: 'Local saving is unavailable or the save is damaged. You can still play.' }; }

@@ -1,7 +1,7 @@
 import { it, expect } from 'vitest';
 import { Simulation, newGame, atHome, healthMax, DIG_SECONDS, MOVE_SECONDS } from '../src/simulation';
 import { index, HOME, tileAt } from '../src/world';
-import { NUTRIENTS, SAMPLE_IDS } from '../src/biology';
+import { NUTRIENTS, SAMPLE_IDS, SURVEY_IDS } from '../src/biology';
 import { valid, save, load, SAVE_KEY, BACKUP_KEY } from '../src/persistence';
 it('recovers all missing nutrient types after repeated total resource losses', () => {
   const s = newGame(2); s.world.balanced=false; const sim = new Simulation(s);
@@ -54,17 +54,20 @@ it('migrates a legacy expedition without losing progress and backs up the origin
   expect(valid(s)).toBe(true);expect(s.player.cargo).toEqual(NUTRIENTS);expect(s.bank).toBe(123);expect(s.upgrades.energy).toBe(2);expect(s.elapsed).toBe(500);
   expect(s.scans).toEqual([]);expect(s.deposited).toEqual({N:0,P:0,K:0});expect(values.get(BACKUP_KEY)).toBe(raw);
 });
-it('guarantees all three sample sites and sufficient safe resources across 100 seeds',()=>{
+it('guarantees ten reachable samples with strictly stratified survey areas across 100 seeds',()=>{
   for(let seed=0;seed<100;seed++) {
     const s=newGame(seed);
     expect([...s.world.samples.map(site=>site.id)].sort()).toEqual([...SAMPLE_IDS].sort());
-    for(let i=0;i<3;i++) {
-      const site=s.world.samples[i];expect(tileAt(s.world,site.x,site.y)).toBe(0);
-      const counts=[0,0,0];s.world.tiles.forEach((t,pos)=>{if(t>=2&&t<=4&&Math.abs(Math.floor(pos/40)-site.y)<=5)counts[t-2]++;});
-      expect(counts.every(n=>n>=3)).toBe(true);
+    for(const site of s.world.samples) {
+      expect(tileAt(s.world,site.x,site.y)).toBe(0);
       for(let x=Math.min(site.x,HOME.x);x<=Math.max(site.x,HOME.x);x++) expect([5,6]).not.toContain(tileAt(s.world,x,site.y));
       for(let y=3;y<=site.y;y++)expect([5,6]).not.toContain(tileAt(s.world,HOME.x,y));
     }
+    const trio=s.world.samples.filter(a=>(SURVEY_IDS as readonly string[]).includes(a.id)).sort((a,b)=>a.y-b.y);
+    trio.forEach((site,i)=>{
+      const counts=[0,0,0];s.world.tiles.forEach((t,pos)=>{if(t>=2&&t<=4&&Math.abs(Math.floor(pos/40)-site.y)<=5)counts[t-2]++;});
+      expect(counts[i]).toBeGreaterThanOrEqual(12);
+    });
   }
 });
 

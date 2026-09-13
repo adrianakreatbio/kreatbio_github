@@ -1,4 +1,4 @@
-import { NUTRIENTS, PLANT_TARGET, SAMPLE_IDS, emptyTotals, type Nutrient, type NutrientTotals, type SampleId } from './biology';
+import { DISCOVERY_BONUS, NUTRIENTS, PLANT_TARGET, SAMPLE_IDS, SURVEY_IDS, emptyTotals, type Nutrient, type NutrientTotals, type SampleId } from './biology';
 import { generate, FOOD_TILE, FOOD_ENERGY, H, HOME, index, layer, tileAt, playableTile, surveyForTile, nutrientRevealed, type Tile, type World } from './world';
 export const TRACKS = ['digestion', 'energy', 'storage', 'membrane'] as const;
 export type Track = typeof TRACKS[number];
@@ -12,7 +12,7 @@ export const MOVE_SECONDS = .09;
 // Research credits per delivered nutrient, by the soil layer it was collected in.
 // Deeper samples are rarer and costlier to obtain, so the lab pays more for them.
 export const VALUES = [10, 20, 35];
-export const PRICES: Record<Track, number[]> = { digestion: [60, 110, 180], energy: [80, 130, 190], storage: [60, 110, 180], membrane: [50, 90, 150] };
+export const PRICES: Record<Track, number[]> = { digestion: [60, 110, 220], energy: [80, 130, 240], storage: [60, 110, 220], membrane: [50, 90, 195] };
 export const energyMax = (s: State) => [160, 270, 420, 620][s.upgrades.energy];
 export const healthMax = (s: State) => [100, 140, 190, 250][s.upgrades.membrane];
 export const cargoMax = (s: State) => [10, 16, 24, 34][s.upgrades.storage];
@@ -36,9 +36,10 @@ export class Simulation {
   collect(n: Nutrient) { const p = this.state.player; p.cargo.push(n); (p.cargoValues ??= []).push(VALUES[layer(p.y)]); this.events.push({kind:'collect',x:p.x,y:p.y,nutrient:n}); }
   restoreLostCargo() {
     const s=this.state;
+    const AREA: Record<Nutrient, SampleId> = { N: 'root-partner', P: 'phosphorus-helper', K: 'root-risk' };
     for(const n of s.player.cargo) {
-      // Return each lost item to an already surveyed area, preserving finite supply.
-      const site=s.world.samples.find(a=>s.scans.includes(a.id)) ?? s.world.samples[0];
+      // Return each lost item to its own surveyed area, preserving strict stratification.
+      const site=s.world.samples.find(a=>a.id===AREA[n]&&s.scans.includes(a.id)) ?? s.world.samples.find(a=>s.scans.includes(a.id)&&(SURVEY_IDS as readonly string[]).includes(a.id)) ?? s.world.samples[0];
       let placed=false;
       for(let radius=1;radius<30&&!placed;radius++)for(let dx=-radius;dx<=radius&&!placed;dx++)for(const dy of [-radius,radius]) {
         const x=site.x+dx,y=site.y+dy,pos=index(x,y);
@@ -85,8 +86,11 @@ export class Simulation {
     return this.state.world.samples.find(site => Math.abs(site.x - this.state.player.x) + Math.abs(site.y - this.state.player.y) <= 1);
   }
   scan(id: SampleId) {
-    if (this.state.won || this.state.scans.includes(id) || this.nearbySample()?.id !== id) return false;
-    this.state.scans.push(id); this.emit('scan'); return true;
+    if (this.state.scans.includes(id) || this.nearbySample()?.id !== id) return false;
+    this.state.scans.push(id);
+    // Publishing a discovery find pays a research bonus; survey scans pay via their deposits.
+    if (!(SURVEY_IDS as readonly string[]).includes(id)) this.state.bank += DISCOVERY_BONUS;
+    this.emit('scan'); return true;
   }
   step(dt: number, dx: number, dy: number) {
     const s = this.state, p = s.player;
@@ -134,9 +138,11 @@ export class Simulation {
     } else this.resetAction();
     for (const e of s.world.enemies) {
       e.timer += dt;
-      if (e.timer > .65) {
+      // Deeper pathogens move faster and hunt from further away.
+      const el = layer(e.y);
+      if (e.timer > [.65, .5, .38][el]) {
         e.timer = 0;
-        const near = Math.abs(e.x - p.x) + Math.abs(e.y - p.y) < 7;
+        const near = Math.abs(e.x - p.x) + Math.abs(e.y - p.y) < [7, 9, 11][el];
         const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]];
         let d = e.dir;
         if (near) d = Math.abs(p.x - e.x) > Math.abs(p.y - e.y) ? (p.x > e.x ? 1 : 3) : (p.y > e.y ? 0 : 2);
