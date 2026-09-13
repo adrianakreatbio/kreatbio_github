@@ -8,7 +8,7 @@ export type Tile = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9; // air, soil, N, P, K,
 export interface Enemy { x: number; y: number; dir: number; timer: number; }
 export interface SampleSite { id: SampleId; x: number; y: number; }
 export const CHALLENGES = ['Explore freely', 'No cargo losses', 'At most 4 deliveries'] as const;
-export interface World { buried?: Record<number, Tile>; balanced?: boolean; challenge?: number; seed: number; tiles: Tile[]; enemies: Enemy[]; samples: SampleSite[]; }
+export interface World { buried?: Record<number, Tile>; balanced?: boolean; challenge?: number; seed: number; tiles: Tile[]; enemies: Enemy[]; worms?: Enemy[]; samples: SampleSite[]; }
 export const index = (x: number, y: number) => y * W + x;
 export const layer = (y: number) => y < 34 ? 0 : y < 67 ? 1 : 2;
 export function random(seed: number) {
@@ -37,7 +37,7 @@ export function generate(seed: number): World {
   // Early food can always finance a recovery trip.
   for (let x = 12; x <= 28; x += 2) tiles[index(x, 5)] = (2 + (x / 2) % 3) as Tile;
   // Pathogen pressure rises with depth: sparse in topsoil, dense near the parent material.
-  for (const [start, end, step] of [[16, 33, 8], [36, 66, 6], [69, 96, 4]] as const) for (let y = start; y <= end; y += step) {
+  for (const [start, end, step] of [[16, 33, 6], [36, 66, 5], [69, 96, 3]] as const) for (let y = start; y <= end; y += step) {
     const x = 3 + Math.floor(r() * 12) + (r() > .5 ? 20 : 0);
     for (let dx = -1; dx <= 1; dx++) tiles[index(x + dx, y)] = 0;
     enemies.push({ x, y, dir: Math.floor(r() * 4), timer: 0 });
@@ -48,6 +48,7 @@ export function generate(seed: number): World {
   addEnergyFood(world);
   balanceDeposits(world);
   addDeepPockets(world);
+  addWorms(world);
   world.challenge=seed%3;
   return world;
 }
@@ -168,6 +169,19 @@ export function balanceDeposits(world: World) {
     for(let dx=0;dx<=7;dx++)world.tiles[index(site.x+dx,site.y+5)]=1;
     for(let dy=0;dy<=5;dy++)world.tiles[index(site.x+7,site.y+dy)]=1;
     if(i>0){for(let dx=1;dx<=5;dx++)if(site.x+dx>Math.max(HOME.x,site.x))world.tiles[index(site.x+dx,site.y)]=5;world.tiles[index(site.x+6,site.y)]=0;}
+  });
+}
+
+// Earthworms: soil engineers that churn real burrows (bioturbation) and shove
+// whatever they bump into. Harmless, oblivious, and surprisingly pushy.
+export function addWorms(world: World) {
+  if (world.worms?.length) return;
+  const rng = random(world.seed ^ 0x3aa9);
+  world.worms = [20, 45, 70].map(base => {
+    const y = base + Math.floor(rng() * 6) - 3;
+    let x = rng() > .5 ? 3 + Math.floor(rng() * 11) : 27 + Math.floor(rng() * 10);
+    for (let tries = 0; tries < 9 && tileAt(world, x, y) === 6; tries++) x = 3 + Math.floor(rng() * (W - 6));
+    return { x, y, dir: Math.floor(rng() * 4), timer: 0 };
   });
 }
 

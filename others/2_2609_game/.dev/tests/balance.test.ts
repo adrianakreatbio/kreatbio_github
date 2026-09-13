@@ -26,7 +26,7 @@ it('returns lost cargo without inflating total supply or awarding credits',()=>{
 });
 it('rejects malformed buried deposits and retains legacy progress',()=>{
  const s=newGame(19);s.world.buried={[index(0,3)]:2};expect(valid(s)).toBe(false);
- delete s.world.buried;s.bank=99;s.deposited.N=5;const raw=JSON.stringify({version:4,state:s});const db={getItem:()=>raw,setItem:()=>{},removeItem:()=>{}};expect(load(db).state?.bank).toBe(99);expect(load(db).state?.deposited.N).toBe(5);expect(VERSION).toBe(7);
+ delete s.world.buried;s.bank=99;s.deposited.N=5;const raw=JSON.stringify({version:4,state:s});const db={getItem:()=>raw,setItem:()=>{},removeItem:()=>{}};expect(load(db).state?.bank).toBe(99);expect(load(db).state?.deposited.N).toBe(5);expect(VERSION).toBe(8);
 });
 it('legacy recovery does not overwrite preserved hidden deposits',()=>{
  const s=newGame(77);s.world.balanced=false;s.world.tiles[index(12,5)]=0;s.world.buried={[index(12,5)]:3};const sim=new Simulation(s);sim.respawn();

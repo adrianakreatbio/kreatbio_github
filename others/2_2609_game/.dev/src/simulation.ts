@@ -1,13 +1,16 @@
 import { DISCOVERY_BONUS, NUTRIENTS, PLANT_TARGET, SAMPLE_IDS, SURVEY_IDS, emptyTotals, type Nutrient, type NutrientTotals, type SampleId } from './biology';
-import { generate, FOOD_TILE, FOOD_ENERGY, H, HOME, index, layer, tileAt, playableTile, surveyForTile, nutrientRevealed, type Tile, type World } from './world';
+import { generate, FOOD_TILE, FOOD_ENERGY, H, HOME, SURFACE, index, layer, tileAt, playableTile, surveyForTile, nutrientRevealed, type Tile, type World } from './world';
 export const TRACKS = ['digestion', 'energy', 'storage', 'membrane'] as const;
 export type Track = typeof TRACKS[number];
 export type Upgrades = Record<Track, number>;
 export interface Player { x: number; y: number; energy: number; health: number; cargo: Nutrient[]; cargoValues?: number[]; }
 export interface State { world: World; player: Player; upgrades: Upgrades; bank: number; deposited: NutrientTotals; scans: SampleId[]; won: boolean; elapsed: number; trips: number; deaths: number; deepest?: number; }
 export type ReturnReason = 'energy' | 'membrane' | 'both';
-export interface Event { kind: 'dig' | 'food' | 'collect' | 'hurt' | 'deposit' | 'respawn' | 'auto-return' | 'full' | 'upgrade' | 'scan' | 'win'; x: number; y: number; reason?: ReturnReason; energyRestored?: number; nutrient?: Nutrient; closeCall?: boolean; }
-export const DIG_SECONDS = [.30, .45, .60];
+export interface Event { kind: 'dig' | 'food' | 'collect' | 'hurt' | 'deposit' | 'respawn' | 'auto-return' | 'full' | 'upgrade' | 'scan' | 'win' | 'push' | 'strain'; x: number; y: number; reason?: ReturnReason; energyRestored?: number; nutrient?: Nutrient; closeCall?: boolean; }
+// Bulk density rises sharply with depth: lower horizons are slow and expensive
+// to dig without enzyme/energy upgrades — the soft gate to the deep game.
+export const DIG_SECONDS = [.30, .60, 1.10];
+export const DIG_ENERGY = [1.8, 4, 7];
 export const MOVE_SECONDS = .09;
 // Research credits per delivered nutrient, by the soil layer it was collected in.
 // Deeper samples are rarer and costlier to obtain, so the lab pays more for them.
@@ -32,6 +35,7 @@ export class Simulation {
   // Assisted return restores the old automatic trip HOME on full cargo (Aa settings).
   assistReturn = false;
   fullNotified = false;
+  strained = new Set<number>();
   constructor(public state: State) {}
   collect(n: Nutrient) { const p = this.state.player; p.cargo.push(n); (p.cargoValues ??= []).push(VALUES[layer(p.y)]); this.events.push({kind:'collect',x:p.x,y:p.y,nutrient:n}); }
   restoreLostCargo() {
@@ -124,9 +128,10 @@ export class Simulation {
         } else {
           this.moveTimer = 0;
           const l = layer(y), duration = DIG_SECONDS[l] / [1, 1.45, 2, 2.7][s.upgrades.digestion];
+          if (this.progress === 0 && s.upgrades.digestion < l && !this.strained.has(l)) { this.strained.add(l); this.events.push({ kind: 'strain', x, y }); }
           const increment = Math.min(dt / duration, 1 - this.progress);
           this.progress += increment;
-          p.energy -= increment * [1.8, 3.3, 5.3][l] * energyUse(s);
+          p.energy -= increment * DIG_ENERGY[l] * energyUse(s);
           if (this.progress >= 1 - 1e-9) {
             const raw=tileAt(s.world,x,y);
             if(t===1 && raw>=2 && raw<=4)(s.world.buried??={})[index(x,y)]=raw;
@@ -148,6 +153,23 @@ export class Simulation {
         if (near) d = Math.abs(p.x - e.x) > Math.abs(p.y - e.y) ? (p.x > e.x ? 1 : 3) : (p.y > e.y ? 0 : 2);
         const [ex, ey] = dirs[d];
         if (e.y + ey > 4 && tileAt(s.world, e.x + ex, e.y + ey) === 0) { e.x += ex; e.y += ey; } else e.dir = (e.dir + 1) % 4;
+      }
+    }
+    for (const w of s.world.worms ?? []) {
+      w.timer += dt;
+      if (w.timer <= .85) continue;
+      w.timer = 0;
+      const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+      // Deterministic wander keeps burrows organic without extra RNG state.
+      if ((w.x * 31 + w.y * 17 + Math.floor(s.elapsed * 1.3)) % 5 === 0) w.dir = (w.dir + ((w.x ^ w.y) % 3 === 0 ? 1 : 3)) % 4;
+      const [wx, wy] = dirs[w.dir], nx = w.x + wx, ny = w.y + wy, nt = tileAt(s.world, nx, ny);
+      // Worms tunnel through soil and water but never eat deposits, food or rock.
+      if (ny <= SURFACE + 1 || ny >= H - 2 || ![0, 1, 9].includes(nt)) { w.dir = (w.dir + 1) % 4; continue; }
+      if (nt === 1) s.world.tiles[index(nx, ny)] = 0;
+      w.x = nx; w.y = ny;
+      if (w.x === p.x && w.y === p.y && !atHome(s)) {
+        const px = p.x + wx, py = p.y + wy;
+        if ([0, 5, 9].includes(tileAt(s.world, px, py))) { p.x = px; p.y = py; this.resetAction(); this.events.push({ kind: 'push', x: px, y: py }); }
       }
     }
     const onTile = tileAt(s.world, p.x, p.y);

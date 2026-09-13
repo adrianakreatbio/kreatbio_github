@@ -38,7 +38,7 @@ it('discovery scans pay the publication bonus and count toward the ten-scan goal
 it('deeper finds pay more research credits on delivery',()=>{
  const s=newGame(5),sim=new Simulation(s);s.scans=s.world.samples.map(a=>a.id);
  s.player.x=20;s.player.y=80;s.world.tiles[index(20,80)]=0;s.world.tiles[index(21,80)]=4;
- sim.step(.6,1,0);
+ sim.step(1.1,1,0);
  expect(s.player.cargo).toEqual(['K']);expect(s.player.cargoValues).toEqual([VALUES[2]]);
  s.player.x=20;s.player.y=2;sim.step(1/60,0,0);
  expect(s.bank).toBe(VALUES[2]);expect(s.deposited.K).toBe(1);
@@ -67,13 +67,42 @@ it('keeps playing after victory: movement, collection and purchases continue wit
  sim.step(.3,1,0);expect(s.player.cargo).toEqual(['N']);
  expect(sim.events.filter(e=>e.kind==='win')).toHaveLength(1);
 });
+it('earthworms burrow real tunnels, shove the player, and never eat deposits',()=>{
+ const s=newGame(3),sim=new Simulation(s);
+ s.world.worms=[{x:10,y:50,dir:1,timer:0}];
+ s.world.tiles[index(11,50)]=0;s.world.tiles[index(12,50)]=0;
+ s.player={x:11,y:50,energy:100,health:100,cargo:[],cargoValues:[]};
+ sim.step(.9,0,0);
+ expect(s.world.worms[0].x).toBe(11);
+ expect(s.player.x).toBe(12);
+ expect(sim.events.some(e=>e.kind==='push')).toBe(true);
+ const b=newGame(3),simB=new Simulation(b);
+ b.world.worms=[{x:10,y:51,dir:1,timer:0}];
+ b.world.tiles[index(11,51)]=1;
+ simB.step(.9,0,0);
+ expect(b.world.tiles[index(11,51)]).toBe(0);expect(b.world.worms[0].x).toBe(11);
+ const d=newGame(3),simD=new Simulation(d);
+ d.world.worms=[{x:13,y:50,dir:1,timer:0}];
+ d.world.tiles[index(14,50)]=2;
+ simD.step(.9,0,0);
+ expect(d.world.tiles[index(14,50)]).toBe(2);expect(d.world.worms[0].x).toBe(13);
+});
+it('migrates v7 saves by adding worms and rejects malformed worms',()=>{
+ const s=newGame(9);delete s.world.worms;
+ let raw=JSON.stringify({version:7,state:s});
+ const db={getItem:()=>raw,setItem:(_k:string,v:string)=>{raw=v;},removeItem:()=>{}};
+ const first=load(db);
+ expect(first.state?.world.worms?.length).toBe(3);expect(first.message.length).toBeGreaterThan(0);
+ save(db,first.state!);expect(JSON.parse(raw).version).toBe(8);
+ const bad=newGame(9);bad.world.worms=[{x:0,y:50,dir:1,timer:0}];expect(valid(bad)).toBe(false);
+});
 it('migrates v5 saves with a notice and validates the new fields strictly',()=>{
  const s=newGame(9);delete (s as any).deepest;delete (s.player as any).cargoValues;
  let raw=JSON.stringify({version:5,state:s});
  const db={getItem:()=>raw,setItem:(_k:string,v:string)=>{raw=v;},removeItem:()=>{}};
  const first=load(db);
  expect(valid(first.state)).toBe(true);expect(first.message.length).toBeGreaterThan(0);
- save(db,first.state!);expect(JSON.parse(raw).version).toBe(7);expect(load(db).state).toEqual(first.state);
+ save(db,first.state!);expect(JSON.parse(raw).version).toBe(8);expect(load(db).state).toEqual(first.state);
  const bad=newGame(9);(bad.player as any).cargoValues=[10];expect(valid(bad)).toBe(false);
  const worse=newGame(9);(worse as any).deepest=-2;expect(valid(worse)).toBe(false);
 });

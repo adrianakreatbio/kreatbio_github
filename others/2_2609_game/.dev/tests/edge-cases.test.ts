@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { Simulation, newGame, atHome, healthMax, DIG_SECONDS, MOVE_SECONDS } from '../src/simulation';
+import { Simulation, newGame, atHome, healthMax, DIG_ENERGY, DIG_SECONDS, MOVE_SECONDS } from '../src/simulation';
 import { index, HOME, tileAt } from '../src/world';
 import { NUTRIENTS, SAMPLE_IDS, SURVEY_IDS } from '../src/biology';
 import { valid, save, load, SAVE_KEY, BACKUP_KEY } from '../src/persistence';
@@ -21,7 +21,7 @@ it('digging is fast, charges once and respects upgraded timing in every layer', 
     let frames = 0; while (s.player.x === 20 && frames++ < 100) sim.step(1/60,1,0);
     expect(frames / 60).toBeLessThanOrEqual(seconds + 1/60);
     expect(frames / 60).toBeGreaterThanOrEqual(seconds - 1e-9);
-    expect(s.player.cargo).toEqual(['N']); expect(s.player.energy).toBeCloseTo(160 - [1.8,3.3,5.3][layer],6);
+    expect(s.player.cargo).toEqual(['N']); expect(s.player.energy).toBeCloseTo(160 - DIG_ENERGY[layer],6);
     for (let i=0;i<60;i++) sim.step(1/60,1,0);
     expect(s.player.cargo).toEqual(['N']);
   }

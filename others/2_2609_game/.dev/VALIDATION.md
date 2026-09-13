@@ -117,3 +117,14 @@ Validation: build passes; 50 unit/integration tests pass, including 100-seed poc
 - Upgrade ladder re-priced (total ✦1565 = max income incl. discovery bonuses). Save v7 accepts 3- or 10-sample worlds; v1–v6 migrate with discovery sites added and progress kept.
 
 Validation: build passes; 51 unit/integration tests pass (100-seed checks for ten reachable samples, strict per-area supplies, pocket/water placement, discovery bonus and ten-scan win, v5/v6 migration). Three-seed simulation pilot wins with 0 deaths in 56–96 active seconds. Consolidated Chrome suite passes (smoke, phone, accessibility with the deeper first-sample walk, audio, default+assisted return, production incl. file://). Full real-time Chrome expedition on seed 2609: victory with all 10 scans, N12/P12/K12, 4 deliveries, 0 deaths, 222.0 active seconds / 270.4 wall seconds, mid-game reload verified, no browser errors. Human playtesting of pacing and difficulty remains outstanding.
+
+## Earthworms, dense horizons and journal cleanup — 13 September 2026
+
+- Field Journal no longer repeats one "Unsequenced soil sample" card per organism; unmet organisms collapse into a single card listing their estimated depths.
+- Three earthworms churn the soil: they burrow real tunnels through plain soil and water (never deposits, food or rock), and shove the player one tile in their heading — into hazards if unlucky. Journaled as ecosystem engineers (bioturbation) with a source. Deterministic wander; no new RNG state.
+- Depth is now a soft upgrade gate: DIG_SECONDS 0.30/0.60/1.10 and dig energy 1.8/4/7 by horizon. Without Enzyme boosts the C horizon is impractical; a one-time strain hint names the recommended upgrade per horizon.
+- Pathogen spawners increased to ~20, banded 6/5/3-tile spacing by horizon (deeper = denser, faster, further-hunting).
+- Visual pass: surface grass meadow strip, faint A/B/C horizon watermarks, drifting motes in dug tunnels, segmented worm rendering; goal chip sized for phone widths.
+- Save v8 (optional `world.worms`, validated ≤10). V1–v7 migrate with worms added; v7 shows a notice.
+
+Validation: build passes; 53 unit/integration tests pass, including worm burrowing/shoving/deposit-safety, strain events via dig-cost formulas, v7 migration and malformed-worm rejection. Three-seed simulation pilot wins in 105–122 active seconds with ≤1 death. Consolidated Chrome suite passes. Full real-time Chrome expedition on seed 2609: victory with all 10 scans, N14/P12/K12, 4 deliveries, 2 deaths, ~370 active seconds / 396 wall seconds, mid-game reload verified, no browser errors — the difficulty now registers even against an automated pilot. Human playtesting remains outstanding.

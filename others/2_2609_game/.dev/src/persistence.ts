@@ -1,8 +1,8 @@
 import { NUTRIENTS, SAMPLE_IDS, SURVEY_IDS, PLANT_TARGET, emptyTotals } from './biology';
 import { cargoMax, energyMax, healthMax, TRACKS, type State } from './simulation';
-import { addSamples, addDiscoverySites, addEnergyFood, H, HOME, W, index, tileAt, placeFirstSampleAtHome } from './world';
+import { addSamples, addDiscoverySites, addEnergyFood, addWorms, H, HOME, W, index, tileAt, placeFirstSampleAtHome } from './world';
 export const SAVE_KEY = 'kreatbio.microload.save';
-export const VERSION = 7;
+export const VERSION = 8;
 export const BACKUP_KEY = `${SAVE_KEY}.v1-backup`;
 export interface StorageLike { getItem(k: string): string | null; setItem(k: string, v: string): void; removeItem(k: string): void; }
 const finite = (n: unknown, min: number, max = Number.MAX_SAFE_INTEGER): n is number => typeof n === 'number' && Number.isFinite(n) && n >= min && n <= max;
@@ -36,6 +36,7 @@ function validState(s: any, legacy = false, food = true): s is State {
   }
   for (let y = 0; y < H; y++) if (s.world.tiles[index(0, y)] !== 6 || s.world.tiles[index(W - 1, y)] !== 6) return false;
   for (let x = 0; x < W; x++) if (s.world.tiles[index(x, 0)] !== 6 || s.world.tiles[index(x, H - 1)] !== 6) return false;
+  if (s.world.worms !== undefined && (!Array.isArray(s.world.worms) || s.world.worms.length > 10 || !s.world.worms.every((w: any) => integer(w.x, 1, W - 2) && integer(w.y, 4, H - 2) && integer(w.dir, 0, 3) && finite(w.timer, 0, 1)))) return false;
   return Array.isArray(s.world.enemies) && s.world.enemies.length <= 30 && s.world.enemies.every((e: any) => integer(e.x, 1, W - 2) && integer(e.y, 5, H - 2) && integer(e.dir, 0, 3) && finite(e.timer, 0, 1));
 }
 export const valid = (s: unknown): s is State => validState(s);
@@ -52,6 +53,7 @@ export function load(storage: StorageLike): { state: State | null; message: stri
       addSamples(state.world, state.player);
       addDiscoverySites(state.world, state.player);
       addEnergyFood(state.world, state.player);
+      addWorms(state.world);
       let backedUp = true;
       try { if (!storage.getItem(BACKUP_KEY)) storage.setItem(BACKUP_KEY, raw); } catch { backedUp = false; }
       return { state, message: `New mission: restore a pea plant. Your world, upgrades and credits carry over; plant totals and scans start fresh.${backedUp ? ' Your original save is backed up.' : ' Backup unavailable; browser storage is full or blocked.'}` };
@@ -60,12 +62,14 @@ export function load(storage: StorageLike): { state: State | null; message: stri
       addEnergyFood(data.state.world, data.state.player);
       placeFirstSampleAtHome(data.state.world);
       addDiscoverySites(data.state.world, data.state.player);
+      addWorms(data.state.world);
       return { state: data.state, message: 'Orange ⚡ food added in the topsoil. Each restores up to 30 energy immediately, even with full cargo. Your progress is kept.' };
     }
-    if (data?.version === 3 && valid(data.state)) { placeFirstSampleAtHome(data.state.world); addDiscoverySites(data.state.world, data.state.player); return { state: data.state, message: 'Scan to reveal nutrients. The first sample is now beside HOME. Your progress is kept.' }; }
-    if (data?.version === 4 && valid(data.state)) { addDiscoverySites(data.state.world, data.state.player); return {state:data.state,message:'Hidden nutrients are now preserved when you dig. Seven new organisms await discovery. Your expedition is kept.'}; }
-    if (data?.version === 5 && valid(data.state)) { addDiscoverySites(data.state.world, data.state.player); return {state:data.state,message:'Deep survey update: deliver cargo by returning HOME yourself (assisted return is in Aa settings), deeper finds earn more credits, and upgrades now have three tiers. Seven new organisms await discovery. Your world and progress are kept.'}; }
-    if (data?.version === 6 && valid(data.state)) { addDiscoverySites(data.state.world, data.state.player); return {state:data.state,message:'Seven new organisms to discover — each scan pays ✦25 and is logged in the Field Journal. Finishing the plant now asks for all 10 scans. Your world and progress are kept.'}; }
+    if (data?.version === 3 && valid(data.state)) { placeFirstSampleAtHome(data.state.world); addDiscoverySites(data.state.world, data.state.player); addWorms(data.state.world); return { state: data.state, message: 'Scan to reveal nutrients. The first sample is now beside HOME. Your progress is kept.' }; }
+    if (data?.version === 4 && valid(data.state)) { addDiscoverySites(data.state.world, data.state.player); addWorms(data.state.world); return {state:data.state,message:'Hidden nutrients are now preserved when you dig. Seven new organisms await discovery. Your expedition is kept.'}; }
+    if (data?.version === 5 && valid(data.state)) { addDiscoverySites(data.state.world, data.state.player); addWorms(data.state.world); return {state:data.state,message:'Deep survey update: deliver cargo by returning HOME yourself (assisted return is in Aa settings), deeper finds earn more credits, and upgrades now have three tiers. Seven new organisms await discovery. Your world and progress are kept.'}; }
+    if (data?.version === 6 && valid(data.state)) { addDiscoverySites(data.state.world, data.state.player); addWorms(data.state.world); return {state:data.state,message:'Seven new organisms to discover — each scan pays ✦25 and is logged in the Field Journal. Finishing the plant now asks for all 10 scans. Your world and progress are kept.'}; }
+    if (data?.version === 7 && valid(data.state)) { addWorms(data.state.world); return {state:data.state,message:'Earthworms now churn the soil — and shove whatever they bump into. Dense lower horizons dig slowly without enzyme upgrades. Your world and progress are kept.'}; }
     if (data?.version !== VERSION || !valid(data.state)) return { state: null, message: 'This save could not be read. Start a new culture to recover.' };
     return { state: data.state, message: '' };
   } catch { return { state: null, message: 'Local saving is unavailable or the save is damaged. You can still play.' }; }

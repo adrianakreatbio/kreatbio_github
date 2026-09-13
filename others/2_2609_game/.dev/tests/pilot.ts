@@ -1,6 +1,6 @@
 import { NUTRIENTS, PLANT_TARGET } from '../src/biology';
 import { W, H, HOME, index, layer, nutrientRevealed, playableTile } from '../src/world';
-import { cargoMax, DIG_SECONDS, type State, type Track } from '../src/simulation';
+import { cargoMax, DIG_ENERGY, DIG_SECONDS, type State, type Track } from '../src/simulation';
 export const itinerary: Track[] = ['energy', 'digestion', 'storage'];
 export function nextUpgrade(s: State) {
   const levels = { digestion: 0, energy: 0, storage: 0, membrane: 0 };
@@ -17,7 +17,7 @@ export function route(s: State, homeOnly = false) {
     for (const [dx, dy] of [[0, 1], [1, 0], [0, -1], [-1, 0]]) {
       const nx = x + dx, ny = y + dy, ni = index(nx, ny), t = playableTile(s.world,s.scans,nx,ny);
       if (nx < 1 || nx >= W - 1 || ny < 1 || ny >= H - 1 || t === 6 || t === 5 || t === 9 || (full && t >= 2 && t <= 4) || (homeOnly && t !== 0)) continue;
-      const e = t === 0 || t === 7 || t === 8 ? .38 : [1.8, 3.3, 5.3][layer(ny)];
+      const e = t === 0 || t === 7 || t === 8 ? .38 : DIG_ENERGY[layer(ny)];
       const time = t === 0 || t === 7 || t === 8 ? .1 : DIG_SECONDS[layer(ny)] / [1, 1.45, 2, 2.7][s.upgrades.digestion];
       const cost = costs[id] + time + e * .08;
       if (cost < costs[ni]) { costs[ni] = cost; parents[ni] = id; energies[ni] = energies[id] + e; if (!queue.includes(ni)) queue.push(ni); }

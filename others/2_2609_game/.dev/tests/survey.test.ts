@@ -57,5 +57,5 @@ it('migrates v3 progress with a reachable first sample and persists v4 reveal st
  const s=newGame(9);s.world.samples[0].x=22;s.world.samples[0].y=15;s.world.tiles[index(22,15)]=0;s.bank=70;s.deposited.N=4;s.scans=[s.world.samples[1].id];
  let raw=JSON.stringify({version:3,state:s});const db={getItem:()=>raw,setItem:(_k:string,v:string)=>{raw=v;},removeItem:()=>{}};
  const migrated=load(db).state!;expect(migrated.bank).toBe(70);expect(migrated.deposited.N).toBe(4);expect(migrated.scans).toEqual(s.scans);expect(migrated.world.samples[0]).toMatchObject({x:20,y:4});
- expect(nutrientRevealed(migrated.world,migrated.scans,5)).toBe(false);save(db,migrated);expect(JSON.parse(raw).version).toBe(7);expect(load(db).state).toEqual(migrated);
+ expect(nutrientRevealed(migrated.world,migrated.scans,5)).toBe(false);save(db,migrated);expect(JSON.parse(raw).version).toBe(8);expect(load(db).state).toEqual(migrated);
 });

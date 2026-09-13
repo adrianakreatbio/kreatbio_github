@@ -49,6 +49,13 @@ export class Renderer {
       if (t === 0 || t === 5 || t === 7 || t === 9 || s.world.buried?.[y*W+x]) {
         c.fillStyle = y <= 3 ? '#102b2b' : ['#111e23', '#151c2b', '#201a2e'][l]; c.fillRect(sx, sy, size, size);
         c.strokeStyle = '#ffffff04'; c.strokeRect(sx, sy, size, size);
+        // Drifting motes give dug tunnels a sense of living pore water.
+        const h2 = ((x * 2654435761 ^ y * 97) >>> 0);
+        if (y > 3 && h2 % 6 === 0) {
+          const mx = sx + size * (.2 + (h2 >>> 4) % 60 / 100) + Math.sin(time * .9 + h2 % 10) * 3;
+          const my = sy + size * (.2 + (h2 >>> 8) % 60 / 100) + Math.cos(time * .7 + h2 % 7) * 3;
+          c.fillStyle = ['#8adfcf30', '#c9a2ff2e', '#d4ff7028'][h2 % 3]; c.beginPath(); c.arc(mx, my, 1.6, 0, 7); c.fill();
+        }
       } else {
         c.fillStyle = t === 6 ? '#48575f' : ['#29322f', '#2a303c', '#332d41'][l];
         c.beginPath(); c.roundRect(sx + 1, sy + 1, size - 2, size - 2, 4); c.fill();
@@ -117,6 +124,17 @@ export class Renderer {
         c.restore();
       }
     }
+    // Surface meadow strip and faint horizon letters give the column a sense of place.
+    if (3 >= minY && 3 <= maxY) {
+      c.strokeStyle = '#7fbf6a'; c.lineWidth = 1.5;
+      for (let x = minX; x <= maxX; x++) for (let j = 0; j < 3; j++) {
+        const h = ((x * 92821 + j * 53987) >>> 0), bx = x * size + 4 + h % (size - 8), sway = Math.sin(time * 1.5 + h) * 2;
+        c.beginPath(); c.moveTo(bx, 4 * size); c.quadraticCurveTo(bx + sway, 4 * size - 7 - h % 6, bx + sway * 1.6, 4 * size - 12 - h % 8); c.stroke();
+      }
+      c.lineWidth = 1;
+    }
+    c.font = `bold ${size * 2.4}px monospace`; c.fillStyle = '#ffffff0a'; c.textAlign = 'left';
+    c.fillText('A', 1.1 * size, 9 * size); c.fillText('B', 1.1 * size, 38 * size); c.fillText('C', 1.1 * size, 71 * size);
     // Sample habitats and DNA markers are distinct from fictional contact hazards.
     for (const site of s.world.samples) {
       const sx = (site.x + .5) * size, sy = (site.y + .5) * size;
@@ -166,6 +184,19 @@ export class Renderer {
       c.save(); c.translate(ex, ey); c.fillStyle = '#ff75953d'; c.strokeStyle = '#ff7595'; c.shadowColor = '#ff7595'; c.shadowBlur = 12;
       c.beginPath(); for (let j = 0; j < 16; j++) { const a = j / 16 * Math.PI * 2 + time * .4, r = j % 2 ? 11 : 17; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.closePath(); c.fill(); c.stroke();
       c.fillStyle = '#ffdddf'; c.fillRect(-6, -3, 4, 3); c.fillRect(3, -3, 4, 3); c.restore();
+    }
+    // Earthworms: segmented, pale saddle band, trailing behind their heading.
+    for (const w of s.world.worms ?? []) {
+      const wx = (w.x + .5) * size, wy = (w.y + .5) * size, dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]], [wdx, wdy] = dirs[w.dir];
+      c.save(); c.translate(wx, wy); c.lineCap = 'round';
+      c.strokeStyle = '#d98a74'; c.lineWidth = size * .3;
+      c.beginPath();
+      for (let i = 0; i <= 4; i++) { const t2 = i / 4, px = -wdx * size * .95 * t2 + (wdy ? Math.sin(time * 3 + i * 1.4) * 3 : 0), py = -wdy * size * .95 * t2 + (wdx ? Math.sin(time * 3 + i * 1.4) * 3 : 0); i ? c.lineTo(px, py) : c.moveTo(px, py); }
+      c.stroke();
+      c.strokeStyle = '#f3b39c'; c.lineWidth = size * .34;
+      c.beginPath(); c.moveTo(-wdx * size * .35, -wdy * size * .35); c.lineTo(-wdx * size * .55, -wdy * size * .55); c.stroke();
+      c.fillStyle = '#8a4a3c'; c.beginPath(); c.arc(wdx * size * .12, wdy * size * .12, size * .09, 0, 7); c.fill();
+      c.restore();
     }
     if (sim.progress > 0) {
       const x = (s.player.x + sim.facing.x) * size, y = (s.player.y + sim.facing.y) * size;
