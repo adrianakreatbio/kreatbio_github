@@ -92,7 +92,7 @@ it('migrates v7 saves by adding worms and rejects malformed worms',()=>{
  let raw=JSON.stringify({version:7,state:s});
  const db={getItem:()=>raw,setItem:(_k:string,v:string)=>{raw=v;},removeItem:()=>{}};
  const first=load(db);
- expect(first.state?.world.worms?.length).toBe(3);expect(first.message.length).toBeGreaterThan(0);
+ expect(first.state?.world.worms?.length).toBe(5);expect(first.message.length).toBeGreaterThan(0);
  save(db,first.state!);expect(JSON.parse(raw).version).toBe(8);
  const bad=newGame(9);bad.world.worms=[{x:0,y:50,dir:1,timer:0}];expect(valid(bad)).toBe(false);
 });

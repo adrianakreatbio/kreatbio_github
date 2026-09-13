@@ -1,6 +1,6 @@
 import { DISCOVERY_BONUS, MICROBES, NUTRIENTS, NUTRIENT_INFO, PLANT_TARGET, SAMPLE_IDS, SURVEY_IDS, type SampleId } from './biology';
 import './style.css';
-import { Simulation, atHome, cargoMax, energyMax, energyUse, healthMax, newGame, PRICES, TRACKS, type Track } from './simulation';
+import { Simulation, atHome, cargoMax, energyMax, energyUse, healthMax, MOVE_ENERGY, newGame, PRICES, TRACKS, type Track } from './simulation';
 import { FOOD_TILE, HOME, SAMPLE_DEPTHS, layer, tileAt, playableTile, nutrientRevealed, surveyForTile, CHALLENGES } from './world';
 import { load, save } from './persistence';
 import { Input } from './input';
@@ -13,7 +13,7 @@ document.querySelector('#app')!.innerHTML = `
 <main><section class="intro"><div><p class="eyebrow">AN ADVENTURE UNDER THE MICROSCOPE</p><h1><span>Micro</span>load<span class="title-dot">.</span></h1><p class="subtitle">Tiny explorer. Living soil. A plant worth saving.</p></div><div class="specimen"><span class="live-dot"></span> SPECIMEN M–02<br><small>Pea rhizosphere · single player</small></div></section>
 <section class="game-shell" aria-label="Microload game">
 <div class="instrument-bar"><span>MICROLOAD <b id="layer-label"></b></span><div><button id="journal">Notes</button><button id="access" aria-label="Accessibility settings">Aa</button><span id="save-status">LOCAL SAVE</span><button id="mute" aria-label="Mute sound">SOUND ON</button><button id="pause" aria-label="Pause game">Ⅱ PAUSE</button></div></div>
-<div class="game-hud" aria-label="Mission progress and vitals"><div id="plant-display"></div><div class="hud-meters"><div id="nutrient-totals"></div><div class="vital-meters">${['energy','health'].map(id => `<div class="hud-meter" id="${id}-panel"><label for="${id}">${id === 'energy' ? '⚡ Energy' : 'Health'}</label><span id="${id}-text"></span><progress id="${id}" max="160" value="160"></progress></div>`).join('')}<div class="hud-meter"><label for="cargo">Cargo</label><span id="cargo-text"></span><progress id="cargo" max="10" value="0"></progress></div></div></div><div class="hud-actions"><button id="scan-count" class="goal-chip" title="Open the Field Journal">◉ LEARN THE SOIL · 0/${SAMPLE_IDS.length}</button><button id="evolve" class="secondary">Upgrade · ✦ <span id="bank">0</span></button></div></div>
+<div class="game-hud" aria-label="Mission progress and vitals"><div id="plant-display"></div><div class="hud-meters"><div id="nutrient-totals"></div><div class="vital-meters">${['energy','health'].map(id => `<div class="hud-meter" id="${id}-panel"><label for="${id}" aria-label="${id === 'energy' ? 'Energy' : 'Health'}">${id === 'energy' ? '⚡' : '♥'}</label><span id="${id}-text"></span><progress id="${id}" max="160" value="160"></progress></div>`).join('')}<div class="hud-meter"><label for="cargo" aria-label="Cargo">▤</label><span id="cargo-text"></span><progress id="cargo" max="10" value="0"></progress></div></div></div><div class="hud-actions"><button id="scan-count" class="goal-chip" title="Open the Field Journal">◉ COLLECT GOLDS · 0/${SAMPLE_IDS.length}</button><button id="evolve" class="secondary">Upgrade · ✦ <span id="bank">0</span></button></div></div>
 <div class="play-layout"><div class="viewport"><canvas id="world" aria-label="Underground world. Hold a direction on the pad, WASD or arrow keys to move and dig."></canvas><div id="direction-pad" aria-label="Hold a direction to move"><button data-direction="up" aria-label="Move up">↑</button><button data-direction="left" aria-label="Move left">←</button><span aria-hidden="true">HOLD</span><button data-direction="right" aria-label="Move right">→</button><button data-direction="down" aria-label="Move down">↓</button></div><div class="viewport-top"><span id="colony-arrow"></span><span id="depth"></span></div><div id="survey-status"></div><div id="vital-warning" role="status" hidden></div><div id="toast" role="status"></div><div id="growth-feedback" hidden></div><div class="viewport-bottom"><span id="location"></span><span id="dig-status"></span></div><div id="navigation-reader" class="sr-only" aria-live="polite"></div><div id="overlay" class="overlay"></div></div></div>
 <div class="game-controls"><p id="objective-copy" role="status"></p><button id="scan" class="primary">Scan</button></div></section>
 <div class="field-notes"><span class="food-key">⚡ FOOD · +30 ENERGY</span><span><i class="dot lime"></i> N · P · K</span><span><i class="dot coral"></i> FICTIONAL HAZARDS</span><span><i class="dot blue"></i> LOW-O₂ WATER</span><span><i class="dot gold"></i> SOIL DNA SAMPLES</span><span class="field-note">Read the soil. Help life grow.</span></div><footer><span>Grown for curious lab minds by <a href="https://kreatbio.com/">KreatBio</a>.</span><span>Progress stays in this browser.</span></footer></main>`;
@@ -147,14 +147,14 @@ function updateHUD() {
     plantSignature = signature;
   }
   $('bank').textContent = String(s.bank);
-  $('scan-count').textContent = `◉ LEARN THE SOIL · ${s.scans.length}/${SAMPLE_IDS.length}`;
+  $('scan-count').textContent = `◉ COLLECT GOLDS · ${s.scans.length}/${SAMPLE_IDS.length}`;
   $('scan-count').classList.toggle('done', s.scans.length === SAMPLE_IDS.length);
   const depth = Math.max(0,p.y-3), best = Math.max(depth, s.deepest ?? 0);
   $('depth').textContent = best > depth ? `${depth} tiles · best ${best}` : `${depth} tiles`;
   $('layer-label').textContent = ['A · TOPSOIL','B · SUBSOIL','C · PARENT MATERIAL'][layer(p.y)];
   const dx = HOME.x-p.x, dy=HOME.y-p.y;
   // Optimistic fuel estimate for the trip HOME: open-tunnel movement only, digging costs extra.
-  const trip = Math.ceil((Math.abs(dx)+Math.abs(dy)) * .38 * energyUse(s));
+  const trip = Math.ceil((Math.abs(dx)+Math.abs(dy)) * MOVE_ENERGY * energyUse(s));
   $('colony-arrow').innerHTML = `<b style="display:inline-block;transform:rotate(${Math.atan2(dy,dx)*180/Math.PI}deg)">➜</b> HOME · ${Math.abs(dx)+Math.abs(dy)}${home?'':` · ≥${trip}⚡`}`;
   const warnings = [];
   if (!home && er <= .25) warnings.push('Low energy: HOME or ⚡ food');

@@ -27,7 +27,8 @@ export function generate(seed: number): World {
       const n = r(), l = layer(y);
       // Coarse rock fragments increase toward the parent material; waterlogged
       // low-oxygen pockets appear only in the deep, poorly drained band.
-      const rock = [.04, .07, .10][l], hazardBand = rock + l * .025;
+      // Rock and hazard density run 1.5x the original rates for a harder dig.
+      const rock = [.06, .105, .15][l], hazardBand = rock + l * .0375;
       t = n < rock ? 6 : n < hazardBand ? 5 : l === 2 && n < hazardBand + .045 ? 9 : n < .29 ? (2 + Math.floor(r() * 3)) as Tile : n > .96 ? 0 : 1;
     }
     tiles[index(x, y)] = t;
@@ -37,7 +38,8 @@ export function generate(seed: number): World {
   // Early food can always finance a recovery trip.
   for (let x = 12; x <= 28; x += 2) tiles[index(x, 5)] = (2 + (x / 2) % 3) as Tile;
   // Pathogen pressure rises with depth: sparse in topsoil, dense near the parent material.
-  for (const [start, end, step] of [[16, 33, 6], [36, 66, 5], [69, 96, 3]] as const) for (let y = start; y <= end; y += step) {
+  // Spawner density runs 1.5x the original count (20 -> 30) for a harder game.
+  for (const [start, end, step] of [[16, 33, 4], [36, 66, 3], [69, 96, 2]] as const) for (let y = start; y <= end; y += step) {
     const x = 3 + Math.floor(r() * 12) + (r() > .5 ? 20 : 0);
     for (let dx = -1; dx <= 1; dx++) tiles[index(x + dx, y)] = 0;
     enemies.push({ x, y, dir: Math.floor(r() * 4), timer: 0 });
@@ -177,7 +179,8 @@ export function balanceDeposits(world: World) {
 export function addWorms(world: World) {
   if (world.worms?.length) return;
   const rng = random(world.seed ^ 0x3aa9);
-  world.worms = [20, 45, 70].map(base => {
+  // Five worms (was three, ~1.5x) spread across all three horizons.
+  world.worms = [16, 32, 48, 66, 84].map(base => {
     const y = base + Math.floor(rng() * 6) - 3;
     let x = rng() > .5 ? 3 + Math.floor(rng() * 11) : 27 + Math.floor(rng() * 10);
     for (let tries = 0; tries < 9 && tileAt(world, x, y) === 6; tries++) x = 3 + Math.floor(rng() * (W - 6));

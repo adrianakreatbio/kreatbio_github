@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { Simulation, newGame, energyMax, cargoMax } from '../src/simulation';
+import { Simulation, newGame, energyMax, cargoMax, MOVE_ENERGY } from '../src/simulation';
 import { FOOD_TILE, FOOD_ENERGY, HOME, index, tileAt } from '../src/world';
 import { load, save, valid, SAVE_KEY, VERSION } from '../src/persistence';
 const storage = () => { const values = new Map<string,string>(); return { getItem: (k:string) => values.get(k) ?? null, setItem: (k:string,v:string) => {values.set(k,v);}, removeItem: (k:string) => {values.delete(k);} }; };
@@ -17,14 +17,14 @@ it('places three reachable topsoil food blocks, including one near the start, ac
 it('restores energy immediately with nearly full cargo and near-zero energy, without changing plant resources',()=>{
  const s=newGame(9),sim=new Simulation(s);s.player={x:20,y:7,energy:.01,health:80,cargo:Array(cargoMax(s)-1).fill('N')};s.world.tiles[index(20,7)]=0;s.bank=123;
  sim.step(.1,-1,0);
- expect(s.player.x).toBe(19);expect(s.player.energy).toBeCloseTo(.01-.38+FOOD_ENERGY);expect(s.deaths).toBe(0);
+ expect(s.player.x).toBe(19);expect(s.player.energy).toBeCloseTo(.01-MOVE_ENERGY+FOOD_ENERGY);expect(s.deaths).toBe(0);
  expect(s.player.health).toBe(80);expect(s.player.cargo).toHaveLength(9);expect(s.bank).toBe(123);expect(s.deposited).toEqual({N:0,P:0,K:0});
  expect(tileAt(s.world,19,7)).toBe(0);expect(sim.events.find(e=>e.kind==='food')?.energyRestored).toBe(30);
 });
 it('caps refills at the upgraded energy maximum and never awards the same food twice',()=>{
  const s=newGame(9),sim=new Simulation(s);s.upgrades.energy=2;s.player.x=20;s.player.y=7;s.player.energy=energyMax(s)-1;s.world.tiles[index(20,7)]=0;
  sim.step(.1,-1,0);expect(s.player.energy).toBe(energyMax(s));
- sim.step(.1,1,0);sim.step(.1,-1,0);expect(s.player.energy).toBeCloseTo(energyMax(s)-.76);
+ sim.step(.1,1,0);sim.step(.1,-1,0);expect(s.player.energy).toBeCloseTo(energyMax(s)-2*MOVE_ENERGY);
  expect(sim.events.filter(e=>e.kind==='food')).toHaveLength(1);
  const db=storage();save(db,s);const loaded=load(db).state!;expect(loaded.world.tiles.filter(t=>t===8)).toHaveLength(2);
  new Simulation(loaded).respawn();expect(loaded.world.tiles.filter(t=>t===8)).toHaveLength(2);

@@ -33,8 +33,8 @@ describe('simulation rules', () => {
   it('charges digging energy once across fixed steps and frees the tile', () => {
     const sim = underground(); sim.state.world.tiles[index(21, 10)] = 1;
     walk(sim, 1, 0); expect(sim.state.player.x).toBe(21); expect(tileAt(sim.state.world, 21, 10)).toBe(0);
-    expect(sim.state.player.energy).toBeCloseTo(158.2, 1);
-    walk(sim, -1, 0); expect(sim.state.player.energy).toBeCloseTo(157.82, 1);
+    expect(sim.state.player.energy).toBeCloseTo(157.3, 1);
+    walk(sim, -1, 0); expect(sim.state.player.energy).toBeCloseTo(156.73, 1);
   });
   it('never charges for idle or bedrock and cancels a partial dig on release', () => {
     const sim = underground(); sim.state.world.tiles[index(21, 10)] = 6;

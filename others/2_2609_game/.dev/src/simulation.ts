@@ -10,7 +10,10 @@ export interface Event { kind: 'dig' | 'food' | 'collect' | 'hurt' | 'deposit' |
 // Bulk density rises sharply with depth: lower horizons are slow and expensive
 // to dig without enzyme/energy upgrades — the soft gate to the deep game.
 export const DIG_SECONDS = [.30, .60, 1.10];
-export const DIG_ENERGY = [1.8, 4, 7];
+// Energy costs run 1.5x steeper than the base energy tier can sustain in B/C horizon,
+// so an Energy upgrade becomes a real requirement for the deep game, not just a comfort.
+export const DIG_ENERGY = [2.7, 6, 10.5];
+export const MOVE_ENERGY = .57;
 export const MOVE_SECONDS = .09;
 // Research credits per delivered nutrient, by the soil layer it was collected in.
 // Deeper samples are rarer and costlier to obtain, so the lab pays more for them.
@@ -117,7 +120,7 @@ export class Simulation {
         if (t === 0 || t === 5 || t === 7 || t === 9 || t === FOOD_TILE || (t>=2 && t<=4 && tileAt(s.world,x,y)===0)) {
           this.moveTimer += dt;
           if (this.moveTimer >= MOVE_SECONDS) {
-            this.moveTimer = 0; p.x = x; p.y = y; p.energy -= .38 * energyUse(s);
+            this.moveTimer = 0; p.x = x; p.y = y; p.energy -= MOVE_ENERGY * energyUse(s);
             if(t>=2 && t<=4){delete s.world.buried![index(x,y)];this.collect(NUTRIENTS[t-2]);}
             if (t === FOOD_TILE) {
               const restored = Math.min(FOOD_ENERGY, energyMax(s) - p.energy);
