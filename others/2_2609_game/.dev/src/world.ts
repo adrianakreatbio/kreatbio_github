@@ -4,7 +4,7 @@ export const W =  40;
 export const H = 100;
 export const SURFACE = 3;
 export const HOME = { x: 20, y: 2 };
-export type Tile = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8; // air, soil, N, P, K, fictional hazard, rock, legacy fragment, energy food
+export type Tile = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9; // air, soil, N, P, K, fictional hazard, rock, legacy fragment, energy food, waterlogged low-oxygen pocket
 export interface Enemy { x: number; y: number; dir: number; timer: number; }
 export interface SampleSite { id: SampleId; x: number; y: number; }
 export const CHALLENGES = ['Explore freely', 'No cargo losses', 'At most 4 deliveries'] as const;
@@ -25,7 +25,8 @@ export function generate(seed: number): World {
     let t: Tile = 0;
     if (y > SURFACE) {
       const n = r(), l = layer(y);
-      t = n < .035 ? 6 : n < .035 + l * .025 ? 5 : n < .29 ? (2 + Math.floor(r() * 3)) as Tile : n > .96 ? 0 : 1;
+      // Waterlogged low-oxygen pockets appear only in the deep, poorly drained band.
+      t = n < .035 ? 6 : n < .035 + l * .025 ? 5 : l === 2 && n < .13 ? 9 : n < .29 ? (2 + Math.floor(r() * 3)) as Tile : n > .96 ? 0 : 1;
     }
     tiles[index(x, y)] = t;
   }
@@ -42,6 +43,7 @@ export function generate(seed: number): World {
   addSamples(world);
   addEnergyFood(world);
   balanceDeposits(world);
+  addDeepPockets(world);
   world.challenge=seed%3;
   return world;
 }
@@ -54,7 +56,7 @@ export function addSamples(world: World, player?: { x: number; y: number }) {
   world.samples = ids.map((id, i) => i === 0 ? { id, x: HOME.x, y: 4 } : ({ id, x: HOME.x + Math.floor(rng()*7)-3, y: [4,40,67][i] + Math.floor(rng()*7)-3 }));
   for (let y = 4; y <= 74; y++) {
     const pos = index(HOME.x, y);
-    if ([5, 6, 7].includes(world.tiles[pos])) world.tiles[pos] = 1;
+    if ([5, 6, 7, 9].includes(world.tiles[pos])) world.tiles[pos] = 1;
   }
   world.samples.forEach(site => {
     // Reach each sample from the safe spine; no impassable random rock wall.
@@ -75,11 +77,11 @@ export function addSamples(world: World, player?: { x: number; y: number }) {
   for (const site of world.samples) {
     for (let dy=-2;dy<=3;dy++) {
       const pos=index(site.x,site.y+dy);
-      if ([5,6].includes(world.tiles[pos])) world.tiles[pos]=1;
+      if ([5,6,9].includes(world.tiles[pos])) world.tiles[pos]=1;
     }
     for(let dx=0;dx<=4;dx++) {
       const pos=index(site.x+dx,site.y+3);
-      if ([5,6].includes(world.tiles[pos])) world.tiles[pos]=1;
+      if ([5,6,9].includes(world.tiles[pos])) world.tiles[pos]=1;
     }
   }
   world.enemies = world.enemies.filter(e => Math.abs(e.x - HOME.x) > 5);
@@ -87,10 +89,11 @@ export function addSamples(world: World, player?: { x: number; y: number }) {
 
 export const FOOD_TILE = 8;
 export const FOOD_ENERGY = 30;
-// Six finite refills, one near the start and the others beside the main route.
+// Three finite refills, all in the organic topsoil band: soil organic matter —
+// and so this microbe's food — declines sharply with depth. Deep trips must be budgeted.
 // Called only for a new world or an older save migration, never on respawn/load of v3.
 export function addEnergyFood(world: World, player?: { x: number; y: number }) {
-  for (const y of [7, 22, 35, 49, 62, 77]) {
+  for (const y of [7, 21, 33]) {
     let x = player?.x === HOME.x - 1 && player.y === y ? HOME.x + 1 : HOME.x - 1;
     if (world.samples.some(site=>site.x===x && site.y===y)) x = HOME.x + 1;
     world.tiles[index(x, y)] = FOOD_TILE;
@@ -114,16 +117,16 @@ export function placeFirstSampleAtHome(world: World) {
 }
 
 // Bounded supplies make every survey useful: no two areas can finish 12 each.
-// Different arrangements change which nutrient the next trip should prioritize.
+// Deposits follow real soil stratification: organic nitrogen concentrates in the
+// topsoil area, phosphorus in the subsoil, and mineral potassium deepest.
 export function balanceDeposits(world: World) {
   world.tiles=world.tiles.map(t=>t>=2&&t<=4?1:t);
   world.buried={};world.balanced=true;
-  const budgets=[[5,4,3],[4,6,4],[7,6,9]];
-  const shift=world.seed%3;
+  const budgets=[[8,4,4],[4,8,4],[4,4,8]];
   world.samples.forEach((site,i)=>{
     const rng=random(world.seed ^ (i+1)*731);
     const values: Tile[]=[];
-    for(let n=0;n<3;n++)for(let j=0;j<budgets[i][n];j++)values.push((2+(n+shift)%3) as Tile);
+    for(let n=0;n<3;n++)for(let j=0;j<budgets[i][n];j++)values.push((2+n) as Tile);
     for(let j=values.length-1;j>0;j--){const k=Math.floor(rng()*(j+1));[values[j],values[k]]=[values[k],values[j]];}
     let j=0;
     for(let dy=1;dy<=4;dy++)for(let dx=1;dx<=6;dx++){
@@ -136,4 +139,20 @@ export function balanceDeposits(world: World) {
     for(let dy=0;dy<=5;dy++)world.tiles[index(site.x+7,site.y+dy)]=1;
     if(i>0){for(let dx=1;dx<=5;dx++)if(site.x+dx>Math.max(HOME.x,site.x))world.tiles[index(site.x+dx,site.y)]=5;world.tiles[index(site.x+6,site.y)]=0;}
   });
+}
+
+// Bonus potassium below the deepest survey: in real soil, K weathers out of
+// feldspar and mica in the C horizon. Surplus credits, not required for the plant.
+export const DEEP_K_POCKETS = 10;
+export function addDeepPockets(world: World) {
+  const rng = random(world.seed ^ 0x9e37);
+  let placed = 0, guard = 0;
+  while (placed < DEEP_K_POCKETS && guard++ < 4000) {
+    const x = 2 + Math.floor(rng() * (W - 4)), y = 78 + Math.floor(rng() * 18);
+    if (x === HOME.x) continue;
+    const pos = index(x, y);
+    if (world.tiles[pos] === 1) { world.tiles[pos] = 4; placed++; }
+  }
+  for (let y = 78; y < 96 && placed < DEEP_K_POCKETS; y++) for (let x = 2; x < W - 2 && placed < DEEP_K_POCKETS; x++)
+    if (x !== HOME.x && world.tiles[index(x, y)] === 1) { world.tiles[index(x, y)] = 4; placed++; }
 }

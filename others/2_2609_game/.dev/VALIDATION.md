@@ -92,3 +92,17 @@ The optional Firefox check also could not reach gameplay: the cached executable 
 Public layout now matches the first game: `index.html`, `game.js`, `styles.css`, `assets/`. Source, dependencies, configuration, tests and documentation moved together into `.dev/`. Vite builds a classic IIFE script and standalone CSS; `publish-static.mjs` copies the runtime files to the public parent without clearing that folder. Rebuild from `.dev/` with `npm run build`.
 
 Validation: TypeScript/build passed; all 42 unit tests passed. Chrome production checks passed for local hosting at `/others/2_2609_game/`, relative assets, movement, stable paused state, denied storage, direct `file://` opening, and a 390×844 phone viewport without page overflow. Screenshots: `test-results/production-nested.png` and `test-results/production-file-phone.png`. This verifies local delivery; no website deployment was performed.
+
+## Deep survey update — 13 September 2026
+
+Motherload-inspired loop revision, keeping the scientific framing:
+
+- Full cargo no longer teleports HOME; the player walks it back. Assisted return in Aa settings restores automatic delivery (default off). A one-time "Cargo full" cue fires, the HUD shows a minimum ⚡ trip estimate, and the canvas edge pulses red under 25% energy (static under reduced motion).
+- Deposits are stratified like real soil: the shallowest survey area is N-rich, the middle P-rich, the deepest K-rich ([8,4,4]/[4,8,4]/[4,4,8]); any two areas still cannot finish the goal. Ten bonus K tiles sit below y=78 in the C horizon (weathering framing), gated behind the deepest survey's scan.
+- Delivered nutrients bank credits by collection depth (10/20/35), framed as expedition/data value, not fertility. Upgrades regained three tiers (total ✦1390 = maximum income of a perfect harvest; tier 1 remains ✦250).
+- Energy food reduced to three tiles, all in the topsoil (organic matter declines with depth). Dig cues pitch down with layer hardness. Horizon labels A/B/C with first-entry milestones; deepest-dive record shown and saved.
+- New tile 9: waterlogged low-oxygen pockets in the deep band — passable without digging, 8 damage per tick (reduced by membrane tiers), cleared from spines/bypasses, journal entry and legend distinguish them from fictional pink hazards.
+- Victory no longer freezes the simulation: the deep survey stays open for harvesting, purchases and depth records, without re-emitting the win.
+- Save v6 (per-item cargo values, deepest record, tile 9). V1–v5 migrate with progress kept; v5 shows a notice. Assisted-return preference persists outside the game save.
+
+Validation: build passes; 50 unit/integration tests pass, including 100-seed pocket/stratification/water placement, depth-value banking, close-call flags, post-win play, v5 migration and strict new-field validation. The three-seed simulation pilot wins with 0 deaths (56–99 active seconds, bank 480–515 remaining for tiers 2–3). The consolidated Chrome suite passes (smoke, phone with assisted-recall scenario, accessibility, audio, default + assisted return, production hosting). Full real-time Chrome expedition on seed 2609: victory N12/P12/K12, 3 scans, 3 manual deliveries, 0 deaths, 113.4 active seconds / 137.6 wall seconds, mid-game reload verified, no browser errors. Human playtesting of the new return-trip tension remains outstanding.

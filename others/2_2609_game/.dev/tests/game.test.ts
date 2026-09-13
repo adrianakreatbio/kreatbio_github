@@ -43,8 +43,8 @@ describe('simulation rules', () => {
     sim.state.world.tiles[index(21, 10)] = 1; sim.step(.1, 1, 0); expect(sim.progress).toBeGreaterThan(0);
     sim.step(.1, 0, 0); expect(sim.progress).toBe(0);
   });
-  it('automatically deposits a restored full cargo without destroying nearby nutrients', () => {
-    const sim = underground(); sim.state.player.cargo = Array(10).fill('N'); sim.state.world.tiles[index(21, 10)] = 2;
+  it('assisted return deposits a restored full cargo without destroying nearby nutrients', () => {
+    const sim = underground(); sim.assistReturn = true; sim.state.player.cargo = Array(10).fill('N'); sim.state.world.tiles[index(21, 10)] = 2;
     sim.step(1/60,1,0);
     expect(atHome(sim.state)).toBe(true);expect(tileAt(sim.state.world,21,10)).toBe(2);
     expect(sim.state.bank).toBe(100);expect(sim.state.deposited.N).toBe(10);expect(sim.state.player.cargo).toHaveLength(0);
@@ -56,7 +56,7 @@ describe('simulation rules', () => {
     sim.state.player.x = HOME.x; sim.state.player.y = HOME.y;
     let cost = 0;
     for (const track of TRACKS) { for (const price of PRICES[track]) { expect(sim.purchase(track)).toBe(true); cost += price; } expect(sim.purchase(track)).toBe(false); }
-    expect(sim.state.bank).toBe(10010 - cost); expect(energyMax(sim.state)).toBe(270); expect(cargoMax(sim.state)).toBe(16); expect(healthMax(sim.state)).toBe(140);
+    expect(sim.state.bank).toBe(10010 - cost); expect(cost).toBe(1390); expect(energyMax(sim.state)).toBe(620); expect(cargoMax(sim.state)).toBe(34); expect(healthMax(sim.state)).toBe(250);
     const poor = new Simulation(newGame()); expect(poor.purchase('energy')).toBe(false);
   });
   it('telegraphs toxin tiles, limits contact damage and allows escape', () => {
@@ -81,7 +81,9 @@ describe('simulation rules', () => {
     sim.step(1 / 60, 0, 0); expect(s.won).toBe(false);
     s.player.cargo = ['K']; s.player.x = HOME.x; s.player.y = HOME.y;
     sim.step(1 / 60, 0, 0); expect(s.won).toBe(true); expect(s.deposited.K).toBe(12);
-    const elapsed = s.elapsed; sim.step(10, 1, 0); expect(s.elapsed).toBe(elapsed);
+    // The deep survey stays open after victory: play continues without re-winning.
+    const elapsed = s.elapsed; sim.step(10, 1, 0); expect(s.elapsed).toBeGreaterThan(elapsed);
+    expect(sim.events.filter(e => e.kind === 'win')).toHaveLength(1);
   });
 });
 describe('persistence', () => {

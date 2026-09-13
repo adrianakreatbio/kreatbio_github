@@ -29,11 +29,13 @@ try {
   const r=await page.locator('.game-shell').boundingBox();assert.ok(r.y+r.height<=height,`game fits ${width}x${height}: ${JSON.stringify(r)}`);
  }
  await page.setViewportSize({width:390,height:844});
- // Full cargo recall must suppress the still-held touch until a fresh press.
+ // Assisted-return recall must suppress the still-held touch until a fresh press.
+ await page.evaluate(()=>localStorage.setItem('microload.assistReturn','true'));
  const full=newGame(2609);full.scans=full.world.samples.map(s=>s.id);full.player={x:20,y:10,energy:100,health:80,cargo:Array(9).fill('N')};full.world.tiles[10*40+20]=0;full.world.tiles[10*40+21]=3;
  await fixture(full);await touch('touchStart',await point('right'));await page.waitForTimeout(900);const returned=await read();assert.equal(returned.player.y,2);assert.equal(returned.trips,1);assert.equal(returned.deposited.P,1);
  await touch('touchMove',await point('down'));await page.waitForTimeout(350);assert.equal((await read()).player.y,2);await touch('touchEnd');
  await touch('touchStart',await point('down'));await page.waitForTimeout(350);await touch('touchEnd');assert.ok((await read()).player.y>2);
+ await page.evaluate(()=>localStorage.removeItem('microload.assistReturn'));
  // Unknown nutrients become mapped; modal remains until explicit close.
  const sample=newGame(2609),site=sample.world.samples.find(s=>s.id==='root-partner');sample.player.x=site.x;sample.player.y=site.y;sample.world.tiles[(site.y+1)*40+site.x]=2;
  await fixture(sample);assert.equal(await page.locator('#scan').isEnabled(),true);await page.screenshot({path:'test-results/survey-before.png'});

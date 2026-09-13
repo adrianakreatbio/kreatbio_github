@@ -1,6 +1,6 @@
 import {it,expect} from 'vitest';
-import {Simulation,newGame,PRICES,energyUse} from '../src/simulation';
-import {nutrientRevealed,playableTile,index,tileAt} from '../src/world';
+import {Simulation,newGame,PRICES,VALUES,energyUse} from '../src/simulation';
+import {nutrientRevealed,playableTile,index,tileAt,DEEP_K_POCKETS} from '../src/world';
 import {save,load} from '../src/persistence';
 it('varies sample positions and discovery order, with safe surveyed bypasses',()=>{
  const layouts=new Set<string>();const orders=new Set<string>();
@@ -22,7 +22,10 @@ it('storage extends energy endurance, and every upgrade is affordable within the
  const base=newGame(9),upgraded=newGame(9);upgraded.upgrades.storage=1;
  for(const s of [base,upgraded]){s.player.y=10;s.world.tiles[index(20,10)]=0;s.world.tiles[index(21,10)]=1;new Simulation(s).step(.3,1,0);}
  expect(160-upgraded.player.energy).toBeCloseTo((160-base.player.energy)*energyUse(upgraded));
- expect(Object.values(PRICES).flat().reduce((a,b)=>a+b,0)).toBeLessThanOrEqual(360);
+ // Tier-1 gear stays affordable within the mission; the full three-tier ladder
+ // costs exactly the maximum research income of a perfectly harvested world.
+ expect(Object.values(PRICES).reduce((a,p)=>a+p[0],0)).toBeLessThanOrEqual(360);
+ expect(Object.values(PRICES).flat().reduce((a,b)=>a+b,0)).toBe(16*VALUES[0]+16*VALUES[1]+16*VALUES[2]+DEEP_K_POCKETS*VALUES[2]);
  // Existing multi-level saves keep their earned abilities.
  upgraded.upgrades.storage=3;let raw='';const db={getItem:()=>raw,setItem:(_k:string,v:string)=>{raw=v;},removeItem:()=>{}};save(db,upgraded);expect(load(db).state?.upgrades.storage).toBe(3);
 });
@@ -32,7 +35,7 @@ it('requires each area scan before any nutrient is visible or collectible',()=>{
   const s=newGame(seed),sim=new Simulation(s);
   expect(s.world.samples[0]).toMatchObject({x:20,y:4});
   const deposits=s.world.tiles.flatMap((t,i)=>t>=2&&t<=4?[i]:[]);
-  expect(deposits.length).toBe(48);
+  expect(deposits.length).toBe(48+DEEP_K_POCKETS);
   for(const i of deposits)expect(playableTile(s.world,s.scans,i%40,Math.floor(i/40))).toBe(1);
   s.player.y=3;expect(sim.scan(s.world.samples[0].id)).toBe(true);
   expect(nutrientRevealed(s.world,s.scans,5)).toBe(true);
@@ -51,5 +54,5 @@ it('migrates v3 progress with a reachable first sample and persists v4 reveal st
  const s=newGame(9);s.world.samples[0].x=22;s.world.samples[0].y=15;s.world.tiles[index(22,15)]=0;s.bank=70;s.deposited.N=4;s.scans=[s.world.samples[1].id];
  let raw=JSON.stringify({version:3,state:s});const db={getItem:()=>raw,setItem:(_k:string,v:string)=>{raw=v;},removeItem:()=>{}};
  const migrated=load(db).state!;expect(migrated.bank).toBe(70);expect(migrated.deposited.N).toBe(4);expect(migrated.scans).toEqual(s.scans);expect(migrated.world.samples[0]).toMatchObject({x:20,y:4});
- expect(nutrientRevealed(migrated.world,migrated.scans,5)).toBe(false);save(db,migrated);expect(JSON.parse(raw).version).toBe(5);expect(load(db).state).toEqual(migrated);
+ expect(nutrientRevealed(migrated.world,migrated.scans,5)).toBe(false);save(db,migrated);expect(JSON.parse(raw).version).toBe(6);expect(load(db).state).toEqual(migrated);
 });

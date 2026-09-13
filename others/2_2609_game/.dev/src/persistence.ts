@@ -2,21 +2,23 @@ import { NUTRIENTS, SAMPLE_IDS, PLANT_TARGET, emptyTotals } from './biology';
 import { cargoMax, energyMax, healthMax, TRACKS, type State } from './simulation';
 import { addSamples, addEnergyFood, H, HOME, W, index, tileAt, placeFirstSampleAtHome } from './world';
 export const SAVE_KEY = 'kreatbio.microload.save';
-export const VERSION = 5;
+export const VERSION = 6;
 export const BACKUP_KEY = `${SAVE_KEY}.v1-backup`;
 export interface StorageLike { getItem(k: string): string | null; setItem(k: string, v: string): void; removeItem(k: string): void; }
 const finite = (n: unknown, min: number, max = Number.MAX_SAFE_INTEGER): n is number => typeof n === 'number' && Number.isFinite(n) && n >= min && n <= max;
 const integer = (n: unknown, min: number, max: number): n is number => finite(n, min, max) && Number.isInteger(n);
 function validState(s: any, legacy = false, food = true): s is State {
   if (!s || !s.world || !s.player || !s.upgrades) return false;
-  if (!integer(s.world.seed, 0, 4294967295) || !Array.isArray(s.world.tiles) || s.world.tiles.length !== W * H || !s.world.tiles.every((t: unknown) => integer(t, 0, legacy ? 7 : food ? 8 : 6) && (legacy || t !== 7))) return false;
+  if (!integer(s.world.seed, 0, 4294967295) || !Array.isArray(s.world.tiles) || s.world.tiles.length !== W * H || !s.world.tiles.every((t: unknown) => integer(t, 0, legacy ? 7 : food ? 9 : 6) && (legacy || t !== 7))) return false;
   if (!TRACKS.every(k => integer(s.upgrades[k], 0, 3))) return false;
   if(s.world.balanced!==undefined && typeof s.world.balanced!=='boolean')return false;
   if(s.world.challenge!==undefined && !integer(s.world.challenge,0,2))return false;
   if(s.world.buried!==undefined && (!s.world.buried || typeof s.world.buried!=='object' || Array.isArray(s.world.buried) || !Object.entries(s.world.buried).every(([k,v])=>/^\d+$/.test(k)&&integer(Number(k),0,W*H-1)&&integer(v,2,4)&&s.world.tiles[Number(k)]===0)))return false;
   const p = s.player;
-  if (!integer(p.x, 1, W - 2) || !integer(p.y, 1, H - 2) || ![0, 5].includes(tileAt(s.world, p.x, p.y))) return false;
+  if (!integer(p.x, 1, W - 2) || !integer(p.y, 1, H - 2) || ![0, 5, 9].includes(tileAt(s.world, p.x, p.y))) return false;
   if (!finite(p.energy, .00001, energyMax(s)) || !finite(p.health, .00001, healthMax(s)) || !Array.isArray(p.cargo) || p.cargo.length > cargoMax(s) || !p.cargo.every((v: any) => legacy ? [8, 18, 35].includes(v) : NUTRIENTS.includes(v))) return false;
+  if (p.cargoValues !== undefined && (!Array.isArray(p.cargoValues) || p.cargoValues.length > p.cargo.length || !p.cargoValues.every((v: any) => finite(v, 0, 1000)))) return false;
+  if (s.deepest !== undefined && !integer(s.deepest, 0, H)) return false;
   if (!integer(s.bank, 0, 1e9) || !finite(s.elapsed, 0, 1e9) || !integer(s.trips, 0, 1e7) || !integer(s.deaths, 0, 1e7) || typeof s.won !== 'boolean') return false;
   if (legacy) {
     if (typeof s.fragment !== 'boolean' || (s.won && !s.fragment)) return false;
@@ -54,10 +56,11 @@ export function load(storage: StorageLike): { state: State | null; message: stri
     if (data?.version === 2 && validState(data.state, false, false)) {
       addEnergyFood(data.state.world, data.state.player);
       placeFirstSampleAtHome(data.state.world);
-      return { state: data.state, message: 'Six orange ⚡ food blocks added. Each restores up to 30 energy immediately, even with full cargo. Your progress is kept.' };
+      return { state: data.state, message: 'Orange ⚡ food added in the topsoil. Each restores up to 30 energy immediately, even with full cargo. Your progress is kept.' };
     }
     if (data?.version === 3 && valid(data.state)) { placeFirstSampleAtHome(data.state.world); return { state: data.state, message: 'Scan to reveal nutrients. The first sample is now beside HOME. Your progress is kept.' }; }
     if (data?.version === 4 && valid(data.state)) return {state:data.state,message:'Hidden nutrients are now preserved when you dig. Your expedition is kept; new cultures use balanced survey supplies.'};
+    if (data?.version === 5 && valid(data.state)) return {state:data.state,message:'Deep survey update: deliver cargo by returning HOME yourself (assisted return is in Aa settings), deeper finds earn more credits, and upgrades now have three tiers. New cultures add deep mineral pockets and low-oxygen water. Your world and progress are kept.'};
     if (data?.version !== VERSION || !valid(data.state)) return { state: null, message: 'This save could not be read. Start a new culture to recover.' };
     return { state: data.state, message: '' };
   } catch { return { state: null, message: 'Local saving is unavailable or the save is damaged. You can still play.' }; }

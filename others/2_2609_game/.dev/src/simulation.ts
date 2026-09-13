@@ -3,22 +3,24 @@ import { generate, FOOD_TILE, FOOD_ENERGY, H, HOME, index, layer, tileAt, playab
 export const TRACKS = ['digestion', 'energy', 'storage', 'membrane'] as const;
 export type Track = typeof TRACKS[number];
 export type Upgrades = Record<Track, number>;
-export interface Player { x: number; y: number; energy: number; health: number; cargo: Nutrient[]; }
-export interface State { world: World; player: Player; upgrades: Upgrades; bank: number; deposited: NutrientTotals; scans: SampleId[]; won: boolean; elapsed: number; trips: number; deaths: number; }
+export interface Player { x: number; y: number; energy: number; health: number; cargo: Nutrient[]; cargoValues?: number[]; }
+export interface State { world: World; player: Player; upgrades: Upgrades; bank: number; deposited: NutrientTotals; scans: SampleId[]; won: boolean; elapsed: number; trips: number; deaths: number; deepest?: number; }
 export type ReturnReason = 'energy' | 'membrane' | 'both';
-export interface Event { kind: 'dig' | 'food' | 'collect' | 'hurt' | 'deposit' | 'respawn' | 'auto-return' | 'upgrade' | 'scan' | 'win'; x: number; y: number; reason?: ReturnReason; energyRestored?: number; nutrient?: Nutrient; }
+export interface Event { kind: 'dig' | 'food' | 'collect' | 'hurt' | 'deposit' | 'respawn' | 'auto-return' | 'full' | 'upgrade' | 'scan' | 'win'; x: number; y: number; reason?: ReturnReason; energyRestored?: number; nutrient?: Nutrient; closeCall?: boolean; }
 export const DIG_SECONDS = [.30, .45, .60];
 export const MOVE_SECONDS = .09;
-export const VALUES = [10, 10, 10];
-export const PRICES: Record<Track, number[]> = { digestion: [60], energy: [80], storage: [60], membrane: [50] };
+// Research credits per delivered nutrient, by the soil layer it was collected in.
+// Deeper samples are rarer and costlier to obtain, so the lab pays more for them.
+export const VALUES = [10, 20, 35];
+export const PRICES: Record<Track, number[]> = { digestion: [60, 110, 180], energy: [80, 130, 190], storage: [60, 110, 180], membrane: [50, 90, 150] };
 export const energyMax = (s: State) => [160, 270, 420, 620][s.upgrades.energy];
 export const healthMax = (s: State) => [100, 140, 190, 250][s.upgrades.membrane];
 export const cargoMax = (s: State) => [10, 16, 24, 34][s.upgrades.storage];
 export const energyUse = (s: State) => 10 / cargoMax(s);
 export const atHome = (s: State) => s.player.y <= 3 && Math.abs(s.player.x - HOME.x) <= 2;
-export const cargoValue = (s: State) => s.player.cargo.length * 10;
+export const cargoValue = (s: State) => s.player.cargo.reduce((sum, _, i) => sum + (s.player.cargoValues?.[i] ?? 10), 0);
 export function newGame(seed = Date.now() >>> 0): State {
-  return { world: generate(seed), player: { ...HOME, energy: 160, health: 100, cargo: [] }, upgrades: { digestion: 0, energy: 0, storage: 0, membrane: 0 }, bank: 0, deposited: emptyTotals(), scans: [], won: false, elapsed: 0, trips: 0, deaths: 0 };
+  return { world: generate(seed), player: { ...HOME, energy: 160, health: 100, cargo: [], cargoValues: [] }, upgrades: { digestion: 0, energy: 0, storage: 0, membrane: 0 }, bank: 0, deposited: emptyTotals(), scans: [], won: false, elapsed: 0, trips: 0, deaths: 0, deepest: 0 };
 }
 export class Simulation {
   events: Event[] = [];
@@ -27,8 +29,11 @@ export class Simulation {
   moveTimer = 0;
   damageTimer = 0;
   facing = { x: 0, y: 1 };
+  // Assisted return restores the old automatic trip HOME on full cargo (Aa settings).
+  assistReturn = false;
+  fullNotified = false;
   constructor(public state: State) {}
-  collect(n: Nutrient) { this.state.player.cargo.push(n); this.events.push({kind:'collect',x:this.state.player.x,y:this.state.player.y,nutrient:n}); }
+  collect(n: Nutrient) { const p = this.state.player; p.cargo.push(n); (p.cargoValues ??= []).push(VALUES[layer(p.y)]); this.events.push({kind:'collect',x:p.x,y:p.y,nutrient:n}); }
   restoreLostCargo() {
     const s=this.state;
     for(const n of s.player.cargo) {
@@ -46,7 +51,12 @@ export class Simulation {
   resetAction() { this.progress = 0; this.target = ''; this.moveTimer = 0; }
   recover() {
     const s = this.state;
-    if (s.player.cargo.length) { s.bank += cargoValue(s); for (const n of s.player.cargo) s.deposited[n]++; s.player.cargo = []; s.trips++; this.emit('deposit'); }
+    if (s.player.cargo.length) {
+      const closeCall = s.player.energy / energyMax(s) <= .15;
+      s.bank += cargoValue(s); for (const n of s.player.cargo) s.deposited[n]++;
+      s.player.cargo = []; s.player.cargoValues = []; s.trips++; this.fullNotified = false;
+      this.events.push({ kind: 'deposit', x: s.player.x, y: s.player.y, ...(closeCall ? { closeCall: true } : {}) });
+    }
     s.player.energy = energyMax(s); s.player.health = healthMax(s);
     if (NUTRIENTS.every(n => s.deposited[n] >= PLANT_TARGET) && s.scans.length === SAMPLE_IDS.length && !s.won) { s.won = true; this.emit('win'); }
   }
@@ -58,7 +68,7 @@ export class Simulation {
   }
   purchase(track: Track) {
     const s = this.state, level = s.upgrades[track], cost = PRICES[track][level];
-    if (!atHome(s) || level >= PRICES[track].length || s.bank < cost || s.won) return false;
+    if (!atHome(s) || level >= PRICES[track].length || s.bank < cost) return false;
     s.bank -= cost; s.upgrades[track]++; this.recover(); this.emit('upgrade'); return true;
   }
   respawn(reason: ReturnReason = this.state.player.energy <= 0 ? (this.state.player.health <= 0 ? 'both' : 'energy') : 'membrane') {
@@ -68,8 +78,8 @@ export class Simulation {
       const n = NUTRIENTS[(x / 2) % 3];
       if (!s.world.buried?.[index(x,5)] && (s.deposited[n] < PLANT_TARGET || s.bank < 100)) s.world.tiles[index(x, 5)] = (2 + (x / 2) % 3) as 2 | 3 | 4;
     }
-    s.player = { ...HOME, energy: energyMax(s), health: healthMax(s), cargo: [] }; s.deaths++;
-    this.resetAction(); this.damageTimer = 0; this.emit('respawn', reason);
+    s.player = { ...HOME, energy: energyMax(s), health: healthMax(s), cargo: [], cargoValues: [] }; s.deaths++;
+    this.fullNotified = false; this.resetAction(); this.damageTimer = 0; this.emit('respawn', reason);
   }
   nearbySample() {
     return this.state.world.samples.find(site => Math.abs(site.x - this.state.player.x) + Math.abs(site.y - this.state.player.y) <= 1);
@@ -80,12 +90,15 @@ export class Simulation {
   }
   step(dt: number, dx: number, dy: number) {
     const s = this.state, p = s.player;
-    if (s.won) return;
     s.elapsed += dt; this.damageTimer = Math.max(0, this.damageTimer - dt);
     const standing=index(p.x,p.y), found=s.world.buried?.[standing];
     if(found && nutrientRevealed(s.world,s.scans,p.y) && p.cargo.length<cargoMax(s)) { delete s.world.buried![standing];this.collect(NUTRIENTS[found-2]); }
     if (atHome(s)) this.recover();
-    if (p.cargo.length >= cargoMax(s) && p.energy > 0 && p.health > 0) { this.returnFullCargo(); return; }
+    if (p.cargo.length >= cargoMax(s) && p.energy > 0 && p.health > 0) {
+      // The trip back HOME with a full hold is the player's own risk to manage.
+      if (this.assistReturn) { this.returnFullCargo(); return; }
+      if (!this.fullNotified) { this.fullNotified = true; this.emit('full'); }
+    }
     if (dx && dy) dy = 0;
     if (dx || dy) {
       this.facing = { x: dx, y: dy };
@@ -93,7 +106,7 @@ export class Simulation {
       if (this.target !== key) { this.progress = 0; this.target = key; }
       const full = t >= 2 && t <= 4 && p.cargo.length >= cargoMax(s);
       if (t !== 6 && !full) {
-        if (t === 0 || t === 5 || t === 7 || t === FOOD_TILE || (t>=2 && t<=4 && tileAt(s.world,x,y)===0)) {
+        if (t === 0 || t === 5 || t === 7 || t === 9 || t === FOOD_TILE || (t>=2 && t<=4 && tileAt(s.world,x,y)===0)) {
           this.moveTimer += dt;
           if (this.moveTimer >= MOVE_SECONDS) {
             this.moveTimer = 0; p.x = x; p.y = y; p.energy -= .38 * energyUse(s);
@@ -131,10 +144,14 @@ export class Simulation {
         if (e.y + ey > 4 && tileAt(s.world, e.x + ex, e.y + ey) === 0) { e.x += ex; e.y += ey; } else e.dir = (e.dir + 1) % 4;
       }
     }
-    const hazard = tileAt(s.world, p.x, p.y) === 5 || s.world.enemies.some(e => e.x === p.x && e.y === p.y);
-    if (hazard && this.damageTimer === 0 && !atHome(s)) { p.health -= 18 / (1 + s.upgrades.membrane * .5); this.damageTimer = .8; this.emit('hurt'); }
+    const onTile = tileAt(s.world, p.x, p.y);
+    const hazard = onTile === 5 || s.world.enemies.some(e => e.x === p.x && e.y === p.y);
+    // Waterlogged pockets are passable shortcuts, but low oxygen stresses an aerobic microbe.
+    const anoxic = onTile === 9;
+    if ((hazard || anoxic) && this.damageTimer === 0 && !atHome(s)) { p.health -= (hazard ? 18 : 8) / (1 + s.upgrades.membrane * .5); this.damageTimer = .8; this.emit('hurt'); }
+    if (p.y - 3 > (s.deepest ?? 0)) s.deepest = p.y - 3;
     if (p.energy <= 0 || p.health <= 0) this.respawn();
-    else if (p.cargo.length >= cargoMax(s)) this.returnFullCargo();
+    else if (this.assistReturn && p.cargo.length >= cargoMax(s)) this.returnFullCargo();
     else if (atHome(s)) this.recover();
   }
 }

@@ -1,6 +1,6 @@
 import { MICROBES, NUTRIENTS, PLANT_TARGET } from './biology';
 import { FOOD_TILE, H, HOME, W, layer, tileAt, playableTile, nutrientRevealed, surveyForTile } from './world';
-import { type Simulation } from './simulation';
+import { energyMax, type Simulation } from './simulation';
 const COLORS = ['#d4ff70', '#72eadc', '#b78aff'];
 interface Particle { x: number; y: number; vx: number; vy: number; life: number; color: string; }
 export class Renderer {
@@ -46,7 +46,7 @@ export class Renderer {
     const minY = Math.max(0, Math.floor(-oy / size)), maxY = Math.min(H - 1, Math.ceil((this.height - oy) / size));
     for (let y = minY; y <= maxY; y++) for (let x = minX; x <= maxX; x++) {
       const t = playableTile(s.world, s.scans, x, y), l = layer(y), sx = x * size, sy = y * size;
-      if (t === 0 || t === 5 || t === 7 || s.world.buried?.[y*W+x]) {
+      if (t === 0 || t === 5 || t === 7 || t === 9 || s.world.buried?.[y*W+x]) {
         c.fillStyle = y <= 3 ? '#102b2b' : ['#111e23', '#151c2b', '#201a2e'][l]; c.fillRect(sx, sy, size, size);
         c.strokeStyle = '#ffffff04'; c.strokeRect(sx, sy, size, size);
       } else {
@@ -86,6 +86,17 @@ export class Renderer {
         c.fillText(NUTRIENTS[t - 2], sx + size / 2, sy + size / 2 + 5);
         const known = s.world.samples.some(site => s.scans.includes(site.id) && MICROBES[site.id].nutrient === NUTRIENTS[t - 2] && Math.abs(site.x - x) <= 5 && Math.abs(site.y - y) <= 3);
         if (known) { c.strokeStyle = col; c.lineWidth = 1.5; c.strokeRect(sx + 3, sy + 3, size - 6, size - 6); }
+      }
+      if (t === 9) {
+        // Waterlogged pore space: passable, dim blue, oxygen-poor.
+        c.fillStyle = '#3a7fb02a'; c.fillRect(sx, sy, size, size);
+        c.strokeStyle = '#6fb7e877'; c.lineWidth = 1.2;
+        for (const off of [.4, .65, .88]) {
+          c.beginPath();
+          for (let i = 0; i <= 6; i++) { const wx = sx + 3 + i * (size - 6) / 6, wy = sy + size * off + Math.sin(time * 1.5 + x * 1.7 + i * 1.1) * 2; i ? c.lineTo(wx, wy) : c.moveTo(wx, wy); }
+          c.stroke();
+        }
+        c.font = 'bold 7px monospace'; c.fillStyle = '#9fd4f5'; c.textAlign = 'center'; c.fillText('LOW O₂', sx + size / 2, sy + 11);
       }
       if (t === 5) {
         c.fillStyle = '#ff759525'; c.fillRect(sx, sy, size, size); c.strokeStyle = '#ff7595'; c.lineWidth = 1.5;
@@ -165,6 +176,14 @@ export class Renderer {
     }
     const vignette = c.createRadialGradient(this.width / 2, this.height / 2, this.height * .25, this.width / 2, this.height / 2, this.width * .7);
     vignette.addColorStop(0, '#02060a00'); vignette.addColorStop(1, '#02060a99'); c.fillStyle = vignette; c.fillRect(0, 0, this.width, this.height);
+    // Low-energy alarm: the screen edge pulses red as reserves run out.
+    const er = s.player.energy / energyMax(s);
+    if (active && er <= .25) {
+      const urgency = 1 - er / .25, pulse = this.reducedMotion.matches ? .6 : .55 + Math.sin(time * 5) * .35;
+      const alarm = c.createRadialGradient(this.width / 2, this.height / 2, this.height * .3, this.width / 2, this.height / 2, this.width * .62);
+      alarm.addColorStop(0, '#ff3d5e00'); alarm.addColorStop(1, `rgba(255,61,94,${(.14 + .2 * urgency) * pulse})`);
+      c.fillStyle = alarm; c.fillRect(0, 0, this.width, this.height);
+    }
   }
   microbe(x: number, y: number, size: number, time: number, hurt: boolean) {
     const c = this.ctx; c.save(); c.translate(x, y); c.rotate(Math.sin(time * 2) * .06);

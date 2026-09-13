@@ -6,7 +6,7 @@ const inventory=(s:ReturnType<typeof newGame>)=>[2,3,4].map(t=>s.world.tiles.fil
 it('makes every area necessary, keeps enough supply, and offers safe access across 100 seeds',()=>{
  for(let seed=0;seed<100;seed++) {
   const s=newGame(seed),zones=s.world.samples.map(site=>{const c=[0,0,0];s.world.tiles.forEach((t,i)=>{if(t>=2&&t<=4&&surveyForTile(s.world,Math.floor(i/40)).id===site.id)c[t-2]++;});return c;});
-  expect(inventory(s)).toEqual([16,16,16]);
+  expect(inventory(s)).toEqual([16,16,26]);
   for(let omitted=0;omitted<3;omitted++){const available=[0,0,0];zones.forEach((z,i)=>{if(i!==omitted)z.forEach((v,n)=>available[n]+=v);});expect(available.some(v=>v<12)).toBe(true);}
   for(const site of s.world.samples){for(let dy=0;dy<=5;dy++)expect([5,6]).not.toContain(tileAt(s.world,site.x,site.y+dy));for(let dx=0;dx<=7;dx++)expect([5,6]).not.toContain(tileAt(s.world,site.x+dx,site.y+5));}
   expect(valid(s)).toBe(true);
@@ -26,7 +26,7 @@ it('returns lost cargo without inflating total supply or awarding credits',()=>{
 });
 it('rejects malformed buried deposits and retains legacy progress',()=>{
  const s=newGame(19);s.world.buried={[index(0,3)]:2};expect(valid(s)).toBe(false);
- delete s.world.buried;s.bank=99;s.deposited.N=5;const raw=JSON.stringify({version:4,state:s});const db={getItem:()=>raw,setItem:()=>{},removeItem:()=>{}};expect(load(db).state?.bank).toBe(99);expect(load(db).state?.deposited.N).toBe(5);expect(VERSION).toBe(5);
+ delete s.world.buried;s.bank=99;s.deposited.N=5;const raw=JSON.stringify({version:4,state:s});const db={getItem:()=>raw,setItem:()=>{},removeItem:()=>{}};expect(load(db).state?.bank).toBe(99);expect(load(db).state?.deposited.N).toBe(5);expect(VERSION).toBe(6);
 });
 it('legacy recovery does not overwrite preserved hidden deposits',()=>{
  const s=newGame(77);s.world.balanced=false;s.world.tiles[index(12,5)]=0;s.world.buried={[index(12,5)]:3};const sim=new Simulation(s);sim.respawn();

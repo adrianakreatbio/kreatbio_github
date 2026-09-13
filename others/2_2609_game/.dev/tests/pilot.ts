@@ -16,7 +16,7 @@ export function route(s: State, homeOnly = false) {
     const id = queue.pop()!, x = id % W, y = Math.floor(id / W);
     for (const [dx, dy] of [[0, 1], [1, 0], [0, -1], [-1, 0]]) {
       const nx = x + dx, ny = y + dy, ni = index(nx, ny), t = playableTile(s.world,s.scans,nx,ny);
-      if (nx < 1 || nx >= W - 1 || ny < 1 || ny >= H - 1 || t === 6 || t === 5 || (full && t >= 2 && t <= 4) || (homeOnly && t !== 0)) continue;
+      if (nx < 1 || nx >= W - 1 || ny < 1 || ny >= H - 1 || t === 6 || t === 5 || t === 9 || (full && t >= 2 && t <= 4) || (homeOnly && t !== 0)) continue;
       const e = t === 0 || t === 7 || t === 8 ? .38 : [1.8, 3.3, 5.3][layer(ny)];
       const time = t === 0 || t === 7 || t === 8 ? .1 : DIG_SECONDS[layer(ny)] / [1, 1.45, 2, 2.7][s.upgrades.digestion];
       const cost = costs[id] + time + e * .08;

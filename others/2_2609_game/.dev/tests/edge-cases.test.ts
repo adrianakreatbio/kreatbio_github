@@ -47,7 +47,7 @@ it('scans require proximity, happen once and survive failure and reload', () => 
 });
 it('migrates a legacy expedition without losing progress and backs up the original', () => {
   const old:any=newGame(19);delete old.deposited;delete old.scans;delete old.world.samples;
-  old.world.tiles=old.world.tiles.map((t:number)=>t===8?1:t);old.fragment=false;old.world.tiles[index(HOME.x,97)]=7;old.player.cargo=[8,18,35];old.bank=123;old.upgrades.energy=2;old.elapsed=500;
+  old.world.tiles=old.world.tiles.map((t:number)=>t===8||t===9?1:t);old.fragment=false;old.world.tiles[index(HOME.x,97)]=7;old.player.cargo=[8,18,35];old.bank=123;old.upgrades.energy=2;old.elapsed=500;
   const raw=JSON.stringify({version:1,state:old}), values=new Map([[SAVE_KEY,raw]]);
   const storage={getItem:(k:string)=>values.get(k)??null,setItem:(k:string,v:string)=>{values.set(k,v);},removeItem:(k:string)=>{values.delete(k);}};
   const result=load(storage), s=result.state!;
