@@ -16,13 +16,8 @@ export const EVENT_CATALOG = Object.freeze({
     date: "24 October 2026, 10:00 AM MYT",
     fee: "Free"
   },
-  "basic-bioinfo-3-2026-11-07": {
-    title: "Basic Bioinformatics Workshop 3: Creating and Interpreting Abundance Bar Charts",
-    date: "7 November 2026, 10:00 AM MYT",
-    fee: "Free"
-  },
-  "basic-bioinfo-4-2026-11-21": {
-    title: "Basic Bioinformatics Workshop 4: Amplicon Primer Design Clinic",
+  "basic-bioinfo-3-2026-11-21": {
+    title: "Basic Bioinformatics Workshop 3: Amplicon Primer Design Clinic",
     date: "21 November 2026, 10:00 AM MYT",
     fee: "RM 100 per participant; maximum 15 participants"
   }

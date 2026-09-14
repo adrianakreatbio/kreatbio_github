@@ -7,7 +7,7 @@ import {
 } from "../event-registration.js";
 
 const validInput = {
-  eventId: "basic-bioinfo-4-2026-11-21",
+  eventId: "basic-bioinfo-3-2026-11-21",
   name: "Aisha Rahman",
   email: "AISHA@example.com",
   researchTopic: "Amplicon primer design for soil bacteria",
@@ -17,7 +17,7 @@ const validInput = {
 
 test("validates and normalizes an event registration", () => {
   const registration = parseEventRegistration(validInput);
-  assert.equal(registration.event.title, "Basic Bioinformatics Workshop 4: Amplicon Primer Design Clinic");
+  assert.equal(registration.event.title, "Basic Bioinformatics Workshop 3: Amplicon Primer Design Clinic");
   assert.equal(registration.email, "aisha@example.com");
   assert.equal(registration.suppressed, false);
 });
