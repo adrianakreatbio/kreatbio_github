@@ -35,7 +35,7 @@ test("silently suppresses honeypot submissions", () => {
 test("builds a plain-text registration message", () => {
   const message = buildEventRegistrationEmail(parseEventRegistration(validInput));
   assert.match(message.subject, /Amplicon Primer Design Clinic — Aisha Rahman/);
-  assert.match(message.text, /Fee: RM 50 per participant; maximum 15 participants/);
+  assert.match(message.text, /Fee: RM 100 per participant; maximum 15 participants/);
   assert.match(message.text, /Amplicon primer design for soil bacteria/);
 });
 

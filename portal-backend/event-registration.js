@@ -24,7 +24,7 @@ export const EVENT_CATALOG = Object.freeze({
   "basic-bioinfo-4-2026-11-21": {
     title: "Basic Bioinformatics Workshop 4: Amplicon Primer Design Clinic",
     date: "21 November 2026, 10:00 AM MYT",
-    fee: "RM 50 per participant; maximum 15 participants"
+    fee: "RM 100 per participant; maximum 15 participants"
   }
 });
 
