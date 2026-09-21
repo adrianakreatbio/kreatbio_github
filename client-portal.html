@@ -214,10 +214,26 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .content.theme-alpha{--topic:#247A72;--topic-rgb:36,122,114;--topic-soft:#F1FAF8;--topic-line:#BFE2DC}
 .content.theme-beta{--topic:#355AA8;--topic-rgb:53,90,168;--topic-soft:#F2F6FE;--topic-line:#C7D6F2}
 .content.theme-functional{--topic:#B26A1C;--topic-rgb:178,106,28;--topic-soft:#FFF8EA;--topic-line:#E9D2A8}
+.content.theme-suggestions{--topic:#247A4B;--topic-rgb:36,122,75;--topic-soft:#F2FAF5;--topic-line:#CBE4D5}
+.theme-suggestions .section-body-shell{background:#fff}
 .content.theme-flow{--topic:#2D6F91;--topic-rgb:45,111,145;--topic-soft:#F1F8FC;--topic-line:#C7DCEB}
 .content.theme-learning{--topic:#0E8F98;--topic-rgb:14,143,152;--topic-soft:#F0FBFA;--topic-line:#B9E4E2}
 .content.theme-metrics{--topic:#1D5FA7;--topic-rgb:29,95,167;--topic-soft:#F2F7FD;--topic-line:#BFD5E8}
 .content.theme-glossary{--topic:#247A4B;--topic-rgb:36,122,75;--topic-soft:#F0FBF5;--topic-line:#BBDDCB}
+/* Presentation links can open a focused report view inside the walkthrough. */
+body.presentation-embed{background:#F4F8FB}
+body.presentation-embed .topbar{height:58px}
+body.presentation-embed .topbar-in{grid-template-columns:auto minmax(0,1fr) auto;padding:0 18px}
+body.presentation-embed .top-r .top-help,body.presentation-embed #exit-btn{display:none}
+body.presentation-embed .shell{grid-template-columns:1fr;margin-top:58px}
+body.presentation-embed .rail,body.presentation-embed .rail-edge-toggle{display:none}
+body.presentation-embed .main{grid-column:1 / -1;--main-pad:22px;padding-top:14px}
+body.presentation-embed .content[class*="theme-"] .section-head{min-height:92px;padding-top:14px;padding-bottom:14px}
+body.presentation-embed .content[class*="theme-"] .section-head h1{font-size:2.25rem}
+body.presentation-panel-sensitivity .alpha-view-bar,body.presentation-panel-sensitivity .section-head{display:none}
+body.presentation-panel-sensitivity #beta-report-panel>:not(#page-details),body.presentation-panel-sensitivity #alpha-report-panel>:not(#page-details){display:none}
+body.presentation-panel-sensitivity .section-body-shell{padding:0;border:0;background:transparent;box-shadow:none;overflow:visible}
+body.presentation-panel-sensitivity .main{padding-top:16px}
 .section-head{position:relative;display:grid;align-items:center;height:164px;margin-bottom:22px;padding:24px 34px;border:1px solid #DDEAF2;border-radius:20px;background:#fff;box-shadow:0 1px 2px rgba(7,27,58,.05),0 22px 46px -38px rgba(14,143,152,.62);overflow:hidden}
 .section-head::before{content:"";position:absolute;left:0;top:0;bottom:0;width:12px;background:linear-gradient(180deg,#0E8F98 0%,#2A93B5 100%);pointer-events:none}
 .section-head::after{content:"";position:absolute;right:0;top:0;bottom:0;width:min(34%,340px);clip-path:polygon(28% 0,100% 0,100% 100%,0 100%);background:repeating-linear-gradient(135deg,rgba(14,143,152,.28) 0 10px,rgba(42,147,181,.18) 10px 20px,transparent 20px 32px),linear-gradient(135deg,rgba(14,143,152,.14),rgba(42,147,181,.04));border-left:1px solid rgba(14,143,152,.18);pointer-events:none}
@@ -519,6 +535,29 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .clinical-details[open] summary::after{content:"-"}
 .clinical-details-body{padding:0 18px 18px}
 .clinical-details-body > .pattern-panel,.clinical-details-body > .limitbox{box-shadow:none;border-color:var(--line);margin-top:18px}
+.alpha-advanced-section{margin-top:20px}
+.alpha-advanced-section+.alpha-advanced-section{padding-top:20px;border-top:1px solid var(--line)}
+.alpha-advanced-section>h3{color:var(--navy);font-size:1.08rem;line-height:1.25}
+.alpha-advanced-section>p{margin-top:6px;color:var(--muted);font-size:.84rem;line-height:1.5}
+.alpha-advanced-section>.pattern-panel,.alpha-advanced-section>.self-experiment-shell{margin-top:12px;box-shadow:none}
+.clinical-details[data-alpha-advanced-details]{border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible}
+.clinical-details[data-alpha-advanced-details]>summary{border-radius:12px;background:linear-gradient(110deg,#0B6572,#168F91)!important;color:#fff!important;box-shadow:0 12px 28px -20px rgba(11,101,114,.8)}
+.clinical-details[data-alpha-advanced-details]>summary::after{border-color:#fff!important;background:#fff;color:#0B6572}
+.clinical-details[data-alpha-advanced-details][open]>summary{border-bottom:0;border-radius:12px 12px 0 0;background:linear-gradient(110deg,#084F5A,#0E7477)!important}
+.clinical-details[data-alpha-advanced-details]>.clinical-details-body{padding:4px 0 0}
+.clinical-details[data-alpha-advanced-details][open]>.clinical-details-body{padding:20px 22px 22px;border:1px solid #DCE7F1;border-top:0;border-radius:0 0 12px 12px;background:#fff;box-shadow:var(--shadow-1)}
+.clinical-details[data-alpha-advanced-details] .alpha-advanced-section>.pattern-panel,.clinical-details[data-alpha-advanced-details] .alpha-advanced-section>.self-experiment-shell{border:0;border-radius:0;padding:0;background:transparent;box-shadow:none}
+.alpha-chart-samples{margin-top:16px;box-shadow:none}
+.alpha-chart-samples>.clinical-details-body{padding-top:2px}
+.clinical-details[data-beta-advanced-details]{border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible}
+.clinical-details[data-beta-advanced-details]>summary{border-radius:12px;background:linear-gradient(110deg,#51327E,#8056B8)!important;color:#fff!important;box-shadow:0 12px 28px -20px rgba(81,50,126,.8)}
+.clinical-details[data-beta-advanced-details]>summary::after{border-color:#fff!important;background:#fff;color:#51327E}
+.clinical-details[data-beta-advanced-details][open]>summary{border-bottom:0;border-radius:12px 12px 0 0;background:linear-gradient(110deg,#462B70,#7048A8)!important}
+.clinical-details[data-beta-advanced-details]>.clinical-details-body{padding:4px 0 0}
+.clinical-details[data-beta-advanced-details][open]>.clinical-details-body{padding:20px 22px 22px;border:1px solid #DCE7F1;border-top:0;border-radius:0 0 12px 12px;background:#fff;box-shadow:var(--shadow-1)}
+.clinical-details[data-beta-advanced-details] .alpha-advanced-section>.self-experiment-shell{border:0;border-radius:0;padding:0;background:transparent;box-shadow:none}
+.beta-chart-distances{margin-top:16px;box-shadow:none}
+.beta-chart-distances>.clinical-details-body{padding-top:2px}
 .clinical-details[data-beta-self-details],.clinical-details[data-alpha-self-details]{border:2px solid #8B6BC4!important;background:#FBF8FF!important;box-shadow:0 8px 22px rgba(91,58,142,.18)!important}
 .clinical-details[data-beta-self-details] summary,.clinical-details[data-alpha-self-details] summary{color:#fff!important;background:linear-gradient(110deg,#51327E,#8056B8)!important}
 .clinical-details[data-beta-self-details] summary::after,.clinical-details[data-alpha-self-details] summary::after{background:#fff;color:#51327E;border-color:#fff}
@@ -537,8 +576,8 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .self-experiment-legend i{display:inline-block;width:10px;height:10px;border-radius:50%}
 .self-experiment-plot-warning{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-top:1px solid #E4C78C;background:#FFF4DE;color:#6B4918;font-size:.78rem;line-height:1.4}
 .self-experiment-plot-warning strong{color:#5A390D;font-size:.8rem}
-.beta-self-download{display:flex;padding:10px 12px;border-top:1px solid var(--line);background:#fff}
-.beta-self-download .keyviz-download{display:inline-flex;align-items:center;justify-content:center;width:100%}
+.beta-self-download{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:#fff}
+.beta-self-download .keyviz-download{display:inline-flex;align-items:center;justify-content:center;flex:1;width:auto}
 .self-experiment-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px;border:1px solid #CDB9EA;border-radius:12px;background:#FFF9F1;color:#51327E}
 .self-experiment-stats b{grid-column:1/-1;font-size:.86rem;letter-spacing:.02em}
 .self-experiment-stats span{display:flex;flex-direction:column;gap:3px;padding:10px;border:1px solid #16365B;border-radius:9px;background:#071B3A;color:#CDE8F2;font-size:.78rem}
@@ -555,7 +594,8 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .self-experiment-empty{padding:28px;text-align:center;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}
 @media(max-width:760px){.self-experiment-plot{width:100%;min-width:0}.self-experiment-main{grid-template-columns:1fr}.self-experiment-stats{grid-template-columns:1fr}}
 .alpha-self-shell{margin-top:0}
-.alpha-self-shell [data-alpha-self-reset]{grid-column:1/-1;width:max-content}
+.alpha-self-shell [data-alpha-self-reset]{width:100%;min-height:56px;align-self:stretch}
+.self-experiment-samples [data-beta-self-reset]{width:100%;min-height:56px;align-self:stretch}
 .alpha-self-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
 .alpha-self-cards .self-experiment-stats-card{display:flex;flex-direction:column;gap:8px;min-height:250px;padding:10px;border:1px solid #CDB9EA;border-radius:10px;background:#071B3A;color:#CDE8F2}
 .alpha-self-card-head{display:flex;flex-direction:column;gap:3px}
@@ -564,7 +604,7 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .alpha-self-cards .self-experiment-stats-card span,.alpha-self-cards .self-experiment-stats-card small{font-size:.76rem;color:#CDE8F2;line-height:1.35}
 .alpha-self-mini-plot{border-radius:8px;background:#FCFAFF;overflow:hidden}
 .alpha-self-mini-plot svg{display:block;width:100%;height:auto}
-.self-experiment-downloads{display:flex;justify-content:flex-end;margin-top:12px}
+.self-experiment-downloads{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
 .self-experiment-downloads .keyviz-download{display:inline-flex;align-items:center;justify-content:center}
 @media(max-width:900px){.alpha-self-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.alpha-self-cards{grid-template-columns:1fr}}
@@ -681,6 +721,8 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .diversity-view-option:hover,.diversity-view-option:focus-visible,.diversity-view-option[aria-selected="true"]{background:var(--topic-soft,#F2F7FD);color:var(--topic,var(--blue));outline:0}
 .diversity-view-option.is-what-next{margin-top:4px;background:#111827;color:#fff}
 .diversity-view-option.is-what-next:hover,.diversity-view-option.is-what-next:focus-visible,.diversity-view-option.is-what-next[aria-selected="true"]{background:#000;color:#fff}
+.diversity-metric-definition{display:flex;align-items:baseline;flex-wrap:wrap;gap:3px 7px;margin:0 0 18px;padding:11px 14px;background:#EEF5F7;color:#405464;font-size:.82rem;line-height:1.48}
+.diversity-metric-definition b{flex:none;color:var(--navy);font-size:.76rem;letter-spacing:.03em;text-transform:uppercase}
 .diversity-guidance-view .result-next-section{margin-top:4px;box-shadow:none}
 .released-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;justify-items:center;max-width:100%;overflow:hidden}
 .released-card{position:relative;width:var(--chart-width,90%);max-width:100%;margin:0 auto;border:1px solid #DDE6EF;border-radius:8px;background:#FBFDFE;overflow:hidden;min-width:0}
@@ -764,6 +806,77 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .takeaway-card-rule{width:100%;height:1px;margin:15px 0 0;border:0;background:#D8E1E8}
 .takeaway-card-detail{display:grid;gap:7px;margin-top:14px;color:#4D5D6C;font-size:.88rem;line-height:1.48}
 .takeaway-card-detail-label{color:#697887;font-size:.76rem;font-weight:700}
+.taxonomy-takeaway-grid{grid-template-columns:minmax(0,2.15fr) minmax(260px,1fr)}
+.taxonomy-takeaway-grid .takeaway-card{min-height:210px;padding:20px 22px}
+.taxonomy-takeaway-grid .takeaway-card:first-child{grid-column:auto;padding-left:26px}
+.taxonomy-takeaway-grid .takeaway-card:first-child .takeaway-card-head{grid-template-columns:72px minmax(0,1fr);gap:16px}
+.taxonomy-takeaway-grid .takeaway-card:first-child .takeaway-card-icon{width:72px;height:72px}
+.taxonomy-takeaway-grid .takeaway-card:first-child .takeaway-card-icon .icon{width:38px;height:38px}
+.taxonomy-takeaway-grid .takeaway-card-value{margin-top:12px}
+.taxonomy-takeaway-grid .takeaway-card-detail{margin-top:10px}
+.taxonomy-takeaway-grid .takeaway-card-rule{margin-top:11px}
+.diversity-takeaway-grid{grid-template-columns:minmax(0,2.15fr) minmax(260px,1fr)}
+.diversity-takeaway-grid .takeaway-card:first-child{grid-column:auto}
+.diversity-takeaway-grid .takeaway-card{min-height:230px}
+.functional-takeaway-grid{grid-template-columns:1fr}
+.functional-takeaway-grid .takeaway-card{min-height:0;padding:22px 26px}
+.functional-takeaway-grid .takeaway-card:first-child{padding-left:26px}
+.functional-takeaway-grid .takeaway-card:first-child .takeaway-card-head{grid-template-columns:72px minmax(0,1fr);gap:16px}
+.functional-takeaway-grid .takeaway-card:first-child .takeaway-card-icon{width:72px;height:72px}
+.functional-takeaway-grid .takeaway-card:first-child .takeaway-card-icon .icon{width:38px;height:38px}
+.functional-takeaway-grid .takeaway-card-value{max-width:none!important;margin-top:14px!important;font-size:1.3rem!important}
+.functional-takeaway-grid .takeaway-card-detail{margin-top:12px}
+.functional-evidence-list{display:grid;gap:8px;margin:0;padding-left:24px;color:var(--ink)}
+.functional-evidence-list li{padding-left:4px;line-height:1.45}
+.functional-evidence-list li::marker{color:#B26A1C;font-weight:900}
+.functional-evidence-note{margin-top:4px;padding:11px 13px;border-left:4px solid #B26A1C;background:#FFF8EA;color:#5C351A;line-height:1.48}
+.functional-evidence-note b{display:inline;color:#8A4D11;font-size:inherit;letter-spacing:0;text-transform:none}
+.suggestion-hero{--suggestion:#247A4B;position:relative;padding:24px 28px;border:0;border-radius:10px;background:#0C2C4A;color:#fff;overflow:hidden}
+.suggestion-hero[data-tone="warning"]{--suggestion:#D08A36}.suggestion-hero[data-tone="exploratory"],.suggestion-hero[data-tone="unsupported"]{--suggestion:#D08A36}.suggestion-hero[data-tone="unavailable"]{--suggestion:#91A2B1}
+.suggestion-hero-top,.suggestion-hero h2,.suggestion-hero-statement,.suggestion-facts{position:relative;z-index:1}
+.suggestion-hero-top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.suggestion-hero-kicker{color:#9FD7D2;font-size:.7rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase}
+.suggestion-status{display:inline-flex;min-height:28px;align-items:center;padding:0 10px;border:0;border-radius:999px;background:var(--suggestion);color:#fff;font-size:.66rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.suggestion-hero h2{max-width:42ch;margin-top:9px;color:#fff;font-size:1.42rem;line-height:1.22}
+.suggestion-hero-statement{max-width:82ch;margin-top:10px;color:#DCE9F4;font-size:.92rem;line-height:1.52}
+.suggestion-facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.suggestion-facts span{padding:6px 9px;border:0;border-radius:999px;background:rgba(255,255,255,.11);color:#F2F7FB;font-size:.74rem;font-weight:750}
+.suggestion-decision{--decision-accent:#247A4B;max-width:100%;min-width:0;margin-top:26px;padding:0;border:0;border-top:1px solid #CBD8E3;background:transparent;box-shadow:none;overflow:hidden}
+.suggestion-section-head h2{color:var(--navy);font-size:1.18rem}.suggestion-section-head p{margin-top:5px;color:var(--muted);font-size:.86rem;line-height:1.45}
+.suggestion-decision-head{padding:24px 0 18px;border-bottom:1px solid #BFD4CB}
+.suggestion-decision-board{display:grid;max-width:100%;min-width:0}
+.suggestion-decision-row{display:grid;grid-template-columns:42px minmax(150px,.72fr) minmax(170px,1fr) 34px minmax(170px,1fr) 34px minmax(210px,1.15fr);align-items:center;min-width:0;padding:23px 0;border-bottom:1px solid var(--line)}
+.suggestion-decision-row>*{min-width:0}
+.suggestion-decision-step{position:relative;align-self:stretch;display:flex;justify-content:center}
+.suggestion-decision-step::after{content:"";position:absolute;top:29px;bottom:-24px;width:1px;background:#C9D4E0}
+.suggestion-decision-row:last-child .suggestion-decision-step::after{display:none}
+.suggestion-decision-step span{position:relative;z-index:1;display:grid;width:32px;height:32px;place-items:center;border-radius:50%;background:var(--decision-accent);color:#fff;font-weight:900;box-shadow:0 0 0 5px #fff}
+.suggestion-decision-summary{align-self:start;min-width:0;padding:2px 18px 0 0}
+.suggestion-decision-summary b{display:block;margin-bottom:5px;color:#247A4B;font-size:.67rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.suggestion-decision-summary h3{color:var(--navy);font-size:1rem;line-height:1.3;overflow-wrap:anywhere}
+.suggestion-decision-summary p{margin-top:7px;color:var(--muted);font-size:.8rem;line-height:1.46;overflow-wrap:anywhere}
+.suggestion-decision-stage{align-self:stretch;min-width:0;padding:14px;background:#F1F6F8}
+.suggestion-decision-stage[data-tone="decision"]{background:#E5F3EC}.suggestion-decision-stage[data-tone="caution"]{background:#FFF1D9}.suggestion-decision-stage[data-tone="output"]{background:#EAF1F7}
+.suggestion-decision-stage-label{display:block;margin-bottom:8px;color:#247A4B;font-size:.66rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.suggestion-decision-stage h4{color:var(--navy);font-size:.9rem;line-height:1.34;overflow-wrap:anywhere}.suggestion-decision-stage p{margin-top:6px;color:#4E6172;font-size:.77rem;line-height:1.46;overflow-wrap:anywhere}
+.suggestion-decision-arrow{display:grid;place-items:center;color:#247A4B;font-size:1.35rem;font-weight:900}
+.suggestion-outcomes{display:grid;gap:7px}.suggestion-outcome{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px;align-items:start;color:#415667;font-size:.75rem;line-height:1.4}.suggestion-outcome b{color:var(--navy)}
+.suggestion-outcome-dot{width:8px;height:8px;margin-top:5px;border-radius:50%;background:#247A4B}.suggestion-outcome[data-tone="unsupported"] .suggestion-outcome-dot{background:#B26A1C}.suggestion-outcome[data-tone="unavailable"] .suggestion-outcome-dot{background:#758596}
+.suggestion-branch-row{align-items:start}.suggestion-branch-row .suggestion-decision-summary{padding-top:2px}.suggestion-branch-grid{grid-column:3/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));min-width:0;gap:14px}
+.suggestion-branch{min-width:0;overflow:hidden;background:#EDF7F2}.suggestion-branch[data-kind="unexpected"]{background:#FFF2DE}
+.suggestion-branch-head{padding:11px 14px;background:#247A4B;color:#fff}.suggestion-branch[data-kind="unexpected"] .suggestion-branch-head{background:#A8611F}.suggestion-branch-head b{display:block;font-size:.9rem}.suggestion-branch-head span{display:block;margin-top:3px;font-size:.72rem;line-height:1.35;opacity:.9}
+.suggestion-branch-case{padding:12px 14px;color:#405464;font-size:.76rem;line-height:1.45;overflow-wrap:anywhere}.suggestion-branch-case+.suggestion-branch-case{border-top:1px solid rgba(12,44,74,.12)}.suggestion-branch-case b{display:block;margin-bottom:4px;color:var(--navy);font-size:.78rem}
+.suggestion-action-list{display:grid;gap:7px}.suggestion-action-list span{display:block;padding:7px 9px;background:rgba(255,255,255,.62);color:#405464;font-size:.74rem;line-height:1.38}.suggestion-action-list b{color:var(--navy)}
+.suggestion-evidence{margin-top:24px;border:0;border-bottom:1px solid #CBD8E3;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+.suggestion-evidence>summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 0;list-style:none;cursor:pointer;color:var(--navy);font-weight:850}
+.suggestion-evidence>summary::-webkit-details-marker{display:none}.suggestion-evidence>summary::after{content:"+";display:grid;width:26px;height:26px;place-items:center;border:0;border-radius:50%;background:#247A4B;color:#fff}.suggestion-evidence[open]>summary::after{content:"−"}
+.suggestion-evidence-subtitle{display:block;margin-top:3px;color:var(--muted);font-size:.76rem;font-weight:550}
+.suggestion-evidence-body{border-top:2px solid #247A4B}
+.suggestion-domain{--suggestion:#247A4B;display:grid;grid-template-columns:minmax(190px,.72fr) minmax(0,1.8fr) auto;gap:22px;align-items:start;padding:23px 0}
+.suggestion-domain+.suggestion-domain{border-top:1px solid #E3EAF0}.suggestion-domain[data-tone="warning"]{--suggestion:#B26A1C}.suggestion-domain[data-tone="exploratory"],.suggestion-domain[data-tone="unsupported"]{--suggestion:#A25C20}.suggestion-domain[data-tone="unavailable"],.suggestion-domain[data-tone="absent"]{--suggestion:#758596}
+.suggestion-domain-title{display:flex;flex-direction:column;align-items:flex-start;gap:8px}.suggestion-domain-title h3{color:var(--navy);font-size:1rem;line-height:1.3}
+.suggestion-domain-copy{display:grid;gap:10px;color:var(--ink);font-size:.85rem;line-height:1.52}.suggestion-domain-copy p b{color:var(--navy)}.suggestion-domain-evidence{color:#526779}
+.suggestion-domain .btn{align-self:center;white-space:nowrap;border-color:#0C2C4A;background:#0C2C4A;color:#fff}
 .alpha-extremes{display:flex!important;align-items:baseline;gap:6px;white-space:nowrap}
 .alpha-extremes strong{color:var(--navy);font-weight:800}
 .alpha-extremes i{color:#82909D;font-style:normal}
@@ -772,10 +885,10 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .alpha-spread-line strong{min-width:0;color:var(--navy);font-size:.86rem}
 .alpha-spread-line small{flex-shrink:0;color:#697887;font-size:.76rem;font-weight:700;text-align:right}
 .alpha-spread-note{margin-top:5px;color:var(--muted);font-size:.78rem;line-height:1.45}
-.alpha-stat-definitions{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0 22px;margin-top:16px;padding-top:14px;border-top:1px solid #E2E9EF}
-.alpha-stat-definitions div{padding:8px 0}
-.alpha-stat-definitions dt{color:var(--navy);font-size:.78rem;font-weight:800}
-.alpha-stat-definitions dd{margin-top:4px;color:var(--muted);font-size:.8rem;line-height:1.48}
+.alpha-stat-heading{display:flex;align-items:center;gap:7px}
+.alpha-stat-help{display:inline-grid;width:19px;height:19px;place-items:center;flex:none;border:1px solid rgba(255,255,255,.72);border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:.68rem;font-weight:900;line-height:1;cursor:help}
+.alpha-stat-help:hover,.alpha-stat-help:focus-visible{outline:0;background:#fff;color:#0C2C4A}
+.alpha-stat-tooltip{position:fixed;z-index:1200;width:min(320px,calc(100vw - 24px));padding:10px 12px;border:1px solid #B9CBD9;border-radius:9px;background:#071B3A;color:#fff;box-shadow:0 14px 34px rgba(7,27,58,.3);font-size:.78rem;font-weight:600;line-height:1.45;pointer-events:none}
 .alpha-view-bar{display:inline-flex;align-items:center;justify-content:flex-start;gap:14px;max-width:100%;margin:0 0 20px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
 .alpha-view-tabs{display:inline-grid;grid-template-columns:repeat(2,minmax(120px,1fr));gap:4px;flex:0 0 auto;padding:4px;border:0;border-radius:10px;background:#202224}
 .alpha-view-tab{min-height:40px;padding:8px 18px;border:0;border-radius:7px;background:transparent;color:#D5D7D9;font-size:.86rem;font-weight:850;transition:background .15s,color .15s,box-shadow .15s}
@@ -1086,17 +1199,6 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .overall-evidence-note[data-tone="supported"]{border-left-color:#247A4B;background:#F2FAF5}
 .overall-evidence-note[data-tone="warning"]{border-left-color:#B26A1C;background:#FFF9EE}
 .overall-evidence-note[data-tone="unavailable"]{border-left-color:#8A98A8;background:#F7F8FA}
-.cross-stats-panel{margin-top:18px;padding:20px 22px;border:1px solid #DCE7F1;border-radius:16px;background:#fff;box-shadow:var(--shadow-1)}
-.cross-stats-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
-.cross-stats-head h3{font-size:1.16rem;color:var(--navy);line-height:1.2}
-.cross-stats-head p{margin-top:5px;color:var(--muted);font-size:.86rem;line-height:1.45}
-.cross-stats-list{display:grid;gap:0;margin-top:12px}
-.cross-stats-item{display:grid;grid-template-columns:10px minmax(0,1fr);gap:11px;align-items:start;padding:12px 0;border-top:1px solid var(--line-2);color:var(--ink);font-size:.88rem;line-height:1.48}
-.cross-stats-item:first-child{border-top:0}
-.cross-stats-item i{width:8px;height:8px;margin-top:6px;border-radius:50%;background:#8094A8}
-.cross-stats-item[data-tone="supported"] i{background:#247A4B}
-.cross-stats-item[data-tone="warning"] i{background:#B26A1C}
-.cross-stats-item[data-tone="unavailable"] i{background:#8A98A8}
 .overall-chart-row{display:grid;grid-template-columns:260px minmax(0,1fr);gap:18px;align-items:center;margin-top:18px}
 .overall-donut{position:relative;width:260px;aspect-ratio:1;margin:0 auto}
 .overall-donut svg{display:block;width:100%;height:100%}
@@ -1115,8 +1217,7 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .relationship-line{display:grid;grid-template-columns:minmax(112px,.65fr) minmax(0,1fr) minmax(132px,.78fr);gap:12px;align-items:center;padding:12px 14px;border:1px solid #DCE7F1;border-radius:14px;background:linear-gradient(180deg,#F8FBFE 0%,#fff 100%)}
 .relationship-node{padding:0;text-align:left;color:var(--navy);font-size:.82rem;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .relationship-track{height:12px;border-radius:999px;background:#E8F1FA;position:relative;overflow:hidden}
-.relationship-track i{display:block;height:100%;width:var(--w,55%);background:var(--blue);border-radius:999px}
-.relationship-line.far .relationship-track i{background:#C0455B}
+.relationship-track i{position:absolute;inset:0;display:block;width:100%;border-radius:999px;background:linear-gradient(90deg,#BFDFFF 0%,#6FA8DC 48%,#1D5FA7 100%);clip-path:inset(0 calc(100% - var(--w,55%)) 0 0)}
 .relationship-caption{display:flex;justify-content:space-between;gap:12px;color:var(--muted-2);font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;padding:0 2px}
 .variability-chart{display:grid;gap:10px;margin-top:16px}
 .variability-axis{display:flex;justify-content:space-between;gap:12px;color:var(--muted-2);font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
@@ -1124,10 +1225,7 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .variability-row.top{border-color:#C9DDF0;background:#F4FAFF}
 .variability-label{color:var(--navy);font-size:.82rem;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .variability-track{position:relative;height:12px;border-radius:999px;background:#E8F1FA;overflow:visible}
-.variability-track i{display:block;height:100%;width:var(--w,0%);border-radius:999px;background:linear-gradient(90deg,#8FC7FF,#1D5FA7)}
-.variability-row.top .variability-track i{background:linear-gradient(90deg,#8FC7FF,#C0455B)}
-.variability-track span{position:absolute;left:var(--w,0%);top:50%;width:18px;height:18px;border:3px solid #fff;border-radius:50%;background:var(--blue);box-shadow:0 6px 14px -8px rgba(7,27,58,.75);transform:translate(-50%,-50%)}
-.variability-row.top .variability-track span{background:#C0455B}
+.variability-track i{position:absolute;inset:0;display:block;width:100%;border-radius:999px;background:linear-gradient(90deg,#BFDFFF 0%,#6FA8DC 48%,#1D5FA7 100%);clip-path:inset(0 calc(100% - var(--w,0%)) 0 0)}
 .variability-score{display:inline-flex;min-width:58px;justify-content:flex-end;color:var(--navy);font-family:var(--mono);font-size:.76rem;font-weight:800}
 .confidence-meter{margin-top:16px;border:1px solid var(--line);border-radius:999px;height:18px;background:linear-gradient(90deg,#C0455B 0 34%,#B26A1C 34% 67%,#247A4B 67% 100%);position:relative}
 .confidence-marker{position:absolute;top:50%;left:var(--pos,18%);width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--navy);transform:translate(-50%,-50%);box-shadow:0 8px 18px -12px rgba(7,27,58,.8)}
@@ -1315,8 +1413,6 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 .method-row:first-child{border-top:0}
 .method-row b{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--navy)}
 .method-row span{min-width:0;font-size:.9rem;line-height:1.45;color:var(--ink);overflow-wrap:anywhere;word-break:break-word}
-.method-source-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.method-source-list span{font-family:var(--mono);font-size:.76rem;color:var(--navy);border:1px solid #D4E0EC;border-radius:999px;background:#F7FAFD;padding:5px 8px}
 .method-empty{display:block;color:var(--muted);font-size:.86rem}
 .method-notes{margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
 .method-note{display:grid;grid-template-columns:170px minmax(0,1fr);gap:16px;align-items:start;padding:14px 0;border-top:1px solid var(--line)}
@@ -1620,6 +1716,14 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
   .flow-analysis-stage{grid-row:3;padding-top:18px}
   .flow-output-stage{grid-row:4;padding-top:18px}
   .flow-arrow{display:none}
+  .suggestion-decision-row{grid-template-columns:42px minmax(0,1fr);align-items:start;padding:22px 0}
+  .suggestion-decision-step{grid-column:1;grid-row:1 / span 4}
+  .suggestion-decision-summary,.suggestion-decision-stage{grid-column:2;margin-left:12px}
+  .suggestion-decision-summary{grid-row:1;padding:0 0 16px}
+  .suggestion-decision-stage{margin-top:8px}
+  .suggestion-decision-arrow{display:none}
+  .suggestion-branch-row .suggestion-decision-step{grid-row:1 / span 2}
+  .suggestion-branch-grid{grid-column:2;margin-left:12px}
 }
 @media (max-width:1080px){
   .grid-4{grid-template-columns:repeat(2,1fr)}
@@ -1656,6 +1760,8 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
   .summary-guide-flat .client-guide-card:first-child{border-top:0}
 }
 @media (max-width:920px){
+  .suggestion-branch-grid{grid-template-columns:1fr}
+  .suggestion-domain{grid-template-columns:1fr}.suggestion-domain .btn{justify-self:start}
   .topbar{height:64px}
   .beta-learning-shell .alpha-story-board{grid-template-columns:1fr}
   .beta-learning-shell .alpha-story-scene+.alpha-story-scene{border-top:1px solid #D9E2E7;border-left:0}
@@ -1739,6 +1845,13 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
   .guide-avatar{display:none}
 }
 @media (max-width:560px){
+  .suggestion-hero{padding:20px 18px}
+  .suggestion-hero-top{align-items:flex-start;flex-direction:column;gap:9px}
+  .suggestion-decision-row{grid-template-columns:34px minmax(0,1fr)}
+  .suggestion-decision-step span{width:28px;height:28px;font-size:.8rem}
+  .suggestion-decision-step::after{top:25px}
+  .suggestion-decision-summary,.suggestion-decision-stage,.suggestion-branch-grid{margin-left:9px}
+  .suggestion-decision-stage{padding:12px}
   .alpha-view-bar{display:flex;align-items:center;gap:9px;width:100%;padding:0}
   .alpha-view-tabs{width:auto;grid-template-columns:repeat(2,minmax(88px,1fr))}
   .alpha-view-tab{padding-left:10px;padding-right:10px}
@@ -2146,6 +2259,8 @@ var DEFAULT_REPORT_CODE="110000000";
 var LOCAL_EXAMPLE_CODE="110000000";
 var LOCAL_EXAMPLE_FILES=[
   ["metadata","Sample metadata","input_data/metadata.tsv","metadata","tsv"],
+  ["rarefaction-adequacy","Rarefaction adequacy","output/o1_qc/rarefaction_adequacy.tsv","qc","tsv"],
+  ["selected-sampling-depth","Selected sampling depth","output/o1_qc/selected_sampling_depth.tsv","qc","tsv"],
   ["alpha-diversity","Alpha diversity","output/o4_diversity/alpha_diversity.tsv","alpha_diversity","tsv"],
   ["alpha-group-test","Alpha group tests","output/o4_diversity/alpha_group_test.tsv","alpha_stats","tsv"],
   ["faith-pd","Faith PD","output/o4_diversity/faith_pd.tsv","alpha_diversity","tsv"],
@@ -2188,6 +2303,7 @@ var LOCAL_EXAMPLE_FILES=[
   ["alpha-shannon-figure","Shannon diversity","output/o6_figures/alpha_kruskal_wallis.png","figure","png"],
   ["alpha-faith-figure","Faith PD diversity","output/o6_figures/alpha_faith_pd_boxplot.png","figure","png"],
   ["alpha-simpson-figure","Simpson diversity","output/o6_figures/alpha_simpson_boxplot.png","figure","png"],
+  ["alpha-rarefaction-figure","Alpha rarefaction curve","output/o6_figures/alpha_rarefaction_curve.png","figure","png"],
   ["beta-figure","Bray-Curtis PCoA","output/o6_figures/beta_pcoa.png","figure","png"],
   ["beta-unweighted-figure","Unweighted UniFrac PCoA","output/o6_figures/beta_unweighted_unifrac_pcoa.png","figure","png"],
   ["beta-weighted-figure","Weighted UniFrac PCoA","output/o6_figures/beta_weighted_unifrac_pcoa.png","figure","png"],
@@ -2224,6 +2340,20 @@ function assayLabel(id){var a=ASSAYS[id]||{};return [a.kingdom,a.marker,a.region
 
 /* ---------------- app state ---------------- */
 var state={assay:"",mode:"plain",section:"welcome",pipeStep:0,visited:{},token:"",localExample:false,report:null,reportRefreshPromise:null,apiBase:configuredApiBase(),chatApiBase:configuredChatApiBase(),chatToken:"",chatQuota:null,chatAvailable:false,chatAuthError:"",chartIndex:{taxonomy:0,alpha:0,beta:0,functional:0},chartView:{alpha:"chart",beta:"chart",functional:"chart"},alphaView:"report",betaView:"report",chartWidth:storedChartWidth(),chartZoom:100,metricReturnSection:"",taxonomyRankTables:{},taxonomyRankIndex:0,groupBy:"",functionalDiffFilter:"all",functionalDetailsOpen:false,flowFilter:"diversity",flowQuery:"",filesFilter:"all",metricFilter:"all",glossaryFilter:"all",learningTopic:"all",learningIndex:0,chatMessages:[],chatBusy:false,reportHydrating:false};
+function presentationRequest(){
+  var params=new URLSearchParams(window.location.search),allowedSections=["welcome","overall","pipeline","taxonomy","alpha","beta","functional","suggestions","flow","learning","metrics","glossary"],allowedMetrics=["bray","weighted_unifrac","unweighted_unifrac"],section=params.get("section")||"welcome",metric=params.get("metric")||"";
+  return {
+    example:params.get("example")==="1",
+    embed:params.get("embed")==="1",
+    section:allowedSections.indexOf(section)>=0?section:"welcome",
+    view:params.get("view")==="example"?"example":"report",
+    metric:allowedMetrics.indexOf(metric)>=0?metric:"",
+    panel:params.get("panel")==="sensitivity"?"sensitivity":""
+  };
+}
+var PRESENTATION_REQUEST=presentationRequest();
+if(PRESENTATION_REQUEST.embed)document.body.classList.add("presentation-embed");
+if(PRESENTATION_REQUEST.panel==="sensitivity")document.body.classList.add("presentation-panel-sensitivity");
 function baseDataset(){
   var assay=ASSAYS[state.assay];
   return assay&&DATASETS[assay.data]?DATASETS[assay.data]:emptyReportDataset({code:exampleReportCode()});
@@ -2563,8 +2693,7 @@ async function hydrateMethodMetadataIntoDataset(d){
   d.methodConfig=methodConfigFromRelease(methodsText,params,versions,d.assay);
   if(d.methodConfig.taxonomyDatabaseLabel)d.refdb=d.methodConfig.taxonomyDatabaseLabel;
   d.methodNotes=[
-    {label:"Important limits",bodyKey:"limitNote"},
-    {label:"Source files",type:"sources"}
+    {label:"Important limits",bodyKey:"limitNote"}
   ];
   d.methodSteps=methodStepsFromRelease(d.methodConfig);
 }
@@ -3444,6 +3573,17 @@ function kruskalWallisStatisticFromSamples(d,metric){
   if(tieCorrection>0)h=h/tieCorrection;
   return {statistic:Math.max(0,h),n:n,groupCount:groups.length};
 }
+/* ALPHA_STATS_CORE_START */
+function alphaKruskalEpsilonSquared(h,n){
+  h=Number(h);n=Number(n);
+  if(!Number.isFinite(h)||!Number.isFinite(n)||n<=1)return null;
+  return Math.max(0,Math.min(1,h/(n-1)));
+}
+function alphaSelfPValue(p){
+  if(p==null||!isFinite(p))return "=Not estimable";
+  return p<.001?"<0.001":"="+p.toFixed(3);
+}
+/* ALPHA_STATS_CORE_END */
 function deriveMissingAlphaStats(rows,d){
   rows=(rows||[]).map(function(row){return Object.assign({},row);});
   rows.forEach(function(row){
@@ -3477,9 +3617,10 @@ function deriveMissingAlphaStats(rows,d){
     }
     var h=row.statistic==null?NaN:Number(row.statistic),n=row.n==null?NaN:Number(row.n);
     if(row.effect==null&&Number.isFinite(h)&&Number.isFinite(n)&&n>1){
-      row.effect=Math.max(0,Math.min(1,h/(n-1)));
+      row.effect=alphaKruskalEpsilonSquared(h,n);
       row.effectDerived=true;
-      row.effectMethod="Kruskal-Wallis rank eta-squared from H";
+      row.effectLabel="Epsilon-squared (ε²)";
+      row.effectMethod="Kruskal-Wallis epsilon-squared: H / (n − 1)";
     }
     return row;
   });
@@ -3680,16 +3821,17 @@ var NAV=[
    {id:"taxonomy",n:"04",title:"What microbes are present",sub:"Explore the results",ic:'<path d="M21 21l-4.3-4.3"/><circle cx="11" cy="11" r="7"/>'},
    {id:"alpha",n:"05",title:"How diverse are they?",sub:"Understand diversity",ic:'<path d="M4 20h16M7 20V9M12 20V4M17 20v-7"/>'},
    {id:"beta",n:"06",title:"Compare samples",sub:"See similarities & differences",ic:'<circle cx="6" cy="12" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 11l8-4M8 13l8 4"/>'},
-   {id:"functional",n:"07",title:"What they may do",sub:"Predicted functions",ic:'<path d="M9 3h6l1 4 4 2v6l-4 2-1 4H9l-1-4-4-2V9l4-2z"/><circle cx="12" cy="12" r="2.4"/>'}
+   {id:"functional",n:"07",title:"What they may do",sub:"Predicted functions",ic:'<path d="M9 3h6l1 4 4 2v6l-4 2-1 4H9l-1-4-4-2V9l4-2z"/><circle cx="12" cy="12" r="2.4"/>'},
+   {id:"suggestions",n:"08",title:"Suggestions",sub:"Recommended next steps",ic:'<path d="M5 21V4M5 5h11l-2 4 2 4H5"/><path d="m9 17 2 2 4-5"/>'}
  ]},
  {sec:"Reference",items:[
-   {id:"flow",n:"08",title:"Plot flow",sub:"Inputs to outputs",ic:'<path d="M4 7h6v6H4z"/><path d="M14 4h6v6h-6z"/><path d="M14 14h6v6h-6z"/><path d="M10 10h2c1.5 0 2-1 2-3"/><path d="M10 10h2c1.5 0 2 1 2 3"/>'},
-   {id:"learning",n:"09",title:"Learning Cards",sub:"Topic slide guide",ic:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 7h8M8 11h6"/>'},
-   {id:"metrics",n:"10",title:"Metric guide",sub:"How statements are called",ic:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15l3-3 3 2 5-7"/>'},
-   {id:"glossary",n:"11",title:"Glossary",sub:"Terms in plain words",ic:'<path d="M4 5h12a2 2 0 0 1 2 2v13H6a2 2 0 0 1-2-2z"/><path d="M8 8h6M8 12h6"/>'}
+   {id:"flow",n:"09",title:"Plot flow",sub:"Inputs to outputs",ic:'<path d="M4 7h6v6H4z"/><path d="M14 4h6v6h-6z"/><path d="M14 14h6v6h-6z"/><path d="M10 10h2c1.5 0 2-1 2-3"/><path d="M10 10h2c1.5 0 2 1 2 3"/>'},
+   {id:"learning",n:"10",title:"Learning Cards",sub:"Topic slide guide",ic:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 7h8M8 11h6"/>'},
+   {id:"metrics",n:"11",title:"Metric guide",sub:"How statements are called",ic:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15l3-3 3 2 5-7"/>'},
+   {id:"glossary",n:"12",title:"Glossary",sub:"Terms in plain words",ic:'<path d="M4 5h12a2 2 0 0 1 2 2v13H6a2 2 0 0 1-2-2z"/><path d="M8 8h6M8 12h6"/>'}
  ]}
 ];
-var SECTION_ORDER=["welcome","overall","pipeline","taxonomy","alpha","beta","functional","flow","learning","metrics","glossary"];
+var SECTION_ORDER=["welcome","overall","pipeline","taxonomy","alpha","beta","functional","suggestions","flow","learning","metrics","glossary"];
 function functionalSectionAvailable(){
   var d=baseDataset(),a=ASSAYS[state.assay]||{};
   return !(d&&d.assay&&d.assay.functional_prediction===false)&&!(d&&d.methodConfig&&d.methodConfig.functional_prediction===false)&&a.functionalPrediction!==false;
@@ -3736,6 +3878,7 @@ function sectionThemeId(id){
   if(id==="alpha")return "alpha";
   if(id==="beta")return "beta";
   if(id==="functional")return "functional";
+  if(id==="suggestions")return "suggestions";
   if(id==="pipeline")return "pipeline";
   if(id==="overall")return "overall";
   if(id==="flow")return "flow";
@@ -4227,7 +4370,11 @@ function defaultAlphaMetric(d){
   return ids[0]||"shannon";
 }
 function defaultBetaMetric(d){
-  var ids=(d.betaMetrics||[]).map(function(m){return m.id;});
+  var ids=(d.betaMetrics||[]).map(function(m){return m.id;}),matrices=d.betaDistanceMatrices||{};
+  function usable(id){return ids.indexOf(id)>=0&&(!matrices[id]||!betaSelfConstantDistanceIssue(matrices[id]));}
+  if(usable("bray"))return "bray";
+  if(usable("weighted_unifrac"))return "weighted_unifrac";
+  if(usable("unweighted_unifrac"))return "unweighted_unifrac";
   if(ids.indexOf("bray")>=0)return "bray";
   return ids[0]||"bray";
 }
@@ -4727,53 +4874,45 @@ function taxonomyResultSummaryPanel(d){
   var rank=taxonomyComparisonSelectedRank(taxonomyComparisonAllFigures()),rankLabel=taxonRankLabel(rank);
   var shift=strongestTaxonShift(d),support=taxonomySupportSummary(d,rank),summaries=primaryTaxonomyDiffSummaries(d,rank),diff=combinedTaxonomyDiffSummary(summaries);
   var abundanceDatabase=taxonomyDatabaseContext(d),abundanceSource=taxonomySourceTableText(d),statMethods=summaries.map(function(summary){return summary.method;}).filter(function(method,index,all){return method&&all.indexOf(method)===index;});
-  var conclusionValue,conclusionNote,statValue;
+  var conclusionValue,conclusionNote;
   if(!isDefaultGroupView(d)){
     conclusionValue="The alternative grouping is exploratory.";
     conclusionNote="Released statistical tests apply to the pipeline's original grouping.";
-    statValue="Not recalculated for "+activeGroupingLabel(d);
   }else if(!diff){
     if(support.scope==="loading"){
       conclusionValue="Statistical results are loading.";
       conclusionNote="The composition summary will update when the test is ready.";
-      statValue="Loading statistics";
     }else if(support.scope==="error"){
       conclusionValue="The abundance test could not be opened.";
       conclusionNote="Refresh the report before interpreting the statistical result.";
-      statValue="Statistics file could not be read";
     }else if(support.scope==="empty"){
       conclusionValue="No usable "+rankLabel.toLowerCase()+"-level test rows were found.";
       conclusionNote="Treat the observed composition patterns as descriptive.";
-      statValue="No usable statistical rows";
     }else{
       conclusionValue="No "+rankLabel.toLowerCase()+"-level abundance test was provided.";
       conclusionNote="Treat the observed composition patterns as descriptive.";
-      statValue="No matching statistical test";
     }
   }else if(diff.adjusted){
     conclusionValue="Supported "+rankLabel.toLowerCase()+"-level abundance patterns were detected.";
     conclusionNote="Prioritize candidates that repeat across biological samples.";
-    statValue=diff.adjusted+" FDR-supported taxon comparison"+(diff.adjusted===1?"":"s")+" between groups";
   }else{
     conclusionValue="No FDR-supported "+rankLabel.toLowerCase()+"-level abundance pattern was detected.";
     conclusionNote=diff.raw
       ? (diff.raw===1?"One comparison had a raw p-value below 0.05, but it did not pass FDR correction.":fmtNum(diff.raw)+" comparisons had raw p-values below 0.05, but none passed FDR correction.")
       : "No comparison had a raw p-value below 0.05 or passed FDR correction.";
-    statValue="No FDR-supported "+rankLabel.toLowerCase()+" results";
   }
   var hasShift=shift&&shift.taxon&&shift.taxon!=="None"&&shift.range>0;
   var groupMedianText=hasShift?orderedGroups(d).map(function(g){
     return g.label+" "+fmtPct(taxonMedianByGroup(d,shift.taxon,g.id),1);
   }).join(" · "):"";
-  var statLines=['<span>'+esc(support.note)+'</span>'];
-  if(hasShift&&(!diff||diff.adjusted||!diff.raw))statLines.push('<span class="takeaway-stat-caveat">Exploratory observation, not a confirmed '+esc(groupingLevelTerm(d))+' effect.</span>');
+  var conclusionLines=['<span>'+esc(conclusionNote)+'</span>'];
+  if(hasShift&&(!diff||diff.adjusted||!diff.raw))conclusionLines.push('<span class="takeaway-stat-caveat">Exploratory observation, not a confirmed '+esc(groupingLevelTerm(d))+' effect.</span>');
   var evidence=[
-    {label:"Main conclusion"+(hasMultipleTaxonomyDatabases(d)&&statMethods.length?" · "+readableList(statMethods):""),value:conclusionValue,detailHtml:'<span>'+esc(conclusionNote)+'</span>',tone:support.tone,icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>'},
-    {label:"Exploratory observation"+(abundanceDatabase?" · "+abundanceDatabase:""),value:hasShift?taxonDisplayName(shift.taxon,d):"No clear named taxon",detailHtml:hasShift?('<span class="takeaway-card-detail-label">Largest observed median difference'+(abundanceSource?' in the '+esc(abundanceSource):'')+'</span><span class="takeaway-group-medians">'+esc(groupMedianText)+'</span>'):'<span>No abundance-based taxon shift was identified'+(abundanceSource?' in the '+esc(abundanceSource):'')+'.</span>',divider:true,icon:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/>'},
-    {label:"Statistical context"+(hasMultipleTaxonomyDatabases(d)&&statMethods.length?" · "+readableList(statMethods):""),value:statValue,detailHtml:statLines.join(""),tone:support.tone,divider:true,icon:'<path d="M3 3v18h18"/><path d="M8 17v-3M13 17V8M18 17V5"/>'}
+    {label:"Main conclusion"+(hasMultipleTaxonomyDatabases(d)&&statMethods.length?" · "+readableList(statMethods):""),value:conclusionValue,detailHtml:conclusionLines.join(""),tone:support.tone,icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>'},
+    {label:"Exploratory observation"+(abundanceDatabase?" · "+abundanceDatabase:""),value:hasShift?taxonDisplayName(shift.taxon,d):"No clear named taxon",detailHtml:hasShift?('<span class="takeaway-card-detail-label">Largest observed median difference'+(abundanceSource?' in the '+esc(abundanceSource):'')+'</span><span class="takeaway-group-medians">'+esc(groupMedianText)+'</span>'):'<span>No abundance-based taxon shift was identified'+(abundanceSource?' in the '+esc(abundanceSource):'')+'.</span>',divider:true,icon:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/>'}
   ];
   return '<div class="pattern-panel takeaway-panel" aria-label="Composition summary">'+
-    '<div class="takeaway-card-grid">'+evidence.map(function(x){
+    '<div class="takeaway-card-grid taxonomy-takeaway-grid">'+evidence.map(function(x){
       return '<article class="takeaway-card"'+metricToneAttr(x.tone)+'><div class="takeaway-card-head"><i class="takeaway-card-icon" aria-hidden="true">'+svgIcon(x.icon)+'</i><b>'+esc(x.label)+'</b></div><strong class="takeaway-card-value">'+esc(x.value)+'</strong>'+(x.divider?'<hr class="takeaway-card-rule">':"")+'<div class="takeaway-card-detail">'+x.detailHtml+'</div></article>';
     }).join("")+'</div></div>';
 }
@@ -4860,42 +4999,23 @@ function alphaMetricOverview(d,selectedMetric){
   if(notSupported.length)return {value:"No supported metric",note:"None of the loaded alpha-diversity metrics support a clear "+groupingLabelForSentence(d)+" difference. Use the plots descriptively.",tone:"poor"};
   return {value:"Not available",note:"Alpha-diversity metric values were not available for a cross-metric comparison.",tone:"poor"};
 }
-function alphaGroupSpreadRows(d,metric){
-  var rows=orderedGroups(d).map(function(g){
-    var vals=(d.samples||[]).filter(function(s){return s.group===g.id;}).map(function(s){return alphaVal(s,metric);}).filter(function(v){return v!=null&&!isNaN(v);});
-    return {
-      id:g.id,
-      label:g.label,
-      vals:vals,
-      n:vals.length,
-      min:vals.length?Math.min.apply(null,vals):null,
-      max:vals.length?Math.max.apply(null,vals):null,
-      range:vals.length>=2?Math.max.apply(null,vals)-Math.min.apply(null,vals):null,
-      spreadLabel:""
-    };
-  });
-  var comparable=rows.filter(function(row){return row.range!=null;});
-  if(comparable.length){
-    var ranges=comparable.map(function(row){return row.range;}),smallest=Math.min.apply(null,ranges),largest=Math.max.apply(null,ranges);
-    comparable.forEach(function(row){
-      if(Math.abs(largest-smallest)<1e-12)row.spreadLabel="same observed spread";
-      else if(Math.abs(row.range-smallest)<1e-12)row.spreadLabel="tightest observed spread";
-      else if(Math.abs(row.range-largest)<1e-12)row.spreadLabel="widest observed spread";
-      else row.spreadLabel="intermediate observed spread";
-    });
+function alphaObservedGroupPattern(d,metric){
+  var rows=alphaGroupStats(d,metric).filter(function(row){return row.n>0&&row.median!=null&&!isNaN(row.median);}).sort(function(a,b){return b.median-a.median;});
+  if(!rows.length)return {value:"Group pattern not available",detailHtml:'<span>No group-level values were available for this metric.</span>'};
+  var high=rows[0],low=rows[rows.length-1],value,detail;
+  if(rows.length===1){
+    value=high.label+" is the available group";
+    detail='<span class="takeaway-card-detail-label">Group median</span><span class="takeaway-group-medians">'+esc(high.label+" · "+metricValueText(high.median,metric))+'</span>';
+  }else if(Math.abs(high.median-low.median)<1e-12){
+    value="Group medians are equal";
+    detail='<span class="takeaway-card-detail-label">Observed group medians</span><span>'+esc(rows.map(function(row){return row.label+" · "+metricValueText(row.median,metric);}).join("; "))+'</span>';
+  }else{
+    value=high.label+" has the highest median; "+low.label+" has the lowest";
+    detail='<span class="takeaway-card-detail-label">Observed group medians</span><span class="takeaway-group-medians">'+esc(high.label+" · "+metricValueText(high.median,metric))+'</span><span>'+esc(low.label+" · "+metricValueText(low.median,metric))+'</span>';
   }
-  return rows;
-}
-function alphaGroupSpreadHtml(d,metric){
-  var rows=alphaGroupSpreadRows(d,metric).filter(function(row){return row.n>0;});
-  if(!rows.length)return "";
-  return '<div class="alpha-spread-list">'+rows.map(function(row){
-    var values=row.n>=2
-      ? metricValueText(row.min,metric)+'–'+metricValueText(row.max,metric)
-      : metricValueText(row.min,metric);
-    var label=row.n>=2?row.spreadLabel:"spread unavailable · one sample";
-    return '<span class="alpha-spread-line"><strong>'+esc(row.label+' '+values)+'</strong><small>'+esc(label)+'</small></span>';
-  }).join("")+'<span class="alpha-spread-note">Spread is the observed lowest-to-highest range within each group; a tighter spread indicates more consistent sample values, while a wider spread indicates greater within-group variation.</span></div>';
+  var spread=rows.filter(function(row){return row.n>=2;}).sort(function(a,b){return (b.max-b.min)-(a.max-a.min);})[0];
+  if(spread)detail+='<span>'+esc(spread.label+" has the widest observed range · "+metricValueText(spread.min,metric)+"–"+metricValueText(spread.max,metric))+'.</span>';
+  return {value:value,detailHtml:detail};
 }
 function alphaSupportCardNote(d,metric,support){
   var label=metricLabel(d,"alpha",metric),grouping=groupingLabelForSentence(d);
@@ -4905,27 +5025,19 @@ function alphaSupportCardNote(d,metric,support){
   return "The group test does not support a clear "+grouping+" difference for "+label+".";
 }
 function alphaResultSummaryPanel(d,metric){
-  var label=metricLabel(d,"alpha",metric),definition=alphaMetricDefinition(metric,label),summary=alphaSampleDiversitySummary(d,metric),support=alphaSupportSummary(d,metric);
-  var sampleValue="Sample values not available",sampleDetail='<span>No sample-level '+esc(label)+' values were available for this report.</span>';
-  if(summary.high&&summary.low){
-    if(summary.count===1){
-      sampleValue=summary.high.id+" is the only sample";
-      sampleDetail='<span class="alpha-extremes"><strong>'+esc(summary.high.id)+'</strong> '+esc(metricValueText(summary.high.value,metric))+'</span>'+alphaGroupSpreadHtml(d,metric);
-    }else if(summary.range===0){
-      sampleValue="All samples have the same value";
-      sampleDetail='<span>'+esc(fmtNum(summary.count)+' samples · '+metricValueText(summary.high.value,metric)+' '+label)+'</span>'+alphaGroupSpreadHtml(d,metric);
-    }else{
-      sampleValue=summary.high.id+" is highest; "+summary.low.id+" is lowest";
-      sampleDetail='<span class="alpha-extremes"><strong>'+esc(summary.high.id)+'</strong> '+esc(metricValueText(summary.high.value,metric))+' <i>·</i> <strong>'+esc(summary.low.id)+'</strong> '+esc(metricValueText(summary.low.value,metric))+'</span>'+alphaGroupSpreadHtml(d,metric);
-    }
-  }
+  var support=alphaSupportSummary(d,metric),pattern=alphaObservedGroupPattern(d,metric),grouping=groupingLabelForSentence(d),conclusionValue;
+  if(support.value==="Supported")conclusionValue="Statistically supported "+grouping+" difference";
+  else if(support.value==="Exploratory signal")conclusionValue="Exploratory "+grouping+" signal only";
+  else if(support.stat&&support.value==="Not supported")conclusionValue="No statistically supported "+grouping+" difference";
+  else conclusionValue="Statistical support unavailable";
+  var conclusionDetail='<span>'+esc(alphaSupportCardNote(d,metric,support))+'</span>';
+  if(support.stat)conclusionDetail+='<span class="takeaway-stat-line">'+esc(alphaStatDetail(support.stat))+'</span>';
   var evidence=[
-    {label:"Sample diversity",value:sampleValue,detailHtml:sampleDetail,icon:'<path d="M4 19V9M10 19V5M16 19v-7M22 19V3"/><path d="M2 21h22"/>'},
-    {label:"What this metric captures",value:label+" · "+definition.value,detailHtml:'<span>'+esc(definition.note)+'</span>',divider:true,icon:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'},
-    {label:"Statistical context",value:support.value,detailHtml:'<span>'+esc(alphaSupportCardNote(d,metric,support))+'</span>',tone:support.tone,divider:true,icon:'<path d="M3 3v18h18"/><path d="M8 17v-3M13 17V8M18 17V5"/>'}
+    {label:"Main conclusion",value:conclusionValue,detailHtml:conclusionDetail,tone:support.tone,icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>'},
+    {label:"Observed group pattern",value:pattern.value,detailHtml:pattern.detailHtml,divider:true,icon:'<path d="M4 19V9M10 19V5M16 19v-7M22 19V3"/><path d="M2 21h22"/>'}
   ];
   return '<div class="pattern-panel takeaway-panel" aria-label="Alpha diversity summary">'+
-    '<div class="takeaway-card-grid">'+evidence.map(function(x){
+    '<div class="takeaway-card-grid diversity-takeaway-grid">'+evidence.map(function(x){
       return '<article class="takeaway-card"'+metricToneAttr(x.tone)+'><div class="takeaway-card-head"><i class="takeaway-card-icon" aria-hidden="true">'+svgIcon(x.icon)+'</i><b>'+esc(x.label)+'</b></div><strong class="takeaway-card-value">'+esc(x.value)+'</strong>'+(x.divider?'<hr class="takeaway-card-rule">':"")+'<div class="takeaway-card-detail">'+x.detailHtml+'</div></article>';
     }).join("")+'</div></div>';
 }
@@ -4937,10 +5049,7 @@ function alphaInspectionTable(d,metric){
     var chips=samples.length?samples.map(function(x){return '<i>'+esc(x.id)+' '+metricValueText(x.val,metric)+'</i>';}).join(""):'<i>No values</i>';
     return '<div class="inspection-row"><b>'+esc(g.label)+'</b><span class="inspection-values">'+chips+'</span><span><strong>'+esc(st&&st.n?("n="+st.n+"; range "+metricValueText(st.min,metric)+"-"+metricValueText(st.max,metric)):"Not available")+'</strong></span></div>';
   }).join("");
-  var intro='<p class="table-caption">'+helpCommon("Each sample’s displayed "+label+" value is listed with its group, followed by the group’s sample count and observed minimum-to-maximum range. Use this table to check individual values; it does not identify outliers or test statistical significance.")+'</p>';
-  return '<div class="pattern-panel"><h3>'+esc(label+" Values by Sample")+'</h3>'+intro+
-    '<div class="inspection-table"><div class="inspection-row"><b>'+esc(activeGroupingLabel(d))+'</b><b>Samples</b><b>Group summary</b></div>'+rows+'</div>'+
-    refLink(alphaMetricRef(metric))+'</div>';
+  return '<div class="inspection-table"><div class="inspection-row"><b>'+esc(activeGroupingLabel(d))+'</b><b>Samples</b><b>Group summary</b></div>'+rows+'</div>'+refLink(alphaMetricRef(metric));
 }
 function alphaStatsForActiveGrouping(d){
   var rows=(d&&d.alphaStats)||[];
@@ -4950,7 +5059,8 @@ function alphaStatsForActiveGrouping(d){
   var active=(d&&d.activeGroupFactor)||activeGroupFactor(d),wanted=normalizeHeaderKey(active&&active.id||"group");
   return rows.filter(function(row){return !row.groupColumn||normalizeHeaderKey(row.groupColumn)===wanted;});
 }
-function alphaStatsPanel(d){
+function alphaStatsPanel(d,opts){
+  opts=opts||{};
   var rows=alphaStatsForActiveGrouping(d);
   if(!rows.length)return "";
   var hasQ=rows.some(function(r){return r.q!=null;});
@@ -4967,30 +5077,21 @@ function alphaStatsPanel(d){
     {head:"p-value",width:"minmax(120px,.55fr)",definition:"The unadjusted result. The portal uses p < 0.05 as the statistical-support threshold.",cell:function(r){return '<span><strong>'+esc(r.p!=null?fmtP(r.p):"NA")+'</strong></span>';}}
   ]);
   if(hasQ)cols.push({head:"Adjusted p",width:"minmax(145px,.65fr)",definition:"Benjamini-Hochberg correction across the displayed alpha tests. Use adjusted p < 0.05 when available. Correction can raise a p-value while leaving an already-large value unchanged.",cell:function(r){return '<span><strong>'+esc(r.q!=null?fmtP(r.q):"NA")+'</strong>'+(r.qDerived?'<small>Calculated · BH</small>':"")+'</span>';}});
-  if(hasEffect)cols.push({head:"Effect size",width:"minmax(170px,.75fr)",definition:hasDerivedEffect?"Values marked Calculated use rank eta-squared: H / (n − 1). Values nearer 0 indicate weaker rank separation; no universal category cutoffs are applied.":"A measure of the magnitude of the group pattern. Values nearer 0 indicate weaker separation; no universal category cutoffs are applied.",cell:function(r){return '<span><strong>'+esc(r.effect!=null?fmtStatNumber(r.effect):"NA")+'</strong>'+(r.effectDerived?'<small>Calculated · η²ₕ</small>':"")+'</span>';}});
+  if(hasEffect)cols.push({head:"Effect size",width:"minmax(170px,.75fr)",definition:hasDerivedEffect?"Values marked Calculated use Kruskal-Wallis epsilon-squared (ε²): H / (n − 1). Values nearer 0 indicate weaker rank separation; no universal category cutoffs are applied.":"A measure of the magnitude of the group pattern. Values nearer 0 indicate weaker separation; no universal category cutoffs are applied.",cell:function(r){return '<span><strong>'+esc(r.effect!=null?fmtStatNumber(r.effect):"NA")+'</strong>'+(r.effectDerived?'<small>Calculated · ε²</small>':'<small>Reported effect size</small>')+'</span>';}});
   var colStyle='--cols:'+cols.map(function(c){return c.width;}).join(" ");
   var body=rows.map(function(r){
     return '<div class="inspection-row" style="'+colStyle+'">'+cols.map(function(c){return c.cell(r);}).join("")+'</div>';
   }).join("");
   var groupSizes=orderedGroups(d).map(function(g){return (d.samples||[]).filter(function(s){return s.group===g.id;}).length;}).filter(function(n){return n>0;});
   var smallGroup=groupSizes.some(function(n){return n<5;});
-  var caption="Group comparisons across the available alpha-diversity metrics. Values marked ‘Calculated’ were derived by the portal because they were not supplied in the source table.";
-  var sourceGroups={};
-  rows.forEach(function(row){
-    if(!row.sourceName)return;
-    if(!sourceGroups[row.sourceName])sourceGroups[row.sourceName]=[];
-    var sourceMetric=metricLabel(d,"alpha",normalizeAlphaMetricName(row.metric||row.metricLabel))||row.metricLabel||row.metric;
-    if(sourceGroups[row.sourceName].indexOf(sourceMetric)<0)sourceGroups[row.sourceName].push(sourceMetric);
-  });
-  var sourceNames=Object.keys(sourceGroups);
-  if(sourceNames.length)caption+=" Source files: "+sourceNames.map(function(name){return name+" ("+sourceGroups[name].join(", ")+")";}).join("; ")+".";
   var caution=smallGroup?'<p class="pattern-note"><b>Small-sample caution:</b> At least one group has fewer than 5 samples, so the Kruskal-Wallis chi-square approximation may be unreliable.</p>':"";
-  var definitions='<dl class="alpha-stat-definitions">'+cols.map(function(c){return '<div><dt>'+esc(c.head)+'</dt><dd>'+esc(c.definition)+'</dd></div>';}).join("")+'</dl>';
-  return clinicalDetails("Alpha Statistical Tests",'<div class="pattern-panel">'+
-    '<p class="table-caption">'+helpCommon(caption)+'</p>'+caution+
+  var headers=cols.map(function(c){return '<b class="alpha-stat-heading"><span>'+esc(c.head)+'</span><span class="alpha-stat-help" tabindex="0" role="button" aria-label="'+esc(c.head+' definition: '+c.definition)+'" data-tooltip="'+esc(c.definition)+'">?</span></b>';}).join("");
+  var panel='<div class="pattern-panel">'+
+    caution+
     '<div class="inspection-table">'+
-      '<div class="inspection-row" style="'+colStyle+'">'+cols.map(function(c){return '<b>'+esc(c.head)+'</b>';}).join("")+'</div>'+
-      body+'</div>'+definitions+'</div>');
+      '<div class="inspection-row" style="'+colStyle+'">'+headers+'</div>'+
+      body+'</div></div>';
+  return opts.bodyOnly?panel:clinicalDetails("Alpha Statistical Tests",panel);
 }
 function alphaSelfLogGamma(z){
   var cof=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,.001208650973866179,-.000005395239384953],x=z,y=x,tmp=x+5.5;tmp-=(x+.5)*Math.log(tmp);var ser=1.000000000190015;for(var j=0;j<cof.length;j++){y+=1;ser+=cof[j]/y;}return -tmp+Math.log(2.5066282746310005*ser/x);
@@ -5086,7 +5187,8 @@ function alphaSelfMiniPlot(d,metric,result,selected,byId,sampleNumbers){
   return '<div class="alpha-self-mini-plot"><svg data-alpha-self-metric="'+esc(metric)+'" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(metricLabel(d,"alpha",metric))+' retained sample distribution">'+body+'<text x="8" y="16" font-size="10" fill="#705F85">Box = IQR · line = median · whiskers = min/max</text></svg></div>';
 }
 var alphaSelfState={selected:null,open:false};
-function alphaSelfExperimentPanel(d){
+function alphaSelfExperimentPanel(d,opts){
+  opts=opts||{};
   var metrics=(d.alphaMetrics||[]).filter(function(m){return ["shannon","simpson","faith"].indexOf(m.id)>=0;}),all=(d.samples||[]).map(function(s){return String(s.raw||s.id);}),selected=alphaSelfState.selected;
   if(!selected)selected=all.slice();
   var byId={};(d.samples||[]).forEach(function(s){byId[String(s.raw||s.id)]=s;});
@@ -5098,11 +5200,23 @@ function alphaSelfExperimentPanel(d){
     var hasP=result.p!=null&&isFinite(result.p),interpretation=!hasP?"p-value not estimable":(result.p<0.05?"supported group difference":result.p<0.10?"exploratory signal":"no supported group difference");
     plotCount++;
     var plot=alphaSelfMiniPlot(d,metric.id,result,selected,byId,sampleNumbers);
-    return '<div class="self-experiment-stats-card"><div class="alpha-self-card-head"><b>'+esc(label)+'</b><strong>p='+(hasP?result.p.toFixed(3):"Not estimable")+'</strong><span>H='+result.H.toFixed(3)+' · '+interpretation+'</span></div>'+plot+'</div>';
+    return '<div class="self-experiment-stats-card"><div class="alpha-self-card-head"><b>'+esc(label)+'</b><strong>p'+alphaSelfPValue(hasP?result.p:null)+'</strong><span>H='+result.H.toFixed(3)+' · '+interpretation+'</span></div>'+plot+'</div>';
   }).join("");
-  var download=plotCount?'<div class="self-experiment-downloads"><button type="button" class="keyviz-download" data-self-experiment-download="alpha">Download SVG</button></div>':"";
-  var body='<div class="self-experiment-shell alpha-self-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to recalculate Shannon, Simpson, and Faith PD. The statistic cards are calculated outputs.</small></div><button type="button" class="btn secondary" data-alpha-self-reset>Reset to all samples</button>'+checks+'</div><div class="alpha-self-cards">'+cards+'</div>'+download+'<p class="table-caption">Exploratory only; the released alpha-diversity results remain the report reference.</p></div>';
-  return clinicalDetails("Self-experiment",body).replace('<details class="clinical-details">','<details data-alpha-self-details'+(alphaSelfState.open?' open':'')+' class="clinical-details">');
+  var download=plotCount?'<div class="self-experiment-downloads"><button type="button" class="keyviz-download" data-self-experiment-download="alpha" data-download-format="svg">Download SVG</button><button type="button" class="keyviz-download" data-self-experiment-download="alpha" data-download-format="png">Download PNG</button></div>':"";
+  var body='<div class="self-experiment-shell alpha-self-shell"><div class="self-experiment-samples"><div class="self-experiment-samples-head"><small>Select or clear samples to recalculate Shannon, Simpson, and Faith PD. The statistic cards are calculated outputs.</small></div>'+checks+'<button type="button" class="btn secondary" data-alpha-self-reset>Reset to all samples</button></div><div class="alpha-self-cards">'+cards+'</div>'+download+'</div>';
+  if(opts.bodyOnly)return body;
+  return clinicalDetails("Sensitivity analysis — not part of the released report",body).replace('<details class="clinical-details">','<details data-alpha-self-details'+(alphaSelfState.open?' open':'')+' class="clinical-details">');
+}
+function alphaAdvancedDetailsPanel(d,metric){
+  var stats=alphaStatsPanel(d,{bodyOnly:true});
+  var statsSection=stats?'<section class="alpha-advanced-section"><h3>All-metric statistical tests</h3>'+stats+'</section>':'<section class="alpha-advanced-section"><h3>All-metric statistical tests</h3><p>No matching group-test table was available for this grouping.</p></section>';
+  var sensitivity='<section class="alpha-advanced-section"><h3>Sensitivity analysis — not part of the released report</h3><p>Use this only to inspect how individual samples influence an exploratory recalculation.</p>'+alphaSelfExperimentPanel(d,{bodyOnly:true})+'</section>';
+  var details=clinicalDetails("Advanced alpha details",statsSection+sensitivity).replace('<details class="clinical-details">','<details data-alpha-advanced-details'+(alphaSelfState.open?' open':'')+' class="clinical-details">');
+  return '<div id="page-details" class="guided-anchor">'+details+'</div>';
+}
+function alphaSampleValuesDetails(d,metric){
+  var title=metricLabel(d,"alpha",metric)+" Values by Sample";
+  return clinicalDetails(title,alphaInspectionTable(d,metric)).replace('<details class="clinical-details">','<details class="clinical-details alpha-chart-samples">');
 }
 function betaSupportTone(d,metric){
   var status=betaNextDecisionStatus(d,metric);
@@ -5144,14 +5258,8 @@ function detailLines(text){
     return '<span>'+esc(part.replace(/\.\s*$/,""))+'</span>';
   }).join("");
 }
-function betaMetricDefinition(metric,label){
-  if(metric==="unweighted_unifrac")return {value:"Presence/absence + phylogeny",note:"Compares which taxa are present and how evolutionarily distinct they are, without using abundance."};
-  if(metric==="weighted_unifrac")return {value:"Abundance + phylogeny",note:"Compares evolutionary differences while giving more influence to abundant taxa."};
-  if(metric==="bray")return {value:"Abundance-based community distance",note:"Compares whole-community abundance profiles. Nearby PCoA points have more similar compositions."};
-  return {value:"Between-sample community distance",note:(label||"This metric")+" compares whole microbial communities between samples; nearby PCoA points are more similar."};
-}
 function betaResultSummaryPanel(d,metric){
-  var label=metricLabel(d,"beta",metric),definition=betaMetricDefinition(metric,label),top=betaTopLevel(d,metric),pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric),status=betaNextDecisionStatus(d,metric),tone=betaSupportTone(d,metric),pattern=betaGroupPattern(d,metric);
+  var label=metricLabel(d,"beta",metric),top=betaTopLevel(d,metric),pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric),status=betaNextDecisionStatus(d,metric),tone=betaSupportTone(d,metric),pattern=betaGroupPattern(d,metric);
   var relationshipValue="Group relationship not available",relationshipDetail='<span>At least two '+esc(groupingUnitLabel(d))+' with PCoA coordinates are needed.</span>';
   if(pattern.closest){
     var closestLabel=pattern.closest.a.label+" and "+pattern.closest.b.label;
@@ -5159,9 +5267,7 @@ function betaResultSummaryPanel(d,metric){
     relationshipValue=pattern.closest===pattern.furthest?(closestLabel+" are the available pair"):(closestLabel+" are closest");
     relationshipDetail='<span class="takeaway-card-detail-label">Centroid distance on the displayed axes</span><span class="takeaway-group-medians">'+esc(closestLabel+" · "+pattern.closest.distance.toFixed(3))+'</span>';
     if(pattern.furthest&&pattern.furthest!==pattern.closest)relationshipDetail+='<span>'+esc(furthestLabel+" are farthest apart · "+pattern.furthest.distance.toFixed(3))+'.</span>';
-    relationshipDetail+='<span>'+esc(label+": "+definition.note)+'</span>';
   }
-  var statValue=!pm?"Not available":({supported:"Supported",small:"Supported · small effect",dispersion:"Group-spread caution",exploratory:"Exploratory only",unavailable:"Not available",unsupported:"Not supported"}[status]||"Not supported");
   var statLines=[];
   if(pm){
     var permanovaParts=["p="+fmtP(pm.p)];
@@ -5171,13 +5277,19 @@ function betaResultSummaryPanel(d,metric){
   }else{
     statLines.push('<span>No matching PERMANOVA result was found for this grouping.</span>');
   }
+  var betaConclusionNote="";
+  if(status==="small")betaConclusionNote="The reported R² indicates a small effect magnitude.";
+  else if(status==="dispersion")betaConclusionNote="Unequal within-group spread limits interpretation of the separation.";
+  else if(status==="exploratory")betaConclusionNote="Treat the plotted pattern as descriptive rather than a firm group difference.";
+  else if(status==="unsupported")betaConclusionNote="Treat the "+label+" positions as descriptive.";
+  else if(status==="unavailable"||!pm)betaConclusionNote=top.note;
+  var conclusionDetail=(betaConclusionNote?'<span>'+esc(betaConclusionNote)+'</span>':"")+statLines.join("");
   var evidence=[
-    {label:"Main conclusion",value:top.value,detailHtml:'<span>'+esc(top.note)+'</span>',tone:tone,icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>'},
-    {label:"Observed group relationship",value:relationshipValue,detailHtml:relationshipDetail,divider:true,icon:'<circle cx="6" cy="12" r="3"/><circle cx="18" cy="7" r="3"/><circle cx="18" cy="18" r="3"/><path d="m9 11 6-3M9 13l6 4"/>'},
-    {label:"Statistical context",value:statValue,detailHtml:statLines.join(""),tone:tone,divider:true,icon:'<path d="M3 3v18h18"/><path d="M8 17v-3M13 17V8M18 17V5"/>'}
+    {label:"Main conclusion",value:top.value,detailHtml:conclusionDetail,tone:tone,icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>'},
+    {label:"Observed group relationship",value:relationshipValue,detailHtml:relationshipDetail,divider:true,icon:'<circle cx="6" cy="12" r="3"/><circle cx="18" cy="7" r="3"/><circle cx="18" cy="18" r="3"/><path d="m9 11 6-3M9 13l6 4"/>'}
   ];
   return '<div class="pattern-panel takeaway-panel" aria-label="Between-sample diversity summary">'+
-    '<div class="takeaway-card-grid">'+evidence.map(function(x){
+    '<div class="takeaway-card-grid diversity-takeaway-grid">'+evidence.map(function(x){
       return '<article class="takeaway-card"'+metricToneAttr(x.tone)+'><div class="takeaway-card-head"><i class="takeaway-card-icon" aria-hidden="true">'+svgIcon(x.icon)+'</i><b>'+esc(x.label)+'</b></div><strong class="takeaway-card-value">'+esc(x.value)+'</strong>'+(x.divider?'<hr class="takeaway-card-rule">':"")+'<div class="takeaway-card-detail">'+x.detailHtml+'</div></article>';
     }).join("")+'</div></div>';
 }
@@ -5188,11 +5300,8 @@ function betaInspectionTable(d,metric){
     return '<div class="inspection-row" style="--cols:minmax(190px,.95fr) minmax(170px,.7fr) minmax(280px,1.35fr)"><b>'+esc(p.a.label+" vs "+p.b.label)+'</b><span><strong>'+p.distance.toFixed(3)+'</strong></span><span><strong>'+esc(call)+'</strong></span></div>';
   }).join("");
   if(!rows)rows='<div class="inspection-row" style="--cols:minmax(190px,.95fr) minmax(170px,.7fr) minmax(280px,1.35fr)"><b>Not available</b><span>Not available</span><span><small>At least two '+esc(groupingUnitLabel(d))+' with PCoA coordinates are needed.</small></span></div>';
-  var intro='<p class="table-caption">'+helpCommon("Whole-community centroid distances by "+activeGroupingLabel(d)+", ordered from farthest to closest in the PCoA chart.")+'</p>';
   var explanation='<p class="table-caption"><b>Explanation:</b> '+helpCommon("Each value is the straight-line distance between two group centres in the PCoA plot. Larger values mean the plotted groups are farther apart. These distances are descriptive, not p-values, so interpret them with PERMANOVA, R², and PERMDISP.")+'</p>';
-  return '<div class="pattern-panel">'+intro+
-    '<div class="inspection-table"><div class="inspection-row" style="--cols:minmax(190px,.95fr) minmax(170px,.7fr) minmax(280px,1.35fr)"><b>Comparison</b><b>Distance</b><b>Interpretation</b></div>'+rows+'</div>'+explanation+
-    refLink(REFS.beta)+'</div>';
+  return '<div class="inspection-table"><div class="inspection-row" style="--cols:minmax(190px,.95fr) minmax(170px,.7fr) minmax(280px,1.35fr)"><b>Comparison</b><b>Distance</b><b>Interpretation</b></div>'+rows+'</div>'+explanation+refLink(REFS.beta);
 }
 function functionGroupValue(row,g,d){
   if(row&&row.sampleValues&&d){
@@ -5316,27 +5425,17 @@ function functionalCombinedSupportNote(fs,diff){
 }
 function functionalResultSummaryPanel(d){
   var fs=d.sourceStats&&d.sourceStats.functionalSummary||{},ng=nstiGuide(fs.nsti_mean),diff=functionalDiffSummary(d);
-  var supportedRows=(d.functionalDiffStats||[]).filter(function(r){return r.q!=null&&Number(r.q)<0.05;});
   var conclusionValue=diff.count
     ? (diff.sig?diff.value:(diff.adjustedAvailable?"No FDR-supported differential predicted functions were detected":"Adjusted functional support is unavailable"))
     : "Predicted functional patterns are descriptive hypotheses";
-  var conclusionNote=diff.count
-    ? (diff.sig?diff.testLabel+" support was found after Benjamini-Hochberg correction. Confirm important functions with a direct assay.":(diff.adjustedAvailable?diff.testLabel+" produced no feature-comparison result below the adjusted p-value/FDR threshold.":diff.testLabel+" results were loaded, but adjusted p-values/FDR were not available; raw p-values remain exploratory."))
-    : "Functions are inferred from detected taxa and reference genomes; they are not measurements of gene presence, expression, or activity.";
-  var reportedOutputs=[];
-  if(Number(fs.pathway_features)>0||(d.functionalTables&&d.functionalTables.pathway||[]).length||(d.functions||[]).length)reportedOutputs.push("pathway");
-  if(Number(fs.ko_features)>0||(d.functionalTables&&d.functionalTables.ko||[]).length)reportedOutputs.push("KO");
-  if(Number(fs.ec_features)>0||(d.functionalTables&&d.functionalTables.ec||[]).length)reportedOutputs.push("EC");
-  var supportDetail='<span>Applies to '+esc(reportedOutputs.length?readableList(reportedOutputs)+" predictions":"the available functional predictions")+'.</span><span>'+esc(ng.note+nstiSampleContext(fs))+'</span>';
-  if(diff.count)supportDetail+='<span class="takeaway-stat-line">'+esc(diff.testLabel+': '+fmtNum(diff.uniqueFeatures)+' unique features · '+fmtNum(diff.count)+' feature-comparison results · '+(supportedRows.length?fmtNum(supportedRows.length)+' FDR-supported difference'+(supportedRows.length===1?'':'s'):'No FDR-supported differences'))+'</span>';
-  else supportDetail+='<span>Use the displayed abundance patterns descriptively.</span>';
-  supportDetail+='<span>'+esc(functionalCombinedSupportNote(fs,diff))+'</span>';
+  var evidenceLines=['<li>'+esc(ng.note)+'</li>'];
+  if(diff.count)evidenceLines.push('<li>'+esc(diff.testLabel+': '+fmtNum(diff.uniqueFeatures)+' unique features · '+fmtNum(diff.count)+' feature-comparison results · '+(diff.sig?fmtNum(diff.sig)+' FDR-supported difference'+(diff.sig===1?'':'s'):'No FDR-supported differences'))+'</li>');
+  else evidenceLines.push('<li>No matching differential-function test was available; use the displayed patterns descriptively.</li>');
+  var conclusionDetail='<ol class="functional-evidence-list">'+evidenceLines.join("")+'</ol><p class="functional-evidence-note"><b>Note:</b> '+esc(functionalCombinedSupportNote(fs,diff))+'</p>';
   var evidence=[
-    {label:"Main conclusion",value:conclusionValue,detailHtml:'<span>'+esc(conclusionNote)+'</span>',tone:diff.count?diff.tone:"",icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>'},
-    {label:"Reading priority",value:"Consistency before magnitude",detailHtml:'<span class="takeaway-card-detail-label">How to use the heatmaps</span><span>Look for colour patterns that repeat within metadata categories, then use FDR-supported ALDEx2 results when available to prioritize follow-up.</span>',divider:true,icon:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/>'},
-    {label:"Overall PICRUSt2 prediction support",value:functionalNstiAvailable(fs)?("Mean NSTI "+Number(fs.nsti_mean).toFixed(3)):ng.band,detailHtml:supportDetail,tone:functionalNstiAvailable(fs)&&Number(fs.nsti_mean)<0.10?"good":"poor",divider:true,icon:'<path d="M3 3v18h18"/><path d="M8 17v-3M13 17V8M18 17V5"/>'}
+    {label:"Main conclusion",value:conclusionValue,detailHtml:conclusionDetail,tone:diff.count?diff.tone:"",icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>'}
   ];
-  return '<div class="pattern-panel takeaway-panel" aria-label="Predicted function summary"><div class="takeaway-card-grid">'+evidence.map(function(x){
+  return '<div class="pattern-panel takeaway-panel" aria-label="Predicted function summary"><div class="takeaway-card-grid functional-takeaway-grid">'+evidence.map(function(x){
     return '<article class="takeaway-card"'+metricToneAttr(x.tone)+'><div class="takeaway-card-head"><i class="takeaway-card-icon" aria-hidden="true">'+svgIcon(x.icon)+'</i><b>'+esc(x.label)+'</b></div><strong class="takeaway-card-value">'+esc(x.value)+'</strong>'+(x.divider?'<hr class="takeaway-card-rule">':"")+'<div class="takeaway-card-detail">'+x.detailHtml+'</div></article>';
   }).join("")+'</div></div>';
 }
@@ -5593,9 +5692,13 @@ function resetSelfExperimentState(){
   betaSelfState.selected={};
   betaSelfState.open=false;
 }
-function betaSelfExperimentPanel(d){
+function betaSelfExperimentPanel(d,opts){
+  opts=opts||{};
   var available=(d.betaMetrics||[]).filter(function(m){return d.betaDistanceMatrices&&d.betaDistanceMatrices[m.id];});
-  if(!available.length)return clinicalDetails("Self-experiment",'<p class="table-caption">This exploratory tool needs a usable beta-diversity distance matrix, which is not available for this report.</p>').replace('<details class="clinical-details">','<details data-beta-self-details class="clinical-details">');
+  if(!available.length){
+    var unavailable='<p class="table-caption">This exploratory tool needs a usable beta-diversity distance matrix, which is not available for this report.</p>';
+    return opts.bodyOnly?unavailable:clinicalDetails("Self-experiment",unavailable).replace('<details class="clinical-details">','<details data-beta-self-details class="clinical-details">');
+  }
   var metric=available.some(function(m){return m.id===betaSelfState.metric;})?betaSelfState.metric:(available.some(function(m){return m.id==="weighted_unifrac";})?"weighted_unifrac":available[0].id);betaSelfState.metric=metric;
   var matrix=d.betaDistanceMatrices[metric],all=matrix.ids.slice(),selected=betaSelfState.selected[metric];if(!selected)selected=all.slice();
   var groupsById={};(d.samples||[]).forEach(function(s){groupsById[String(s.raw||s.id)]=s.group;groupsById[String(s.id)]=s.group;});
@@ -5615,7 +5718,8 @@ function betaSelfExperimentPanel(d){
   var matrixNote=matrixIssue?'All sample-to-sample distances are identical, so these statistics cannot support a biological interpretation.':'';
   var statHtml=stats?'<div class="self-experiment-stats"><b>Exploratory recalculation</b><span>PERMANOVA p<strong>'+(stats.permanova.p==null?'Not estimable':stats.permanova.p.toFixed(3))+'</strong></span><span>PERMANOVA R²<strong>'+(stats.permanova.R2*100).toFixed(1)+'%</strong></span><span>Pseudo-F<strong>'+(stats.permanova.F==null?'Not estimable':stats.permanova.F.toFixed(3))+'</strong></span><span>PERMDISP p / F<strong>'+(stats.permdisp?stats.permdisp.p.toFixed(3)+' / '+stats.permdisp.F.toFixed(3):'Not estimable')+'</strong></span><span>PCoA 1 / PCoA 2<strong>'+(stats.pcoa.pc1*100).toFixed(1)+'% / '+(stats.pcoa.pc2*100).toFixed(1)+'%</strong></span><span>Interpretation<strong>'+esc(significance)+'</strong></span><span>Retained groups<strong>'+esc(countText)+'</strong></span>'+(matrixNote?'<small class="self-experiment-note">'+esc(matrixNote)+'</small>':'')+(dispersionNote?'<small class="self-experiment-note">'+esc(dispersionNote)+'</small>':'')+'</div>':'<p class="table-caption">Select at least two groups with enough samples to recalculate statistics.</p>';
   var plot=stats?betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers,matrixIssue):'<div class="self-experiment-empty">No recalculable PCoA for this selection.</div>';
-  var body='<div class="self-experiment-shell"><div class="self-experiment-samples"><b>Samples to include</b><div class="self-experiment-samples-head"><small>Select or clear samples to test how the result changes. The statistic cards are calculated outputs and cannot be edited directly.</small></div>'+checks+'</div><div class="self-experiment-intro"><label>Distance metric <select data-beta-self-metric>'+options+'</select></label><button type="button" class="btn secondary" data-beta-self-reset>Reset to all samples</button></div><div class="self-experiment-main">'+plot+statHtml+'</div><p class="table-caption">Exploratory only: sample removal should be justified by independent quality or biological evidence.</p></div>';
+  var body='<div class="self-experiment-shell"><div class="self-experiment-intro"><label>Distance metric <select data-beta-self-metric>'+options+'</select></label></div><div class="self-experiment-samples"><div class="self-experiment-samples-head"><small>Select or clear samples to test how the result changes. The statistic cards are calculated outputs and cannot be edited directly.</small></div>'+checks+'<button type="button" class="btn secondary" data-beta-self-reset>Reset to all samples</button></div><div class="self-experiment-main">'+plot+statHtml+'</div></div>';
+  if(opts.bodyOnly)return body;
   return clinicalDetails("Self-experiment",body).replace('<details class="clinical-details">','<details data-beta-self-details'+(betaSelfState.open?' open':'')+' class="clinical-details">');
 }
 function betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers,matrixIssue){
@@ -5631,7 +5735,7 @@ function betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers,matrixIssue){
   plottedPoints.forEach(function(point){var placement=selfExperimentLabelPlacement(point.x,point.y,point.number,labelBounds,occupiedLabels,11,7);body+='<circle cx="'+point.x.toFixed(1)+'" cy="'+point.y.toFixed(1)+'" r="7" fill="'+groupColor(Math.max(0,point.gi))+'"><title>'+esc(point.number+'. '+(point.s?sampleLabel(point.s):point.pt.id))+'</title></circle>';if(placement)body+='<text x="'+placement.x.toFixed(1)+'" y="'+placement.y.toFixed(1)+'" text-anchor="'+placement.anchor+'" font-size="11" font-weight="800" fill="#071B3A">'+point.number+'</text>';});
   var legend=(d.groups||[]).filter(function(g){return pts.some(function(pt){var s=byId[pt.id];return s&&s.group===g.id;});}).map(function(g,i){return '<span><i style="background:'+groupColor((d.groups||[]).indexOf(g))+'"></i>'+esc(g.label)+'</span>';}).join("");
   var warning=matrixIssue?'<div class="self-experiment-plot-warning"><strong data-svg-warning-line>Warning — uninformative distance matrix</strong><span data-svg-warning-line>Every retained sample pair has the same '+esc(metricLabel(d,"beta",metric))+' distance ('+esc(Number(matrixIssue.value).toFixed(3))+').</span><span data-svg-warning-line>Point positions, separation and overlap are arbitrary and should not be interpreted.</span></div>':"";
-  return '<div class="self-experiment-plot"><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Exploratory '+esc(metricLabel(d,"beta",metric))+' PCoA">'+axes+body+'<text x="'+((p.l+w-p.r)/2)+'" y="'+(h-8)+'" text-anchor="middle" font-size="11" fill="#526779">PCoA 1 ('+(stats.pcoa.pc1*100).toFixed(1)+'%)</text><text x="16" y="'+((p.t+h-p.b)/2)+'" transform="rotate(-90 16 '+((p.t+h-p.b)/2)+')" text-anchor="middle" font-size="11" fill="#526779">PCoA 2 ('+(stats.pcoa.pc2*100).toFixed(1)+'%)</text></svg><div class="self-experiment-legend">'+legend+'</div>'+warning+'<div class="beta-self-download"><button type="button" class="keyviz-download" data-self-experiment-download="beta">Download SVG</button></div></div>';
+  return '<div class="self-experiment-plot"><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Exploratory '+esc(metricLabel(d,"beta",metric))+' PCoA">'+axes+body+'<text x="'+((p.l+w-p.r)/2)+'" y="'+(h-8)+'" text-anchor="middle" font-size="11" fill="#526779">PCoA 1 ('+(stats.pcoa.pc1*100).toFixed(1)+'%)</text><text x="16" y="'+((p.t+h-p.b)/2)+'" transform="rotate(-90 16 '+((p.t+h-p.b)/2)+')" text-anchor="middle" font-size="11" fill="#526779">PCoA 2 ('+(stats.pcoa.pc2*100).toFixed(1)+'%)</text></svg><div class="self-experiment-legend">'+legend+'</div>'+warning+'<div class="beta-self-download"><button type="button" class="keyviz-download" data-self-experiment-download="beta" data-download-format="svg">Download SVG</button><button type="button" class="keyviz-download" data-self-experiment-download="beta" data-download-format="png">Download PNG</button></div></div>';
 }
 function betaGroupPattern(d,metric){
   var cents=pcoCentroids(d,metric||defaultBetaMetric(d)),pairs=betaDistancePairs(d,metric).slice().sort(function(a,b){return a.distance-b.distance;});
@@ -6080,14 +6184,8 @@ function overallTaxonomyStatState(d){
   if(diff&&diff.adjusted)return {status:"supported",rank:rank,raw:diff.raw||0,adjusted:diff.adjusted,text:fmtNum(diff.adjusted)+" FDR-supported taxon comparison"+(diff.adjusted===1?"":"s")+" between groups."};
   if(diff&&diff.adjustedAvailable){
     var rawText="No "+rankWord+" result passed FDR correction.";
-    if(diff.raw===1&&diff.rawRows&&diff.rawRows[0]){
-      var rawRow=diff.rawRows[0],contrast=taxonomyDiffContrastLabel(rawRow),rawParts=[];
-      if(contrast==="Not specified")contrast="";
-      if(rawRow.p!=null)rawParts.push("raw p-value="+fmtP(rawRow.p));
-      if(rawRow.q!=null)rawParts.push("FDR-adjusted p-value="+fmtP(rawRow.q));
-      rawText=contrast
-        ? "For "+taxonDisplayName(rawRow.taxon,d)+", the "+contrast+" comparison had "+rawParts.join(" and ")+". It is exploratory, not statistically supported."
-        : taxonDisplayName(rawRow.taxon,d)+" had "+rawParts.join(" and ")+" in the loaded comparison. It is exploratory, not statistically supported.";
+    if(diff.raw===1){
+      rawText="One "+rankWord+" comparison had a raw p-value below 0.05, but it did not pass FDR correction. No "+rankWord+" group difference was statistically supported.";
     }else if(diff.raw>1){
       rawText=fmtNum(diff.raw)+" "+rankWord+" comparisons had raw p-values below 0.05, involving "+fmtNum(diff.rawUniqueTaxa)+" "+(diff.rawUniqueTaxa===1?"taxon":"taxa")+"; none passed FDR correction. They are exploratory, not statistically supported.";
     }
@@ -6153,38 +6251,6 @@ function overallConfidenceEvidence(d){
   if(beta.pd&&beta.pd.p!=null)parts.push("PERMDISP p="+fmtP(beta.pd.p));
   return {text:parts.length?parts.join(" · ")+".":beta.text,tone:beta.status==="supported"?"supported":(beta.status==="warning"?"warning":(beta.status==="unavailable"?"unavailable":"descriptive"))};
 }
-function overallCrossStatsItems(d){
-  var taxonomy=overallTaxonomyStatState(d),alpha=overallAlphaStatState(d),beta=overallBetaStatState(d),functional=overallFunctionalStatState(d),items=[];
-  function add(text,tone){if(text&&!items.some(function(item){return item.text===text;}))items.push({text:text,tone:tone||"descriptive"});}
-  if(!isDefaultGroupView(d)){
-    add("Statistical support cannot be combined for "+activeGroupingLabel(d)+" because the loaded tests apply to the pipeline grouping.","unavailable");
-    return items;
-  }
-  var betaSupported=beta.status==="supported"||beta.status==="warning";
-  if(beta.status==="warning")add("Warning: "+beta.label+" PERMANOVA is statistically supported, but unequal within-group spread may affect its interpretation.","warning");
-  if(betaSupported&&alpha.status==="supported")add("Beta diversity supports a difference in community composition, and "+readableList(alpha.supported)+" supports a difference in within-sample diversity. Both tests support group differences, but they describe different aspects of diversity.","supported");
-  else if(betaSupported&&(alpha.status==="unsupported"||alpha.status==="exploratory"))add("Beta diversity supports a difference in community composition. Alpha diversity does not show a statistically supported difference for the tested metrics. These results are not contradictory because the analyses measure different aspects of diversity.","descriptive");
-  else if((beta.status==="unsupported"||beta.status==="exploratory")&&alpha.status==="supported")add(readableList(alpha.supported)+" supports a difference in within-sample diversity. The selected beta-diversity test does not support overall community separation. These results are not contradictory because the analyses measure different aspects of diversity.","descriptive");
-  if(betaSupported&&taxonomy.status==="supported")add("The overall community difference and corrected taxon-level results are both statistically supported.","supported");
-  else if(betaSupported&&taxonomy.status==="unsupported")add("Beta diversity supports an overall community difference, but no individual displayed taxon passed FDR correction.","descriptive");
-  else if((beta.status==="unsupported"||beta.status==="exploratory")&&taxonomy.status==="supported")add("The corrected taxon-level test supports specific abundance differences. The selected beta-diversity test does not support overall community separation.","descriptive");
-  var assessedDiversity=[{name:"alpha",result:alpha},{name:"beta",result:beta}].filter(function(entry){return entry.result.status!=="unavailable";}),supportedDiversity=assessedDiversity.some(function(entry){return entry.result.status==="supported"||entry.result.status==="warning";});
-  if(assessedDiversity.length&&!supportedDiversity){
-    var diversityName=assessedDiversity.length===2?"alpha- and beta-diversity":assessedDiversity[0].name+"-diversity";
-    add("Visible "+diversityName+" patterns are exploratory; the available group-level tests do not support them statistically. They should not be reported as confirmed group differences.","descriptive");
-  }
-  if(functional.status==="unsupported")add(functional.text+" They should not be treated as confirmed functional differences between groups.","descriptive");
-  else if(functional.status==="unavailable"&&items.length<2)add(functional.text,"unavailable");
-  if(!items.length){
-    var missing=[taxonomy,alpha,beta].filter(function(result){return result.status==="unavailable";});
-    add(missing.length?"Cross-analysis statistical interpretation is limited because matching tests were not loaded for all result types.":"No additional cross-analysis warning is required for the loaded results.",missing.length?"unavailable":"supported");
-  }
-  return items.slice(0,3);
-}
-function overallCrossStatsPanel(d){
-  var items=overallCrossStatsItems(d);
-  return '<section class="cross-stats-panel guided-anchor" aria-labelledby="cross-stats-title"><div class="cross-stats-head"><div><h3 id="cross-stats-title">How the results fit together</h3><p>Statistical context across abundance, alpha diversity, beta diversity, and functional prediction.</p></div></div><div class="cross-stats-list">'+items.map(function(item){return '<div class="cross-stats-item" data-tone="'+esc(item.tone)+'"><i aria-hidden="true"></i><span>'+esc(item.text)+'</span></div>';}).join("")+'</div></section>';
-}
 function keyFindingDonut(rows,d){
   var total=rows.reduce(function(a,x){return a+x.mean;},0),colors=keyFindingColors(),circ=2*Math.PI*48,offset=0;
   if(!total)return '<div class="keyviz-donut-wrap"><svg class="keyviz-donut" viewBox="0 0 140 140"><circle class="keyviz-donut-bg" cx="70" cy="70" r="48"/></svg><div class="keyviz-donut-center"><b>NA</b><span>No named taxa</span></div></div>';
@@ -6217,15 +6283,16 @@ function overallRelationshipCard(d){
   var metric=defaultBetaMetric(d),pattern=betaGroupPattern(d,metric),pairs=betaDistancePairs(d,metric),closest=pattern.closest,far=pattern.furthest||pattern.mostDistinct;
   var evidence=overallRelationshipEvidence(d);
   var maxDist=pairs.length?Math.max.apply(null,pairs.map(function(p){return p.distance;})):0;
-  var closestText=closest?(closest.a.label+" + "+closest.b.label):"Not available";
-  var farText=far&&far.a?(far.a.label+" + "+far.b.label):(pattern.mostDistinct?pattern.mostDistinct.group:"Not available");
+  var closestText=closest?(closest.a.label+" + "+closest.b.label+" · "+closest.distance.toFixed(3)):"Not available";
+  var farText=far&&far.a?(far.a.label+" + "+far.b.label+" · "+far.distance.toFixed(3)):(pattern.mostDistinct?pattern.mostDistinct.group:"Not available");
   var closestWidth=closest&&maxDist?Math.max(8,(closest.distance/maxDist)*100):0;
   var farWidth=far&&far.distance&&maxDist?Math.max(8,(far.distance/maxDist)*100):0;
   return '<div class="overall-card"><h3>Group relationship</h3>'+
-    '<p>Uses '+esc(metricLabel(d,"beta",metric))+' PCoA group centroids on the displayed axes. The closest and most separated pairs are ranked by Euclidean distance between those centroids; this is descriptive and should be read with PERMANOVA and PERMDISP.</p>'+
+    '<p>Uses '+esc(metricLabel(d,"beta",metric))+' PCoA group-centre distance. Shorter, lighter bars mean more similar groups; longer, darker bars mean more separated groups. Color represents distance only—not group identity or statistical support.</p>'+
     '<div class="relationship-strip">'+
+      '<div class="relationship-caption"><span>More similar</span><span>More separated</span></div>'+
       '<div class="relationship-line"><span class="relationship-node">Closest pair</span><div class="relationship-track"><i style="--w:'+closestWidth.toFixed(1)+'%"></i></div><span class="relationship-node">'+esc(closestText)+'</span></div>'+
-      '<div class="relationship-line far"><span class="relationship-node">Most separated</span><div class="relationship-track"><i style="--w:'+farWidth.toFixed(1)+'%"></i></div><span class="relationship-node">'+esc(farText)+'</span></div>'+
+      '<div class="relationship-line"><span class="relationship-node">Most separated</span><div class="relationship-track"><i style="--w:'+farWidth.toFixed(1)+'%"></i></div><span class="relationship-node">'+esc(farText)+'</span></div>'+
     '</div>'+overallEvidenceNote("Statistical context",evidence.text,evidence.tone)+'</div>';
 }
 function overallConfidenceCard(d){
@@ -6252,10 +6319,10 @@ function overallVariabilityCard(d){
   var metric=defaultAlphaMetric(d),label=metricLabel(d,"alpha",metric),vars=alphaVariabilityByGroup(d,metric),max=vars.length?Math.max.apply(null,vars.map(function(v){return v.spread;})):0,top=vars[0]||null;
   var rows=vars.map(function(v){
     var w=max?Math.max(8,(v.spread/max)*100):0;
-    return '<div class="variability-row'+(v===top?' top':'')+'"><span class="variability-label">'+esc(v.group)+'</span><div class="variability-track" style="--w:'+w.toFixed(1)+'%"><i></i><span></span></div><span class="variability-score">'+esc(metricValueText(v.spread,metric))+'</span></div>';
+    return '<div class="variability-row'+(v===top?' top':'')+'"><span class="variability-label">'+esc(v.group)+'</span><div class="variability-track" style="--w:'+w.toFixed(1)+'%"><i></i></div><span class="variability-score">'+esc(metricValueText(v.spread,metric))+'</span></div>';
   }).join("");
   var value=top?top.group+" varies the most":"Variability not available";
-  var note=top?"Bars show within-group standard deviation for "+label+" (the square root of the mean squared difference from that group’s mean); the widest spread indicates the least consistency among samples in that group.":"No "+label+" spread could be calculated for the current grouping.";
+  var note=top?"Bars show within-group standard deviation for "+label+" (the square root of the mean squared difference from that group’s mean). Every row uses the same light-to-dark scale; wider, darker bars indicate less consistent samples.":"No "+label+" spread could be calculated for the current grouping.";
   return '<div class="overall-card"><h3>Variability</h3><span class="overall-value">'+esc(value)+'</span><p>'+esc(note)+'</p><div class="variability-chart"><div class="variability-axis"><span>More consistent</span><span>More variable</span></div>'+rows+'</div>'+overallEvidenceNote("Statistical context","Descriptive only. These bars do not test whether group variability differs significantly and do not identify outliers.","descriptive")+'</div>';
 }
 function overallWhatMattersCard(d){
@@ -6440,6 +6507,9 @@ function keyVizExportSvg(kind,d){
 }
 function downloadTextFile(filename,text,type){
   var blob=new Blob([text],{type:type||"image/svg+xml;charset=utf-8"});
+  downloadBlobFile(filename,blob);
+}
+function downloadBlobFile(filename,blob){
   var url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download=filename;document.body.appendChild(a);a.click();
   setTimeout(function(){URL.revokeObjectURL(url);a.remove();},1000);
@@ -6480,12 +6550,26 @@ function standaloneSvgMarkup(svg,kind){
   if(!copy.getAttribute("height")&&viewBox.length===4&&isFinite(viewBox[3]))copy.setAttribute("height",viewBox[3]);
   return '<?xml version="1.0" encoding="UTF-8"?>\n'+new XMLSerializer().serializeToString(copy);
 }
-function downloadSelfExperimentPlots(kind){
+function downloadSvgMarkupAsPng(filename,markup){
+  var source=new Blob([markup],{type:"image/svg+xml;charset=utf-8"}),url=URL.createObjectURL(source),image=new Image();
+  image.onload=function(){
+    var parser=new DOMParser(),svg=parser.parseFromString(markup,"image/svg+xml").documentElement,viewBox=String(svg.getAttribute("viewBox")||"").trim().split(/\s+/).map(Number);
+    var width=viewBox.length===4&&isFinite(viewBox[2])?viewBox[2]:(image.naturalWidth||900),height=viewBox.length===4&&isFinite(viewBox[3])?viewBox[3]:(image.naturalHeight||600),scale=2;
+    var canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(width*scale));canvas.height=Math.max(1,Math.round(height*scale));
+    var context=canvas.getContext("2d");context.fillStyle="#ffffff";context.fillRect(0,0,canvas.width,canvas.height);context.drawImage(image,0,0,canvas.width,canvas.height);
+    canvas.toBlob(function(blob){if(blob)downloadBlobFile(filename,blob);URL.revokeObjectURL(url);},"image/png");
+  };
+  image.onerror=function(){URL.revokeObjectURL(url);};
+  image.src=url;
+}
+function downloadSelfExperimentPlots(kind,format){
+  format=format==="png"?"png":"svg";
   var root=$("#content"),nodes=kind==="alpha-shannon"?$$('[data-alpha-self-metric="shannon"]',root):(kind==="alpha"?$$(".alpha-self-mini-plot svg",root):$$(".self-experiment-main .self-experiment-plot svg",root));
   nodes.forEach(function(svg,index){
     var label=(svg.getAttribute("aria-label")||(kind.indexOf("alpha")===0?"alpha self experiment":"beta self experiment")).replace(/[^a-z0-9]+/gi,"_").replace(/^_|_$/g,"").toLowerCase();
-    var suffix=nodes.length>1?"_"+(index+1):"";
-    downloadTextFile(label+suffix+".svg",standaloneSvgMarkup(svg,kind),"image/svg+xml;charset=utf-8");
+    var suffix=nodes.length>1?"_"+(index+1):"",markup=standaloneSvgMarkup(svg,kind);
+    if(format==="png")downloadSvgMarkupAsPng(label+suffix+".png",markup);
+    else downloadTextFile(label+suffix+".svg",markup,"image/svg+xml;charset=utf-8");
   });
 }
 function manifestFiles(){
@@ -7914,34 +7998,36 @@ function betaChartObservationItems(d,file){
   var metric=betaMetricForFigure(d,file),label=metricLabel(d,"beta",metric),pm=d.permanova&&d.permanova[metric],pd=betaPerDispForMetric(d,metric),quality=betaDistanceMatrixQuality(d,metric),items=[];
   if(quality.available&&!quality.informative){
     var tiedValue=isFinite(quality.min)?Number(quality.min).toFixed(3):"the same value";
-    items.push("Distance check: all "+quality.count+" sample-to-sample "+label+" distances are tied at "+tiedValue+", so this analysis contains no usable distance variation.");
-    items.push("Plot interpretation: the displayed positions and ellipses are an arbitrary projection of tied distances. Do not interpret closest groups, separation, or within-group spread from this PCoA.");
+    items.push("Data check: all "+quality.count+" sample-to-sample "+label+" distances are "+tiedValue+". Because every sample is equally different from every other sample, this distance matrix cannot show a meaningful group pattern.");
+    items.push("What the plot shows: the positions and ellipses are a two-dimensional arrangement of tied distances. Do not use this PCoA to identify close groups, separated groups, or differences in within-group spread.");
     if(pm&&pm.p!=null){
-      items.push("Group test: PERMANOVA does not support a group difference (p="+fmtP(pm.p)+(pm.R2!=null?"; R²="+(Number(pm.R2)*100).toFixed(1)+"%":"")+"). With a constant distance matrix, this result cannot distinguish the groups.");
+      items.push("Statistical result: PERMANOVA does not support a group difference (p="+fmtP(pm.p)+"). The calculated R² is not interpreted because the distance matrix contains no usable variation.");
     }else{
-      items.push("Group test: a matching PERMANOVA result was unavailable, and the constant distance matrix cannot distinguish the groups.");
+      items.push("Statistical result: a matching PERMANOVA result was unavailable, and the tied distance matrix cannot distinguish the groups.");
     }
     return uniqueObservationItems(items);
   }
   var pattern=betaGroupPattern(d,metric),spreads=betaDisplayedGroupSpreads(d,metric),pairwise=betaPairwiseGroupStats(d,metric);
+  var groupCount=pm&&pm.groupCount!=null?Number(pm.groupCount):(d.groups||[]).length;
+  var groupScope=groupCount===1?"the selected group":(groupCount===2?"both groups":"all "+groupCount+" groups");
   if(pm&&(pm.p!=null||pm.R2!=null)){
-    var effect=pm.R2==null?"":(Number(pm.R2)>=0.30?"large":(Number(pm.R2)>=0.10?"moderate":"small"));
     var effectText=pm.R2==null
-      ? "The share of variation explained by "+activeGroupingLabel(d)+" was not available"
-      : activeGroupingLabel(d)+" categories explain "+(Number(pm.R2)*100).toFixed(1)+"% of the overall "+label+" variation ("+effect+" effect)";
+      ? "The overall R² was not available"
+      : "overall R²="+(Number(pm.R2)*100).toFixed(1)+"%";
     var testText=pm.p==null
-      ? "the PERMANOVA p-value was not available"
+      ? "the PERMANOVA p-value was not available, so statistical support cannot be determined"
       : (Number(pm.p)<0.05
-        ? "PERMANOVA detects an overall difference among the selected categories (p="+fmtP(pm.p)+")"
+        ? "the overall difference is statistically supported (p="+fmtP(pm.p)+")"
         : (Number(pm.p)<0.10
-          ? "PERMANOVA shows only an exploratory overall signal (p="+fmtP(pm.p)+")"
-          : "PERMANOVA does not detect an overall difference among the selected categories (p="+fmtP(pm.p)+")"));
-    items.push("Group effect: "+effectText+"; "+testText+".");
+          ? "this is a possible group pattern, but it is not statistically supported (p="+fmtP(pm.p)+")"
+          : "the test does not support an overall group difference (p="+fmtP(pm.p)+")"));
+    items.push("Overall result: Across "+groupScope+", "+label+" PERMANOVA gave "+effectText+"; "+testText+".");
   }else{
-    items.push("Group effect: Matching PERMANOVA and R² results were unavailable, so an overall "+groupingLabelForSentence(d)+" effect cannot be assessed for this "+label+" plot.");
+    items.push("Overall result: Matching PERMANOVA and R² results were unavailable, so an overall "+groupingLabelForSentence(d)+" effect cannot be assessed for this "+label+" plot.");
   }
 
   var distinctGap=pattern.scores&&pattern.scores.length>1?pattern.scores[0].score-pattern.scores[pattern.scores.length-1].score:0;
+  var plotParts=[];
   if(pattern.closest){
     var patternText;
     if(pattern.closest===pattern.furthest){
@@ -7950,51 +8036,51 @@ function betaChartObservationItems(d,file){
       patternText=pattern.closest.a.label+" and "+pattern.closest.b.label+" have the closest group centres, while "+pattern.furthest.a.label+" and "+pattern.furthest.b.label+" are farthest apart on the displayed axes";
     }
     if(pattern.mostDistinct&&distinctGap>1e-9)patternText+="; "+pattern.mostDistinct.group+" is the most separated group overall";
-    items.push("Observed group pattern: "+patternText+". These positions are descriptive and do not establish a statistically significant difference between a specific pair of groups.");
+    plotParts.push(patternText);
   }else{
-    items.push("Observed group pattern: At least two groups with plotted coordinates are required to compare group centres.");
+    plotParts.push("at least two groups with plotted coordinates are required to compare group centres");
   }
 
-  var spreadText;
   if(spreads.length){
     var spreadGap=spreads.length>1?spreads[0].spread-spreads[spreads.length-1].spread:0;
-    spreadText=spreads.length>1&&Math.abs(spreadGap)<1e-9
-      ? "The displayed groups have the same mean sample-to-centre spread ("+spreads[0].spread.toFixed(3)+")"
-      : spreads[0].group+" has the widest displayed within-group spread (mean sample-to-centre distance "+spreads[0].spread.toFixed(3)+"), indicating the greatest sample-to-sample variability on these axes";
+    plotParts.push(spreads.length>1&&Math.abs(spreadGap)<1e-9
+      ? "the displayed groups have the same mean sample-to-centre spread ("+spreads[0].spread.toFixed(3)+")"
+      : spreads[0].group+" has the widest displayed within-group spread (mean sample-to-centre distance "+spreads[0].spread.toFixed(3)+")");
   }else{
-    spreadText="At least two plotted samples within a group are required to summarize displayed within-group spread";
+    plotParts.push("at least two plotted samples within a group are required to summarize within-group spread");
   }
-  if(pd&&pd.p!=null){
-    spreadText+=Number(pd.p)<0.05
-      ? "; PERMDISP flags unequal group spread (p="+fmtP(pd.p)+"), so apparent separation may partly reflect different within-group variability"
-      : "; PERMDISP does not flag unequal group spread (p="+fmtP(pd.p)+"), so no dispersion warning is added";
-  }else{
-    spreadText+="; a matching PERMDISP result was unavailable, so differences in spread could not be tested";
-  }
-  items.push("Within-group consistency: "+spreadText+".");
 
   var axisTotal=pm?Number(pm.pc1||0)+Number(pm.pc2||0):0;
   if(axisTotal>0){
-    var hiddenText=axisTotal<100?"; the remaining "+Math.max(0,100-axisTotal).toFixed(1)+"% is not visible in this two-dimensional view":"";
-    items.push("Plot coverage: PC1 and PC2 together display "+axisTotal.toFixed(1)+"% of the total "+label+" variation"+hiddenText+".");
+    plotParts.unshift("PC1 and PC2 display "+axisTotal.toFixed(1)+"% of the total variation");
   }else{
-    items.push("Plot coverage: The percentages represented by PC1 and PC2 were unavailable, so the amount of variation omitted from this two-dimensional view cannot be quantified.");
+    plotParts.unshift("the variation represented by PC1 and PC2 was unavailable");
   }
+  items.push("What the plot shows: "+plotParts.join(". ")+". These are two-dimensional visual observations only; they do not prove a difference between groups.");
 
+  var checkParts=[];
   if(pairwise.length){
-    var candidate=pairwise[0],pairLabel=candidate.a.label+" and "+candidate.b.label;
+    var candidate=pairwise[0],pairLabel=candidate.a.label+" versus "+candidate.b.label;
     var sampleCount=candidate.a.n===candidate.b.n
       ? "n="+candidate.a.n+" per group"
       : candidate.a.label+" n="+candidate.a.n+"; "+candidate.b.label+" n="+candidate.b.n;
     var correction=pairwise.length>1?"; FDR-adjusted p-value="+fmtP(candidate.q):"";
     if(candidate.q<0.05){
-      items.push("Direct group comparison: "+pairLabel+" form the strongest tested contrast, and their comparison is statistically supported (PERMANOVA p-value for this comparison="+fmtP(candidate.p)+correction+"; R²="+(candidate.R2*100).toFixed(1)+"%; "+sampleCount+").");
-    }else if(candidate.p<0.10){
-      items.push("Direct group comparison: "+pairLabel+" form the strongest tested contrast, but the result remains exploratory and is not statistically supported (PERMANOVA p-value for this comparison="+fmtP(candidate.p)+correction+"; R²="+(candidate.R2*100).toFixed(1)+"%; "+sampleCount+").");
+      checkParts.push(pairLabel+" is the strongest tested pairwise contrast and is statistically supported (pairwise R²="+(candidate.R2*100).toFixed(1)+"%; p="+fmtP(candidate.p)+correction+"; "+sampleCount+")");
     }else{
-      items.push("Direct group comparison: "+pairLabel+" form the strongest tested contrast, but their comparison is not statistically supported (PERMANOVA p-value for this comparison="+fmtP(candidate.p)+correction+"; R²="+(candidate.R2*100).toFixed(1)+"%; "+sampleCount+"). Treat any apparent separation as a visual observation only.");
+      checkParts.push(pairLabel+" is the strongest tested pairwise contrast, but is not statistically supported (pairwise R²="+(candidate.R2*100).toFixed(1)+"%; p="+fmtP(candidate.p)+correction+"; "+sampleCount+")");
     }
+  }else{
+    checkParts.push("a pairwise PERMANOVA comparison was unavailable");
   }
+  if(pd&&pd.p!=null){
+    checkParts.push(Number(pd.p)<0.05
+      ? "PERMDISP detected unequal within-group spread (p="+fmtP(pd.p)+"), so apparent separation may partly reflect variability rather than different group centres"
+      : "PERMDISP did not detect unequal within-group spread (p="+fmtP(pd.p)+")");
+  }else checkParts.push("a matching PERMDISP result was unavailable");
+  var smallestGroup=(d.groups||[]).map(function(group){return (d.samples||[]).filter(function(sample){return sample.group===group.id;}).length;}).filter(function(n){return n>0;}).sort(function(a,b){return a-b;})[0];
+  var sensitivityNote=smallestGroup!=null&&smallestGroup<5?" With only "+smallestGroup+" samples in the smallest group, these checks have limited sensitivity.":"";
+  items.push("Statistical checks: "+checkParts.join(". ")+"."+sensitivityNote);
   return uniqueObservationItems(items);
 }
 function functionalChartObservationItems(d,file){
@@ -8145,12 +8231,16 @@ function diversityFigureChoices(kind){
       seenAlpha[file.id]=true;
       figs.push(file);
     });
-    var labels={shannon:"Shannon",simpson:"Simpson",observed:"Observed Features",faith:"Faith PD"},byMetric={};
+    var labels={shannon:"Shannon",simpson:"Simpson",observed:"Observed Features",faith:"Faith PD",rarefaction:"Sampling Depth"},byMetric={};
     figs.forEach(function(file,index){
+      if(/rarefaction/.test(figureText(file))){
+        if(!byMetric.rarefaction)byMetric.rarefaction={kind:"chart",index:index,metric:"observed",label:labels.rarefaction,file:file};
+        return;
+      }
       var metric=figureAlphaMetric(d,figureText(file));
       if(labels[metric]&&!byMetric[metric])byMetric[metric]={kind:"chart",index:index,metric:metric,label:labels[metric],file:file};
     });
-    return ["shannon","simpson","observed","faith"].map(function(metric){return byMetric[metric];}).filter(Boolean);
+    return ["shannon","simpson","observed","faith","rarefaction"].map(function(metric){return byMetric[metric];}).filter(Boolean);
   }
   if(kind==="functional"){
     return figs.map(function(file,index){return {kind:"chart",index:index,metric:functionalKindForFigure(file),label:figureDisplayName(file),file:file};});
@@ -8167,35 +8257,55 @@ function diversityFigureChoices(kind){
   return ["bray","weighted_unifrac","unweighted_unifrac"].map(function(metric){return known[metric];}).filter(Boolean).concat(other);
 }
 function selectedDiversityChoice(kind,choices){
-  if(state.chartView[kind]==="what-next")return {kind:"what-next",index:-1,label:"What Next?",file:null};
   var selected=choices.filter(function(choice){return choice.index===(state.chartIndex[kind]||0);})[0]||choices[0];
-  if(!selected){state.chartView[kind]="what-next";return {kind:"what-next",index:-1,label:"What Next?",file:null};}
+  if(!selected)return null;
   state.chartIndex[kind]=selected.index;
   state.chartView[kind]="chart";
   return selected;
 }
 function diversityViewPicker(kind,choices,selected){
-  var all=choices.concat([{kind:"what-next",index:-1,label:"What Next?"}]);
+  var all=choices;
   var selectedPos=Math.max(0,all.findIndex(function(choice){return choice.kind===selected.kind&&choice.index===selected.index;}));
   var previous=all.length>1?'<button class="btn btn-ghost btn-sm" type="button" data-diversity-view-step="-1" aria-label="Previous view">'+svgIcon('<path d="M19 12H5M11 6l-6 6 6 6"/>')+'</button>':"";
   var picker='<div class="diversity-view-picker" data-diversity-view-picker data-chart-kind="'+esc(kind)+'">'+
-    '<button class="diversity-view-trigger'+(selected.kind==="what-next"?' is-what-next':'')+'" type="button" data-diversity-view-toggle aria-haspopup="listbox" aria-expanded="false"><span>'+esc(selected.label)+'</span>'+svgIcon('<path d="m6 9 6 6 6-6"/>')+'</button>'+
+    '<button class="diversity-view-trigger" type="button" data-diversity-view-toggle aria-haspopup="listbox" aria-expanded="false"><span>'+esc(selected.label)+'</span>'+svgIcon('<path d="m6 9 6 6 6-6"/>')+'</button>'+
     '<div class="diversity-view-menu" role="listbox" aria-label="Choose '+esc(kind==='alpha'?'Alpha-diversity':(kind==='beta'?'Beta-diversity':'Functional-prediction'))+' view" hidden>'+all.map(function(choice){
       var active=choice.kind===selected.kind&&choice.index===selected.index;
-      return '<button class="diversity-view-option'+(choice.kind==="what-next"?' is-what-next':'')+'" type="button" role="option" aria-selected="'+(active?'true':'false')+'" data-diversity-view="'+esc(choice.kind)+'" data-chart-index="'+choice.index+'">'+esc(choice.label)+'</button>';
+      return '<button class="diversity-view-option" type="button" role="option" aria-selected="'+(active?'true':'false')+'" data-diversity-view="'+esc(choice.kind)+'" data-chart-index="'+choice.index+'">'+esc(choice.label)+'</button>';
     }).join("")+'</div></div>';
   var next=all.length>1?'<button class="btn btn-ghost btn-sm" type="button" data-diversity-view-step="1" aria-label="Next view">'+svgIcon('<path d="M5 12h14M13 6l6 6-6 6"/>')+'</button>':"";
   return '<div class="chart-toolbar diversity-view-toolbar'+(all.length===1?' is-single':'')+'">'+previous+picker+next+'<span class="pill">'+(selectedPos+1)+' of '+all.length+'</span>'+(selected.kind==="chart"?chartSizeControl():"")+'</div>';
 }
-function diversityReleasedFigurePanel(kind,title,note,whatNextView){
-  var choices=diversityFigureChoices(kind),selected=selectedDiversityChoice(kind,choices),picker=diversityViewPicker(kind,choices,selected),body;
-  if(selected.kind==="what-next"){
-    body='<div class="diversity-guidance-view">'+whatNextView+'</div>';
-  }else{
-    body='<div class="released-grid"><figure class="released-card chart-loading" style="--chart-width:'+chartRenderWidthValue()+'%"><img src="'+figureViewUrl(selected.file)+'" alt="'+esc(figureDisplayName(selected.file))+'"></figure></div>'+chartObservationPanel(kind,selected.file);
+function diversityMetricDefinitionCopy(kind,selected,d){
+  var fileText=figureText(selected&&selected.file),metric=selected&&selected.metric||"";
+  if(kind==="alpha"){
+    if(/rarefaction/.test(fileText))return {label:"Rarefaction",text:"Shows whether sequencing depth captured most of the detectable features. A curve approaching a plateau suggests that additional reads would add relatively few new features."};
+    metric=metric||figureAlphaMetric(d,fileText);
+    if(metric==="shannon")return {label:"Shannon",text:"Measures both the number of detected microbial types and how evenly their abundance is distributed. Higher values mean greater within-sample diversity."};
+    if(metric==="simpson")return {label:"Simpson",text:"Focuses more strongly on dominant microbial types. Higher Gini–Simpson values mean the sample is less dominated by one or a few types."};
+    if(metric==="observed")return {label:"Observed features",text:"Counts the distinct sequence features detected. It measures richness, not how evenly abundance is distributed."};
+    if(metric==="faith")return {label:"Faith PD",text:"Measures the evolutionary breadth of detected organisms using a phylogenetic tree. Higher values represent more total branch length."};
+    return {label:selected&&selected.label||"Alpha diversity",text:"Summarizes diversity within each sample. Compare values only within the same study and analysis workflow."};
   }
-  var panelTitle=selected.kind==="what-next"?(kind==="alpha"?"Alpha-diversity guidance":(kind==="beta"?"Beta-diversity guidance":"Functional-prediction guidance")):title;
-  return '<div class="released-panel guided-anchor" id="page-chart" data-chart-kind="'+esc(kind)+'"><div class="released-head"><div><h3>'+esc(panelTitle)+'</h3>'+(note?'<p>'+esc(note)+'</p>':'')+'</div>'+picker+'</div>'+body+'</div>';
+  if(kind==="beta"){
+    if(/species[_ -]?vector[_ -]?pcoa|species.*pcoa.*vector/.test(fileText))return {label:"Species-vector PCoA",text:"Shows Bray–Curtis sample relationships and overlays candidate species associated with the displayed directions. The arrows show association, not causation."};
+    metric=metric||betaMetricForFigure(d,selected&&selected.file);
+    if(metric==="unweighted_unifrac")return {label:"Unweighted UniFrac",text:"Compares which evolutionary lineages are present, regardless of abundance. On the PCoA map, closer points contain more similar sets of lineages."};
+    if(metric==="weighted_unifrac")return {label:"Weighted UniFrac",text:"Compares evolutionary lineages while also considering their abundance. On the PCoA map, closer points have more similar phylogenetic abundance profiles."};
+    return {label:"Bray–Curtis",text:"Compares microbial abundance profiles without using evolutionary relationships. On the PCoA map, closer points have more similar community profiles."};
+  }
+  return null;
+}
+function diversityMetricDefinitionHtml(kind,selected){
+  var definition=diversityMetricDefinitionCopy(kind,selected,ds());
+  return definition?'<p class="diversity-metric-definition"><b>'+esc(definition.label)+':</b><span>'+esc(definition.text)+'</span></p>':"";
+}
+function diversityReleasedFigurePanel(kind,title,note,whatNextView){
+  var choices=diversityFigureChoices(kind),selected=selectedDiversityChoice(kind,choices);
+  if(!selected)return "";
+  var picker=diversityViewPicker(kind,choices,selected);
+  var body=diversityMetricDefinitionHtml(kind,selected)+'<div class="released-grid"><figure class="released-card chart-loading" style="--chart-width:'+chartRenderWidthValue()+'%"><img src="'+figureViewUrl(selected.file)+'" alt="'+esc(figureDisplayName(selected.file))+'"></figure></div>'+chartObservationPanel(kind,selected.file)+(whatNextView||"");
+  return '<div class="released-panel guided-anchor" id="page-chart" data-chart-kind="'+esc(kind)+'"><div class="released-head"><div><h3>'+esc(title)+'</h3>'+(note?'<p>'+esc(note)+'</p>':'')+'</div>'+picker+'</div>'+body+'</div>';
 }
 function releasedFigurePanel(kind,title,note,chartFollowUp){
   if(kind==="alpha"||kind==="beta"||kind==="functional")return diversityReleasedFigurePanel(kind,title,note,chartFollowUp);
@@ -8277,7 +8387,6 @@ function secOverall(){
     '<div id="overall-confidence" class="guided-anchor">'+overallConfidenceCard(d)+'</div>'+
     '<div id="overall-variability" class="guided-anchor">'+overallVariabilityCard(d)+'</div>'+
     '</div>';
-  html+=overallCrossStatsPanel(d);
   html+=nextBar();
   return html;
 }
@@ -8417,11 +8526,6 @@ function methodText(text,d,a){
     return tokens[key]!=null?String(tokens[key]):match;
   });
 }
-function methodSourceTags(d){
-  var sources=d.methodSources||[];
-  if(!sources.length)return '<span class="method-empty">Source file list unavailable.</span>';
-  return '<div class="method-source-list">'+sources.map(function(s){return '<span>'+esc(s)+'</span>';}).join("")+'</div>';
-}
 function methodNotes(d){
   var notes=d.methodNotes||[];
   if(!notes.length)return "";
@@ -8430,7 +8534,6 @@ function methodNotes(d){
   }).join("")+'</div>';
 }
 function methodNoteBody(note,d){
-  if(note.type==="sources")return methodSourceTags(d);
   if(note.paragraphs&&note.paragraphs.length)return note.paragraphs.map(function(p){return '<p>'+helpCommon(p)+'</p>';}).join("");
   if(note.bodyKey&&d.methodConfig&&d.methodConfig[note.bodyKey])return '<p>'+helpCommon(d.methodConfig[note.bodyKey])+'</p>';
   return '<p>'+helpCommon(note.body||"")+'</p>';
@@ -9033,7 +9136,6 @@ function secTaxonomy(){
   var chartPanel=figPanel||chartUnavailablePanel("Released taxonomy charts unavailable","Connect the portal API/GCS release folder to show the original taxonomy charts. The summaries above still come from the report tables.");
   html+=chartPanel;
   html+='<div id="page-details" class="guided-anchor">'+taxonomyGenusInspectionPanel(d)+'</div>';
-  html+=taxonomyWhatNextPanel(d);
   html+=nextBar();
   return html;
 }
@@ -9317,7 +9419,6 @@ function openAlphaReportMetric(metric){
 }
 function secAlpha(){
   var d=ds();
-  var isWhatNext=state.chartView.alpha==="what-next";
   var primary=defaultAlphaMetric(d);
   if((d.alphaMetrics||[]).map(function(m){return m.id;}).indexOf(alphaState.metric)<0)alphaState.metric=primary;
   primary=alphaState.metric;
@@ -9337,20 +9438,14 @@ function secAlpha(){
     return html;
   }
   var selectedAlphaFig=currentReleasedFigure("alpha");
-  if(selectedAlphaFig&&!isWhatNext){
+  if(selectedAlphaFig){
     var figMetric=figureAlphaMetric(d,figureText(selectedAlphaFig));
     if((d.alphaMetrics||[]).map(function(m){return m.id;}).indexOf(figMetric)>=0)alphaState.metric=figMetric;
     primary=alphaState.metric;
   }
-  if(!isWhatNext)html+=alphaResultSummaryPanel(d,primary);
-  html+=alphaStatsPanel(d);
-  html+=releasedFigurePanel("alpha","Diversity chart","",alphaWhatNextPanel(d,{embedded:true}));
-  if(!isWhatNext){
-    html+='<div id="page-details" class="guided-anchor">'+clinicalDetails("Sample "+metricLabel(d,"alpha",primary)+" values",alphaInspectionTable(d,primary))+'</div>';
-    html+='<div class="guided-anchor">'+alphaSelfExperimentPanel(d)+'</div>';
-    var alphaSupplementMetric=selectedAlphaFig?figureAlphaMetric(d,figureText(selectedAlphaFig)):alphaState.metric;
-    html+=supplementFigureStack([alphaSupplementFigureForMetric(alphaSupplementMetric)]);
-  }
+  html+=alphaResultSummaryPanel(d,primary);
+  html+=releasedFigurePanel("alpha","Diversity chart","",alphaSampleValuesDetails(d,primary));
+  html+=alphaAdvancedDetailsPanel(d,primary);
   html+='</div>';
   html+=nextBar();
   return html;
@@ -9633,9 +9728,17 @@ function openBetaReportMetric(metric){
   state.betaView="report";showSection("beta");
   setTimeout(function(){var target=$("#page-chart");if(target)target.scrollIntoView({behavior:"smooth",block:"start"});},0);
 }
+function betaGroupDistanceDetails(d,metric){
+  var title=metricLabel(d,"beta",metric)+" Group Distances";
+  return clinicalDetails(title,betaInspectionTable(d,metric)).replace('<details class="clinical-details">','<details class="clinical-details beta-chart-distances">');
+}
+function betaAdvancedDetailsPanel(d){
+  var sensitivity='<section class="alpha-advanced-section"><h3>Sensitivity analysis — not part of the released report</h3><p>Use this only to inspect how individual samples influence an exploratory recalculation.</p>'+betaSelfExperimentPanel(d,{bodyOnly:true})+'</section>';
+  var details=clinicalDetails("Advanced beta details",sensitivity).replace('<details class="clinical-details">','<details data-beta-advanced-details'+(betaSelfState.open?' open':'')+' class="clinical-details">');
+  return '<div id="page-details" class="guided-anchor">'+details+'</div>';
+}
 function secBeta(){
   var d=ds();
-  var isWhatNext=state.chartView.beta==="what-next";
   if((d.betaMetrics||[]).map(function(m){return m.id;}).indexOf(betaState.metric)<0)betaState.metric=defaultBetaMetric(d);
   var html=betaViewSwitch()+head("Diversity","Between Samples & Groups",
     "Whole-community differences across samples and selected groups.");
@@ -9653,17 +9756,13 @@ function secBeta(){
     return html;
   }
   var selectedBetaFig=currentReleasedFigure("beta");
-  if(selectedBetaFig&&!isWhatNext){
+  if(selectedBetaFig){
     var figMetric=betaMetricForFigure(d,selectedBetaFig);
     if((d.betaMetrics||[]).map(function(m){return m.id;}).indexOf(figMetric)>=0)betaState.metric=figMetric;
   }
-  if(!isWhatNext)html+=betaResultSummaryPanel(d,betaState.metric);
-  html+=releasedFigurePanel("beta","Relationship map","",betaWhatNextPanel(d,{embedded:true}));
-  if(!isWhatNext){
-    html+='<div id="page-details" class="guided-anchor">'+clinicalDetails("Group distance details",betaInspectionTable(d,betaState.metric))+'</div>';
-  }
-  if(!isWhatNext)html+='<div class="guided-anchor">'+betaSelfExperimentPanel(d)+'</div>';
-  if(!isWhatNext)html+=betaSupplementFigurePanel(d,betaState.metric,selectedBetaFig);
+  html+=betaResultSummaryPanel(d,betaState.metric);
+  html+=releasedFigurePanel("beta","Relationship map","",betaGroupDistanceDetails(d,betaState.metric));
+  html+=betaAdvancedDetailsPanel(d);
   html+='</div>';
   html+=nextBar();
   return html;
@@ -9695,8 +9794,6 @@ function renderBetaStatsAndRead(){
 /* ---------------- SECTION: functional ---------------- */
 function secFunctional(){
   var d=ds();
-  if(!diversityFigureChoices("functional").length)state.chartView.functional="what-next";
-  var isWhatNext=state.chartView.functional==="what-next";
   var html=head("Function","Predicted Functions",
     "Compare predicted pathways, KO and EC features, plus reference support.");
   html+=groupSelectorPanel("functional");
@@ -9707,27 +9804,155 @@ function secFunctional(){
     return html;
   }
   if(!functionalResultDataAvailable(d)){
-    var missingFunctionalNext=functionalWhatNextPanel(d,null,true);
-    html+=chartUnavailablePanel("Functional prediction not available","This report does not include functional prediction tables. If functional inference is expected, check that the source workflow produced PICRUSt2 or equivalent output and that the portal manifest includes it.",missingFunctionalNext);
+    html+=chartUnavailablePanel("Functional prediction not available","This report does not include functional prediction tables. If functional inference is expected, check that the source workflow produced PICRUSt2 or equivalent output and that the portal manifest includes it.");
     html+=nextBar();return html;
   }
-  if(!isWhatNext)html+=functionalResultSummaryPanel(d);
+  html+=functionalResultSummaryPanel(d);
   var selectedFunctionalFig=currentReleasedFigure("functional");
-  var functionalNext=functionalSummaryWhatNextPanel(d,{embedded:true});
-  var figPanel=releasedFigurePanel("functional","Predicted function chart","",functionalNext);
+  var figPanel=releasedFigurePanel("functional","Predicted function chart","");
   html+=figPanel;
   if(!figPanel){
-    html+=chartUnavailablePanel("Released functional chart unavailable","Connect the portal API/GCS release folder to show the original functional prediction chart. The summaries above still come from the report tables.",functionalNext);
+    html+=chartUnavailablePanel("Released functional chart unavailable","Connect the portal API/GCS release folder to show the original functional prediction chart. The summaries above still come from the report tables.");
   }
-  if(!isWhatNext){
-    var detailKind=selectedFunctionalFig?functionalKindForFigure(selectedFunctionalFig):"pathway";
-    if(!functionalChartFeatureRows(d,detailKind).length){
-      detailKind=["pathway","ko","ec"].filter(function(kind){return functionalChartFeatureRows(d,kind).length;})[0]||detailKind;
-    }
-    var functionalDetails=clinicalDetails("Predicted function details",functionalInspectionTable(d,detailKind)+functionalDiffStatsPanel(d)).replace('<details class="clinical-details">','<details data-functional-details'+(state.functionalDetailsOpen?' open':'')+' class="clinical-details">');
-    html+='<div id="page-details" class="guided-anchor">'+functionalDetails+'</div>';
-    if(selectedFunctionalFig)html+=supplementFigureStack([functionalSupplementFigureForChart(selectedFunctionalFig)]);
+  var detailKind=selectedFunctionalFig?functionalKindForFigure(selectedFunctionalFig):"pathway";
+  if(!functionalChartFeatureRows(d,detailKind).length){
+    detailKind=["pathway","ko","ec"].filter(function(kind){return functionalChartFeatureRows(d,kind).length;})[0]||detailKind;
   }
+  var functionalDetails=clinicalDetails("Predicted function details",functionalInspectionTable(d,detailKind)+functionalDiffStatsPanel(d)).replace('<details class="clinical-details">','<details data-functional-details'+(state.functionalDetailsOpen?' open':'')+' class="clinical-details">');
+  html+='<div id="page-details" class="guided-anchor">'+functionalDetails+'</div>';
+  if(selectedFunctionalFig)html+=supplementFigureStack([functionalSupplementFigureForChart(selectedFunctionalFig)]);
+  html+=nextBar();
+  return html;
+}
+/* ---------------- SECTION: suggestions ---------------- */
+function suggestionStatusLabel(status){
+  return {supported:"Supported",warning:"Review first",exploratory:"Exploratory",unsupported:"Not supported",unavailable:"Support unavailable",absent:"Not available"}[status]||"Descriptive";
+}
+function suggestionSummaryItems(d){
+  var taxonomy=overallTaxonomyStatState(d),alpha=overallAlphaStatState(d),beta=overallBetaStatState(d),functional=overallFunctionalStatState(d);
+  var functionalAvailable=functionalSectionAvailable();
+  var taxonomySummary=taxonomy.status==="supported"
+    ? "At least one taxon-level comparison is statistically supported."
+    : (taxonomy.status==="unsupported"?"Visible composition differences remain descriptive or exploratory.":"Taxon-level statistical support cannot be assessed for this grouping.");
+  var taxonomyAction=taxonomy.status==="supported"
+    ? "Check that each supported taxon changes in the same direction across several biological samples—not because of one extreme sample—then confirm the most important candidate with a targeted method in an independent sample set."
+    : (taxonomy.status==="unsupported"?"Use recurring taxon patterns to form a focused hypothesis, not a confirmed claim. If the question remains important, strengthen replication and repeat the FDR-corrected abundance test before targeted validation.":"The charts can still describe composition, but they cannot establish a group difference. Add a matching differential-abundance test with FDR correction before choosing taxa for validation.");
+  var alphaSummary=alpha.status==="supported"
+    ? "At least one within-sample diversity metric is statistically supported."
+    : (alpha.status==="exploratory"?"Within-sample diversity shows an exploratory signal only.":(alpha.status==="unsupported"?"No tested within-sample diversity metric is statistically supported.":"Matching within-sample diversity tests are unavailable."));
+  var alphaAction=alpha.status==="supported"
+    ? "Confirm that the supported metric shows the same direction across biological replicates, then repeat the comparison in an independent sample set using the same planned metric and test."
+    : (alpha.status==="exploratory"?"Treat the signal as an early lead. Check whether it persists after improving group balance and biological replication, then repeat the same prespecified diversity test.":(alpha.status==="unavailable"?"Use the diversity chart descriptively until the matching group test is available. Do not infer support from boxplot separation alone.":"Report that no tested within-sample diversity difference was supported. Retest only if a stronger design or a clearly defined biological question justifies it."));
+  var betaEvidence=[];
+  if(beta.pm&&beta.pm.p!=null)betaEvidence.push("PERMANOVA p="+fmtP(beta.pm.p));
+  if(beta.pm&&beta.pm.R2!=null)betaEvidence.push("R²="+(Number(beta.pm.R2)*100).toFixed(1)+"%"+(beta.pm.R2Derived?" (calculated)":""));
+  if(beta.pd&&beta.pd.p!=null)betaEvidence.push("PERMDISP p="+fmtP(beta.pd.p));
+  var betaSummary=beta.status==="warning"
+    ? "The overall association is supported, but unequal within-group spread limits interpretation."
+    : beta.text;
+  var betaAction=beta.status==="warning"
+    ? "Review the samples driving the wide group spread, check batch and other metadata, and repeat the analysis without changing the planned test. Validate separation only if it remains after the dispersion concern is understood."
+    : (beta.status==="supported"?"Check that separation repeats across samples rather than being driven by one point, reproduce the same distance analysis in independent biological replicates, then investigate taxa that consistently contribute.":(beta.status==="unavailable"?"Describe sample relationships without claiming group separation. Add the matching PERMANOVA and PERMDISP results before deciding whether follow-up is warranted.":"Report that overall community separation was not statistically supported. Improve balanced biological replication before retesting if this comparison remains important."));
+  var functionalStatus=functional.status==="absent"?"absent":functional.status;
+  var functionalSummary=functional.status==="absent"
+    ? "Predicted functional results are not available for this report."
+    : (functional.status==="supported"?functional.text:(functional.status==="unsupported"?"No predicted-function comparison passed FDR correction.":"Statistical support for predicted functions is unavailable."));
+  var functionalAction=functional.status==="supported"
+    ? "Shortlist FDR-supported predictions that are consistent across samples, then measure the relevant gene, transcript, metabolite, or biological activity directly."
+    : (functional.status==="absent"?"Define the functional question first. If function is central to the study, plan a direct measurement rather than relying on marker-gene inference.":(functional.status==="unavailable"?"Treat the predictions as descriptive until corrected comparison statistics are available, then select only a small number of biologically relevant endpoints for direct measurement.":"No predicted function was supported after correction. Use visible differences only to define focused hypotheses, and validate chosen endpoints with a direct assay rather than presenting predictions as measured activity."));
+  return [
+    {title:"Composition",section:"taxonomy",button:"Review Who Is There",status:taxonomy.status,summary:taxonomySummary,evidence:taxonomy.text,why:"Relative abundance describes each taxon as a share of the community, so one organism can appear to change when another organism changes. FDR correction reduces the chance of promoting a random result when many taxa are tested, but even a supported association does not prove causation.",action:taxonomyAction},
+    {title:"Within-sample diversity",section:"alpha",button:"Review Within Samples",status:alpha.status,summary:alphaSummary,evidence:alpha.text,why:"Alpha diversity condenses richness and/or evenness within each sample into a metric. Groups can look different in a chart because of a few samples or natural variation, so the matching group test—not visual separation alone—determines statistical support.",action:alphaAction},
+    {title:"Between-sample diversity",section:"beta",button:"Review Sample Comparison",status:beta.status,summary:betaSummary,evidence:betaEvidence.length?betaEvidence.join(" · ")+".":beta.text,why:"PERMANOVA asks whether group labels explain overall community distances. PERMDISP checks whether one group is simply more scattered; when spread differs, apparent separation may reflect inconsistency within groups rather than a clean shift between group centres.",action:betaAction},
+    {title:"Predicted functions",section:functionalAvailable?"functional":"pipeline",button:functionalAvailable?"Review Predicted Functions":"Review Workflow",status:functionalStatus,summary:functionalSummary,evidence:functional.status==="absent"?"Functional prediction was not included in this report.":functional.text,why:"PICRUSt2 infers functional potential from marker genes and nearby reference genomes. It does not measure whether a gene is present in every organism, expressed, translated, or producing an active metabolite, so direct validation is essential for biological claims.",action:functionalAction}
+  ];
+}
+function suggestionPlanModel(d,items){
+  var active=items.filter(function(item){return item.status!=="absent";}),supported=active.filter(function(item){return item.status==="supported";}),warnings=active.filter(function(item){return item.status==="warning";}),exploratory=active.filter(function(item){return item.status==="exploratory";}),unsupported=active.filter(function(item){return item.status==="unsupported";}),unavailable=active.filter(function(item){return item.status==="unavailable";}),design=resultStudyDesign(d);
+  var tone,label,title,statement,trustText;
+  if(warnings.length){
+    tone="warning";label="Caution before interpretation";title="Resolve a limitation before using the strongest result";
+    statement=readableList(warnings.map(function(item){return item.title;}))+" requires review first. "+warnings.map(function(item){return item.summary;}).join(" ");
+    if(supported.length)statement+=" Statistical support is also available for "+readableList(supported.map(function(item){return item.title.toLowerCase();}))+".";
+    trustText="The test found a difference, but the report also found a reason for caution. Check whether unequal group spread, another study factor, or a small number of samples could explain the result.";
+  }else if(supported.length){
+    tone="supported";label="Supported findings available";title="Prioritize the supported results, then confirm them independently";
+    statement="Statistical support is available for "+readableList(supported.map(function(item){return item.title.toLowerCase();}))+". Other visible patterns should retain their exploratory, unsupported, or unavailable labels.";
+    trustText="The test found evidence of a difference. Before drawing a conclusion, check how large the difference is, whether several samples show it, and whether the study design provides a fair comparison.";
+  }else if(exploratory.length){
+    tone="exploratory";label="Exploratory only";title="Use the visible signals to define the next test—not as final conclusions";
+    statement="No loaded result provides firm statistical support. "+readableList(exploratory.map(function(item){return item.title;}))+" contains an exploratory signal that requires stronger evidence.";
+    trustText="The pattern is an early lead, not a confirmed difference. Add more balanced biological samples and repeat the same planned test.";
+  }else if(unsupported.length){
+    tone="unsupported";label="No supported differences";title="Keep the current report descriptive";
+    statement="The tested result areas do not provide statistical support for a group difference."+(unavailable.length?" Support could not be assessed for "+readableList(unavailable.map(function(item){return item.title.toLowerCase();}))+".":"");
+    trustText="The tests did not find clear evidence of a difference. This is still a useful result, but it does not prove that the groups are identical. The number of samples and the variation between them affect what the study could detect.";
+  }else{
+    tone="unavailable";label="Statistical support incomplete";title="Complete the matching tests before drawing group-level conclusions";
+    statement="The available result pages do not contain enough matching statistical evidence to assess group differences reliably.";
+    trustText="The report does not include the statistical test needed for this comparison. Use the chart to describe what is visible, but do not claim that the groups differ.";
+  }
+  var facts=[fmtNum(design.total)+" samples",fmtNum(design.positive.length)+" "+groupingUnitLabel(d),fmtNum(supported.length)+" supported result area"+(supported.length===1?"":"s")];
+  if(warnings.length)facts.push(fmtNum(warnings.length)+" result area"+(warnings.length===1?"":"s")+" requiring review");
+  if(unavailable.length)facts.push(fmtNum(unavailable.length)+" result area"+(unavailable.length===1?"":"s")+" with unavailable support");
+  return {tone:tone,label:label,title:title,statement:statement,trustText:trustText,designCount:design.countText,designGuidance:design.guidance,facts:facts};
+}
+function suggestionHero(plan){
+  return '<section class="suggestion-hero" data-tone="'+esc(plan.tone)+'"><div class="suggestion-hero-top"><span class="suggestion-hero-kicker">Current report</span><span class="suggestion-status">'+esc(plan.label)+'</span></div><h2>'+esc(plan.title)+'</h2><p class="suggestion-hero-statement">'+esc(plan.statement)+'</p><div class="suggestion-facts">'+plan.facts.map(function(fact){return '<span>'+esc(fact)+'</span>';}).join("")+'</div></section>';
+}
+function suggestionDecisionStage(label,title,body,tone,extra){
+  return '<div class="suggestion-decision-stage"'+(tone?' data-tone="'+esc(tone)+'"':'')+'><span class="suggestion-decision-stage-label">'+esc(label)+'</span><h4>'+esc(title)+'</h4>'+(body?'<p>'+esc(body)+'</p>':'')+(extra||'')+'</div>';
+}
+function suggestionDecisionArrow(){
+  return '<div class="suggestion-decision-arrow" aria-hidden="true">→</div>';
+}
+function suggestionDecisionFlow(plan){
+  var outcomes='<div class="suggestion-outcomes">'+
+    '<span class="suggestion-outcome"><i class="suggestion-outcome-dot"></i><span><b>Supported</b> — the statistical test found evidence of a difference.</span></span>'+
+    '<span class="suggestion-outcome" data-tone="unsupported"><i class="suggestion-outcome-dot"></i><span><b>Not supported</b> — the test did not find clear evidence of a difference.</span></span>'+
+    '<span class="suggestion-outcome" data-tone="unavailable"><i class="suggestion-outcome-dot"></i><span><b>Cannot assess</b> — the report does not include the test needed to decide.</span></span></div>';
+  var actions='<div class="suggestion-action-list">'+
+    '<span><b>Report it:</b> say what changed, by how much, and what the study cannot prove.</span>'+
+    '<span><b>Check the cause:</b> look for sample, environment, batch, or group-balance problems.</span>'+
+    '<span><b>Collect better evidence:</b> add balanced biological samples and repeat the same analysis.</span>'+
+    '<span><b>Test for similarity:</b> use an equivalence test if you need to show that the groups are meaningfully alike.</span></div>';
+  return '<section class="suggestion-decision" aria-labelledby="suggestion-decision-title">'+
+    '<div class="suggestion-section-head suggestion-decision-head"><h2 id="suggestion-decision-title">How to decide what to do next</h2><p>Use these steps for each result. A non-significant result is not a failed result, and a significant result still needs careful checking.</p></div>'+
+    '<div class="suggestion-decision-board">'+
+      '<article class="suggestion-decision-row"><div class="suggestion-decision-step"><span>1</span></div><div class="suggestion-decision-summary"><b>Read</b><h3>Start with the statistical test</h3><p>Look at the test that belongs to the chart. The chart alone cannot tell you whether a difference is reliable.</p></div>'+
+        suggestionDecisionStage('Use','The matching statistical test','When many features were tested, use the corrected p-value.')+suggestionDecisionArrow()+
+        suggestionDecisionStage('Ask','Does the report include this test?','If the test is missing, describe the chart only. Do not claim a group difference.','decision')+suggestionDecisionArrow()+
+        suggestionDecisionStage('Choose','Give the result one clear label','', 'output',outcomes)+'</article>'+
+      '<article class="suggestion-decision-row"><div class="suggestion-decision-step"><span>2</span></div><div class="suggestion-decision-summary"><b>Check</b><h3>Make sure the result is reliable</h3><p>One p-value is not enough. Check whether the size and pattern of the difference make sense.</p></div>'+
+        suggestionDecisionStage('Look','Check the size and direction','Ask what changed, by how much, and whether most samples show the same pattern.')+suggestionDecisionArrow()+
+        suggestionDecisionStage('Check','Could something else explain it?','Look for unequal group sizes, wide variation, batch effects, environmental differences, or one sample driving the result.','caution')+suggestionDecisionArrow()+
+        suggestionDecisionStage('For this report','Keep the correct limit',plan.trustText,'output')+'</article>'+
+      '<article class="suggestion-decision-row suggestion-branch-row"><div class="suggestion-decision-step"><span>3</span></div><div class="suggestion-decision-summary"><b>Compare</b><h3>Is this what you expected before looking at the results?</h3><p>Use the study question written before the analysis. Do not change the expectation to match the chart.</p></div><div class="suggestion-branch-grid">'+
+        '<section class="suggestion-branch" data-kind="expected"><div class="suggestion-branch-head"><b>Yes — the result is what you expected</b><span>Report it clearly, but do not claim more than the test shows.</span></div><div class="suggestion-branch-case"><b>You expected a difference, and the test found one</b>Say which group was higher or lower and how large the difference was. Check that several samples—not just one—show the pattern. Then repeat the study with new biological samples.</div><div class="suggestion-branch-case"><b>You expected similar groups, and the test found no clear difference</b>Say, “The test did not detect a difference.” Do not say the groups are the same unless a separate equivalence test supports that claim.</div></section>'+
+        '<section class="suggestion-branch" data-kind="unexpected"><div class="suggestion-branch-head"><b>No — the result was unexpected</b><span>Find out why before changing the biological conclusion.</span></div><div class="suggestion-branch-case"><b>You expected a difference, but the test did not find one</b>Report that the expected difference was not detected. Check whether there were too few samples, large differences between samples, or an effect too small for this study to detect.</div><div class="suggestion-branch-case"><b>You did not expect a difference, but the test found one</b>Check the sample information, environment, processing batch, group balance, group spread, and whether one sample drives the result. Look for published studies that could explain the unexpected pattern. Then repeat the study with more independent, well-documented biological samples, correcting any verified sampling or metadata errors first. Do not remove a sample simply to make the result significant.</div></section>'+
+      '</div></article>'+
+      '<article class="suggestion-decision-row"><div class="suggestion-decision-step"><span>4</span></div><div class="suggestion-decision-summary"><b>Act</b><h3>Choose one useful next step</h3><p>Focus on the main uncertainty. Do not follow up every small difference visible in a chart.</p></div>'+
+        suggestionDecisionStage('Start with','The result and study design','Current design: '+plan.designCount+'. '+plan.designGuidance)+suggestionDecisionArrow()+
+        suggestionDecisionStage('Decide','What is still uncertain?','Is the finding reliable, could another factor explain it, or do you need to test whether the groups are similar?','decision')+suggestionDecisionArrow()+
+        suggestionDecisionStage('Do next','Choose the matching action','', 'output',actions)+'</article>'+
+    '</div></section>';
+}
+function suggestionEvidencePanel(items){
+  var rows=items.map(function(item){return '<article class="suggestion-domain" data-tone="'+esc(item.status)+'"><div class="suggestion-domain-title"><h3>'+esc(item.title)+'</h3><span class="suggestion-status">'+esc(suggestionStatusLabel(item.status))+'</span></div><div class="suggestion-domain-copy"><p><b>What this supports:</b> '+esc(item.summary)+'</p><p class="suggestion-domain-evidence"><b>Reported evidence:</b> '+esc(item.evidence)+'</p><p><b>Why this matters:</b> '+esc(item.why)+'</p><p><b>Next check:</b> '+esc(item.action)+'</p></div><button class="btn btn-ghost btn-sm" type="button" data-sec="'+esc(item.section)+'">'+esc(item.button)+'</button></article>';}).join("");
+  return '<details class="suggestion-evidence"><summary><span>Result-specific evidence<span class="suggestion-evidence-subtitle">Open the rationale and next check for each analysis area</span></span></summary><div class="suggestion-evidence-body">'+rows+'</div></details>';
+}
+function secSuggestions(){
+  var d=ds(),items=suggestionSummaryItems(d);
+  var html=head("Next steps","Suggestions","A prioritized plan for reporting, strengthening, and validating the findings.");
+  if(reportTablesLoading()){
+    html+=reportTablesLoadingPanel("suggestions");
+    html+=nextBar();
+    return html;
+  }
+  var plan=suggestionPlanModel(d,items);
+  html+=suggestionHero(plan);
+  html+=suggestionDecisionFlow(plan);
+  html+=suggestionEvidencePanel(items);
   html+=nextBar();
   return html;
 }
@@ -9738,7 +9963,7 @@ function plotFlowGroups(){
     {input:["o1_qc/read_depth_summary.tsv"],tool:"Released read-depth summary + Matplotlib",method:"Read-depth QC summary",note:"Per-sample raw, filtered, feature-assigned and final retained-read counts from the released summary are plotted as a QC figure.",outputs:["o6_figures/read_depth_summary.png"]},
     {input:["o4_diversity/faith_pd.tsv"],support:["raw/master_group/o_phylogeny/tree.nwk","input_data/metadata.tsv"],tool:"Faith PD output + seaborn boxplot",method:"Faith PD alpha diversity",note:"Faith phylogenetic-diversity values derived using the rooted tree are joined to metadata and grouped by sample category.",outputs:["o6_figures/alpha_faith_pd_boxplot.png"]},
     {input:["o4_diversity/alpha_group_test.tsv","o4_diversity/phylogenetic_diversity_summary.tsv"],support:["input_data/metadata.tsv"],tool:"Kruskal-Wallis results",method:"Alpha diversity statistics",note:"Shannon, Simpson, and observed-feature p-values are read from the released alpha group-test table; the Faith PD p-value is read from the released phylogenetic-diversity summary.",outputs:["o4_diversity/alpha_group_test.tsv","o4_diversity/phylogenetic_diversity_summary.tsv"]},
-    {input:["o1_qc/rarefaction_adequacy.tsv"],support:["o1_qc/selected_sampling_depth.tsv"],tool:"Sampling-depth adequacy output + Matplotlib",method:"Rarefaction-depth adequacy",note:"Per-sample final feature-table depth is compared with the selected rarefaction depth; this is an adequacy check, not an alpha-rarefaction series.",outputs:["o6_figures/alpha_rarefaction_curve.png"]},
+    {input:["Pipeline rarefaction series (numeric source not included in the released report)"],support:["o1_qc/rarefaction_adequacy.tsv","o1_qc/selected_sampling_depth.tsv"],tool:"Released per-sample rarefaction series + Matplotlib",method:"Alpha rarefaction curves and sampling-depth adequacy",note:"The released figure shows observed features across subsampling depths. The adequacy and selected-depth tables separately report the chosen depth and sample inclusion; they support interpretation but are not the numeric source used to construct the full curves.",outputs:["o6_figures/alpha_rarefaction_curve.png"]},
     {input:["o4_diversity/alpha_diversity.tsv"],support:["input_data/metadata.tsv"],tool:"Released alpha-diversity output + seaborn boxplots",method:"Shannon and Simpson alpha diversity",note:"Per-sample Shannon and Simpson values are grouped using released metadata and plotted as separate boxplots.",outputs:["o6_figures/alpha_shannon_boxplot.png","o6_figures/alpha_simpson_boxplot.png"]},
     {input:["o4_diversity/pcoa_coordinates.tsv"],support:["o4_diversity/beta_braycurtis_distance.tsv","o4_diversity/permanova.tsv","o4_diversity/permdisp.tsv","input_data/metadata.tsv"],tool:"QIIME 2 Bray-Curtis/PCoA output + vegan statistics + Python plotting",method:"Bray-Curtis distance, PCoA, PERMANOVA and PERMDISP",note:"QIIME 2 Bray-Curtis PCoA coordinates are plotted by group; PERMANOVA and PERMDISP results come from vegan::adonis2 and vegan::betadisper.",outputs:["o6_figures/beta_pcoa.png (+ o4_diversity copy)"]},
     {input:["o4_diversity/unweighted_unifrac_pcoa_coordinates.tsv"],support:["o4_diversity/unweighted_unifrac_distance.tsv","raw/master_group/o_phylogeny/tree.nwk","input_data/metadata.tsv"],tool:"QIIME 2 unweighted UniFrac/PCoA output + Python plotting",method:"Unweighted UniFrac ordination",note:"Presence/absence-based phylogenetic distances are ordinated using PCoA.",outputs:["o6_figures/beta_unweighted_unifrac_pcoa.png (+ o4_diversity copy)"]},
@@ -10099,10 +10324,14 @@ var METRIC_GUIDE=[
   {metric:"Observed features",rule:"Counts how many distinct sequence features were detected after report-level filtering.",note:"More observed features means higher richness, but it depends on read depth, filtering, and the feature-building method. Treat richness differences cautiously unless sample depth and category replication support the pattern."},
   {metric:"Rarefaction",rule:"Plots detected features as sequencing depth increases. A curve that approaches a plateau suggests that additional reads would add relatively few new features; a curve still rising steeply suggests incomplete sampling.",note:"Rarefaction is a sequencing-depth adequacy check, not evidence that metadata groups differ biologically. Compare curve shape and final depth across samples before interpreting richness differences."},
   {metric:"Simpson",rule:"Higher Simpson values indicate less dominance by one or a few taxa.",note:"Use it with Shannon and observed ASVs rather than alone. If Simpson changes but other diversity metrics do not, treat the result as a dominance pattern to inspect rather than a full diversity conclusion."},
+  {metric:"Faith PD",rule:"Adds the phylogenetic branch lengths connecting the organisms detected in a sample. Higher values represent greater evolutionary breadth.",note:"Faith PD depends on the rooted tree and the organisms retained by the workflow. Compare values within the same analysis; there is no universal high or low threshold."},
   {metric:"Sample diversity range",rule:"The summary identifies the individual samples with the highest and lowest value for the selected alpha-diversity metric and reports the full sample range.",note:"This is a descriptive sample-level observation, not evidence that metadata categories differ. Check sequencing depth and the plotted values before interpreting an unusually high or low sample."},
   {metric:"Alpha statistical context",rule:"Statistical support comes from the matching alpha-diversity group test, using the adjusted p-value when available and the raw p-value otherwise.",note:"Supported means the matching p-value is below 0.05. An exploratory or unsupported result should not be presented as a confirmed metadata-category diversity difference, even when individual samples look different."}
  ]},
  {section:"Between samples: beta diversity",intro:"How whole-community similarity and selected-category separation are judged.",rules:[
+  {metric:"Bray–Curtis",rule:"Compares the abundance profile of every detected microbial type without using evolutionary relationships. A distance of 0 means identical profiles; larger distances mean less similar profiles.",note:"Bray–Curtis is sensitive to abundance differences. Two samples can contain many of the same organisms but remain far apart when their proportions differ."},
+  {metric:"Unweighted UniFrac",rule:"Compares which branches of the microbial phylogenetic tree are present. It uses presence or absence rather than abundance.",note:"Rare detected lineages can affect unweighted UniFrac as much as common lineages. Use it when lineage gain or loss matters."},
+  {metric:"Weighted UniFrac",rule:"Compares phylogenetic branches while also weighting them by abundance.",note:"Dominant lineages influence weighted UniFrac more strongly than rare lineages. It is useful for abundance shifts that also account for evolutionary relatedness."},
   {metric:"PCoA distance",rule:"Points closer together have more similar community composition under the selected distance metric.",note:"Use the plotted positions descriptively, then check PERMANOVA and PERMDISP before calling a metadata-category difference statistically supported."},
   {metric:"Displayed group pattern",rule:"The chart observations compare group centres and summarize each group's mean sample-to-centre spread on the displayed PCoA axes.",note:"These are descriptive two-dimensional positions, not statistical tests between two groups. Use PERMANOVA for the overall group effect and PERMDISP for differences in within-group spread."},
   {metric:"Direct group comparison",rule:"Each eligible group pair is tested directly with PERMANOVA on the original distance matrix; R² summarizes effect size and the p-values are FDR-adjusted when more than two groups are compared.",note:"A visual gap or non-overlapping ellipse is not enough to call two groups different. The portal labels the strongest comparison as supported only when its FDR-adjusted p-value is below 0.05."},
@@ -10606,7 +10835,7 @@ function wrapSectionBody(content){
 }
 
 /* ---------------- render & wire ---------------- */
-var RENDER={welcome:secWelcome,overall:secOverall,pipeline:secPipeline,taxonomy:secTaxonomy,alpha:secAlpha,beta:secBeta,functional:secFunctional,flow:secFlow,learning:secLearning,metrics:secMetrics,glossary:secGlossary};
+var RENDER={welcome:secWelcome,overall:secOverall,pipeline:secPipeline,taxonomy:secTaxonomy,alpha:secAlpha,beta:secBeta,functional:secFunctional,suggestions:secSuggestions,flow:secFlow,learning:secLearning,metrics:secMetrics,glossary:secGlossary};
 var MOUNT={
   alpha:function(){renderAlphaRead();},
   beta:function(){renderBetaStatsAndRead();},
@@ -10646,6 +10875,17 @@ function showSection(id,opts){
   wireSectionButtons();
   hydrateChartObservationPanels();
   window.scrollTo({top:(opts.preserveScroll||sameSection)?keepY:0,behavior:"auto"});
+  focusPresentationPanel(id);
+}
+function focusPresentationPanel(id){
+  if(!PRESENTATION_REQUEST.panel)return;
+  setTimeout(function(){
+    var details=id==="beta"?$("[data-beta-advanced-details]"):id==="alpha"?$("[data-alpha-advanced-details]"):null;
+    if(!details)return;
+    details.open=true;
+    var heading=Array.from(details.querySelectorAll("h3")).filter(function(node){return /Sensitivity analysis/i.test(node.textContent||"");})[0];
+    (heading||details).scrollIntoView({behavior:"auto",block:"start"});
+  },0);
 }
 function closeDiversityViewMenus(except){
   $$('[data-diversity-view-picker]').forEach(function(picker){
@@ -10671,9 +10911,35 @@ function wireBhCorrectionGuides(){
     show(0);
   });
 }
+function removeAlphaStatTooltip(){
+  var tooltip=document.querySelector(".alpha-stat-tooltip");
+  if(tooltip)tooltip.remove();
+  $$('[data-tooltip][aria-describedby]').forEach(function(target){target.removeAttribute('aria-describedby');});
+}
+function wireAlphaStatHelp(){
+  removeAlphaStatTooltip();
+  $$('[data-tooltip]',$('#content')).forEach(function(target,index){
+    function show(){
+      removeAlphaStatTooltip();
+      var tooltip=document.createElement('div'),id='alpha-stat-tooltip-'+index,rect=target.getBoundingClientRect();
+      tooltip.id=id;tooltip.className='alpha-stat-tooltip';tooltip.setAttribute('role','tooltip');tooltip.textContent=target.dataset.tooltip;
+      document.body.appendChild(tooltip);
+      var width=tooltip.offsetWidth,height=tooltip.offsetHeight,left=Math.max(12,Math.min(window.innerWidth-width-12,rect.left+rect.width/2-width/2)),top=rect.bottom+8;
+      if(top+height>window.innerHeight-12)top=Math.max(12,rect.top-height-8);
+      tooltip.style.left=left+'px';tooltip.style.top=top+'px';target.setAttribute('aria-describedby',id);
+    }
+    target.addEventListener('mouseenter',show);
+    target.addEventListener('mouseleave',removeAlphaStatTooltip);
+    target.addEventListener('focus',show);
+    target.addEventListener('blur',removeAlphaStatTooltip);
+    target.addEventListener('click',show);
+    target.addEventListener('keydown',function(event){if(event.key==='Escape'){removeAlphaStatTooltip();target.blur();}});
+  });
+}
 function wireSectionButtons(){
   wireReleasedChartLoadState();
   wireBhCorrectionGuides();
+  wireAlphaStatHelp();
   $$('[data-alpha-view]',$('#content')).forEach(function(button){
     button.addEventListener('click',function(){
       state.alphaView=button.dataset.alphaView==='example'?'example':'report';
@@ -10830,11 +11096,9 @@ function wireSectionButtons(){
   $$('[data-diversity-view-step]',$('#content')).forEach(function(button){button.addEventListener('click',function(){
     var panel=button.closest('[data-chart-kind]'),kind=panel&&panel.dataset.chartKind;
     if(!kind)return;
-    var choices=diversityFigureChoices(kind),all=choices.concat([{kind:'what-next',index:-1}]);
+    var choices=diversityFigureChoices(kind),all=choices;
     if(!all.length)return;
-    var current=state.chartView[kind]==='what-next'
-      ? all.length-1
-      : all.findIndex(function(choice){return choice.kind==='chart'&&choice.index===(state.chartIndex[kind]||0);});
+    var current=all.findIndex(function(choice){return choice.kind==='chart'&&choice.index===(state.chartIndex[kind]||0);});
     if(current<0)current=0;
     var next=(current+parseInt(button.dataset.diversityViewStep,10)+all.length)%all.length,choice=all[next];
     state.chartView[kind]=choice.kind;
@@ -10962,10 +11226,10 @@ function wireSectionButtons(){
     if(matrix)betaSelfState.selected[metric]=matrix.ids.slice();
     showSection(state.section,{preserveScroll:true});
   });});
-  $$("[data-beta-self-details]",$("#content")).forEach(function(details){details.addEventListener("toggle",function(){
+  $$("[data-beta-self-details],[data-beta-advanced-details]",$("#content")).forEach(function(details){details.addEventListener("toggle",function(){
     betaSelfState.open=details.open;
   });});
-  $$("[data-alpha-self-details]",$("#content")).forEach(function(details){details.addEventListener("toggle",function(){
+  $$("[data-alpha-self-details],[data-alpha-advanced-details]",$("#content")).forEach(function(details){details.addEventListener("toggle",function(){
     alphaSelfState.open=details.open;
   });});
   $$("[data-functional-details]",$("#content")).forEach(function(details){details.addEventListener("toggle",function(){
@@ -10983,7 +11247,7 @@ function wireSectionButtons(){
     showSection(state.section,{preserveScroll:true});
   });});
   $$("[data-self-experiment-download]",$("#content")).forEach(function(button){button.addEventListener("click",function(){
-    downloadSelfExperimentPlots(button.dataset.selfExperimentDownload);
+    downloadSelfExperimentPlots(button.dataset.selfExperimentDownload,button.dataset.downloadFormat);
   });});
   $$("[data-chart-size]",$("#content")).forEach(function(input){input.addEventListener("input",function(){
     state.chartWidth=chartWidthValueFrom(input.value);
@@ -11504,12 +11768,28 @@ function updateRailMeta(){
   $("#rail-sub").textContent=site+" · "+(d.samples||[]).length+" samples";
   $("#top-report-label").textContent="Report "+(d.reportCode || "example");
 }
+function applyPresentationRequest(){
+  state.alphaView=PRESENTATION_REQUEST.view;
+  state.betaView=PRESENTATION_REQUEST.view;
+  if(PRESENTATION_REQUEST.metric){
+    betaState.metric=PRESENTATION_REQUEST.metric;
+    betaSelfState.metric=PRESENTATION_REQUEST.metric;
+    var metricChoice=diversityFigureChoices("beta").filter(function(item){return betaMetricForFigure(ds(),item.file)===PRESENTATION_REQUEST.metric;})[0];
+    if(metricChoice)state.chartIndex.beta=metricChoice.index;
+  }
+  if(PRESENTATION_REQUEST.panel==="sensitivity"){
+    if(PRESENTATION_REQUEST.section==="alpha")alphaSelfState.open=true;
+    if(PRESENTATION_REQUEST.section==="beta")betaSelfState.open=true;
+  }
+  return PRESENTATION_REQUEST.section;
+}
 function enterApp(isDemo){
   $("#gate").style.display="none";
   $("#app").classList.add("on");
+  if(PRESENTATION_REQUEST.embed)$("#app").classList.add("rail-collapsed");
   document.body.style.background="";
   setChatOpen(false);
-  buildAssaySelect();updateRailMeta();renderNav();showSection("welcome");
+  buildAssaySelect();updateRailMeta();renderNav();showSection(applyPresentationRequest());
 }
 
 async function openGateReport(v){
@@ -11611,6 +11891,14 @@ document.addEventListener("click",function(e){
 $("#nav").addEventListener("click",function(e){var b=e.target.closest("[data-sec]");if(b){showSection(b.dataset.sec);if(window.innerWidth<=920){$("#rail").classList.remove("open");updateMenuToggleState();}}});
 window.addEventListener("resize",updateMenuToggleState);
 updateMenuToggleState();
+
+if(PRESENTATION_REQUEST.example){
+  var autoStatus=$("#gate-status");
+  if(autoStatus){autoStatus.textContent="Opening bundled example report.";autoStatus.className="gate-status";}
+  openLocalExample().then(function(){enterApp(true);}).catch(function(err){
+    if(autoStatus){autoStatus.textContent=err.message;autoStatus.className="gate-status err";}
+  });
+}
 
 })();
 </script>

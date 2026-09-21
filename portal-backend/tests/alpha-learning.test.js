@@ -5,6 +5,8 @@ import vm from "node:vm";
 
 const portalPath = new URL("../../client-portal.html", import.meta.url);
 const portalHtml = fs.readFileSync(portalPath, "utf8");
+const serverPath = new URL("../server.js", import.meta.url);
+const serverSource = fs.readFileSync(serverPath, "utf8");
 const startMarker = "/* ALPHA_LEARNING_CORE_START */";
 const endMarker = "/* ALPHA_LEARNING_CORE_END */";
 const start = portalHtml.indexOf(startMarker);
@@ -16,6 +18,16 @@ assert.ok(end > start, "alpha-learning core end marker follows its start");
 const context = {};
 vm.createContext(context);
 vm.runInContext(portalHtml.slice(start + startMarker.length, end), context);
+
+const statsStartMarker = "/* ALPHA_STATS_CORE_START */";
+const statsEndMarker = "/* ALPHA_STATS_CORE_END */";
+const statsStart = portalHtml.indexOf(statsStartMarker);
+const statsEnd = portalHtml.indexOf(statsEndMarker);
+assert.ok(statsStart >= 0, "alpha-statistics core start marker is present");
+assert.ok(statsEnd > statsStart, "alpha-statistics core end marker follows its start");
+const statsContext = {};
+vm.createContext(statsContext);
+vm.runInContext(portalHtml.slice(statsStart + statsStartMarker.length, statsEnd), statsContext);
 
 test("alpha-learning distributions remain normalized and respond to dominance", () => {
   const even = context.alphaLearningDistribution(4, 0);
@@ -131,4 +143,120 @@ test("the lesson provides a selected-metric handoff to real report results", () 
   assert.match(portalHtml, />Return<\/button>/);
   assert.doesNotMatch(portalHtml, />Return to Report<\/button>/);
   assert.doesNotMatch(portalHtml, />See ['"]?\+esc\(copy\.title\)/);
+});
+
+test("derived Kruskal-Wallis effect size is epsilon-squared and never labelled eta-squared", () => {
+  const effect = statsContext.alphaKruskalEpsilonSquared(0.08888888888888857, 9);
+  assert.ok(Math.abs(effect - 0.011111111111111071) < 1e-12);
+  assert.equal(statsContext.alphaKruskalEpsilonSquared(Number.NaN, 9), null);
+  assert.match(portalHtml, /Epsilon-squared \(ε²\)/);
+  assert.match(portalHtml, /Calculated · ε²/);
+  assert.match(portalHtml, /Reported effect size/);
+  assert.doesNotMatch(portalHtml, /rank eta-squared|Calculated · η/i);
+});
+
+test("sensitivity-analysis p-values never render a numeric zero", () => {
+  assert.equal(statsContext.alphaSelfPValue(0.0004), "<0.001");
+  assert.equal(statsContext.alphaSelfPValue(0.0124), "=0.012");
+  assert.equal(statsContext.alphaSelfPValue(null), "=Not estimable");
+});
+
+test("sensitivity plots can be downloaded as SVG or high-resolution PNG", () => {
+  assert.match(portalHtml, /data-download-format="svg">Download SVG/);
+  assert.match(portalHtml, /data-download-format="png">Download PNG/);
+  assert.match(portalHtml, /function downloadSvgMarkupAsPng\(filename,markup\)/);
+  assert.match(portalHtml, /canvas\.toBlob\(function\(blob\)/);
+  assert.match(
+    portalHtml,
+    /downloadSelfExperimentPlots\(button\.dataset\.selfExperimentDownload,button\.dataset\.downloadFormat\)/
+  );
+});
+
+test("the report keeps one collapsed advanced alpha disclosure after the chart", () => {
+  const sectionStart = portalHtml.indexOf("function secAlpha(){");
+  const sectionEnd = portalHtml.indexOf("function alphaVal", sectionStart);
+  const section = portalHtml.slice(sectionStart, sectionEnd);
+  assert.ok(section.indexOf("alphaResultSummaryPanel") < section.indexOf("releasedFigurePanel"));
+  assert.ok(section.indexOf("releasedFigurePanel") < section.indexOf("alphaAdvancedDetailsPanel"));
+  assert.doesNotMatch(section, /supplementFigureStack|alphaSupplementFigureForMetric/);
+  assert.match(portalHtml, /clinicalDetails\("Advanced alpha details"/);
+  assert.match(portalHtml, /All-metric statistical tests/);
+  assert.match(portalHtml, /Sensitivity analysis — not part of the released report/);
+  assert.match(portalHtml, /data-alpha-advanced-details/);
+});
+
+test("alpha details use header help and keep sample values below chart observations", () => {
+  const statsStart = portalHtml.indexOf("function alphaStatsPanel(");
+  const statsEnd = portalHtml.indexOf("function alphaSelfLogGamma(", statsStart);
+  const stats = portalHtml.slice(statsStart, statsEnd);
+  const advancedStart = portalHtml.indexOf("function alphaAdvancedDetailsPanel(");
+  const advancedEnd = portalHtml.indexOf("function betaSupportTone(", advancedStart);
+  const advanced = portalHtml.slice(advancedStart, advancedEnd);
+
+  assert.match(stats, /class="alpha-stat-help"/);
+  assert.match(stats, /data-tooltip="'\+esc\(c\.definition\)\+'"/);
+  assert.doesNotMatch(stats, /title="'\+esc\(c\.definition\)\+'"/);
+  assert.doesNotMatch(stats, /alpha-stat-definitions|Group comparisons across the available alpha-diversity metrics|Source files:/);
+  assert.match(advanced, /function alphaSampleValuesDetails/);
+  assert.match(advanced, /Values by Sample/);
+  assert.doesNotMatch(advanced, /Each sample’s displayed/);
+  assert.doesNotMatch(advanced, /<h3>'\+esc\(label\+" Values by Sample"\)/);
+  assert.doesNotMatch(advanced, /Current metric sample values|Review the released and clearly marked portal-calculated statistics/);
+  assert.match(portalHtml, /chartObservationPanel\(kind,selected\.file\)\+\(whatNextView\|\|""\)/);
+  assert.doesNotMatch(portalHtml, /Exploratory only; the released alpha-diversity results remain the report reference/);
+  assert.match(portalHtml, /function wireAlphaStatHelp\(\)/);
+  assert.match(portalHtml, /className='alpha-stat-tooltip'/);
+  assert.doesNotMatch(portalHtml, /Exploratory sensitivity analysis:<\/b> Excluding samples creates a new post-hoc calculation\. It must not replace the released analysis or be used to select a preferred p-value\./);
+  assert.match(portalHtml, /'\+checks\+'<button type="button" class="btn secondary" data-alpha-self-reset>/);
+});
+
+test("the rarefaction figure has its own Sampling Depth chart choice", () => {
+  assert.match(portalHtml, /rarefaction:"Sampling Depth"/);
+  assert.match(portalHtml, /byMetric\.rarefaction=\{kind:"chart",index:index,metric:"observed"/);
+  assert.match(portalHtml, /\["shannon","simpson","observed","faith","rarefaction"\]/);
+});
+
+test("the bundled example registers and summarizes its rarefaction evidence", () => {
+  const manifestPath = new URL("../../client_supplements/example1/manifest.json", import.meta.url);
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  const required = [
+    "output/o1_qc/rarefaction_adequacy.tsv",
+    "output/o1_qc/selected_sampling_depth.tsv",
+    "output/o6_figures/alpha_rarefaction_curve.png"
+  ];
+  const paths = manifest.files.map((file) => file.path);
+  required.forEach((requiredPath) => {
+    assert.ok(paths.includes(requiredPath), `${requiredPath} is present in the JSON manifest`);
+    assert.match(portalHtml, new RegExp(requiredPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  });
+
+  const adequacyPath = new URL("../../client_supplements/example1/output/o1_qc/rarefaction_adequacy.tsv", import.meta.url);
+  const lines = fs.readFileSync(adequacyPath, "utf8").trim().split(/\r?\n/);
+  const headers = lines[0].split("\t");
+  const rows = lines.slice(1).map((line) => Object.fromEntries(headers.map((header, index) => [header, line.split("\t")[index]])));
+  assert.equal(rows.length, 9);
+  assert.ok(rows.every((row) => row.adequacy === "adequate" && row.included_at_sampling_depth === "yes"));
+  assert.ok(rows.every((row) => row.sampling_depth === "800"));
+  const smallestMargin = rows.slice().sort((a, b) => Number(a.reads_above_depth) - Number(b.reads_above_depth))[0];
+  assert.equal(smallestMargin.sample_name, "APW61");
+  assert.equal(smallestMargin.reads_above_depth, "37");
+  assert.match(portalHtml, /support interpretation but are not the numeric source used to construct the full curves/);
+});
+
+test("backend manifest enrichment backfills rarefaction tables and merges missing figures", () => {
+  const figureStart = serverSource.indexOf("async function addInferredFigureFiles");
+  const figureEnd = serverSource.indexOf("async function addInferredAlphaFiles", figureStart);
+  const figureFunction = serverSource.slice(figureStart, figureEnd);
+  assert.match(serverSource, /import \{ mergeMissingManifestFiles \} from "\.\/manifest-utils\.js"/);
+  assert.match(figureFunction, /mergeMissingManifestFiles\(existingFigures, figures, figureDedupeKey\)/);
+  assert.match(figureFunction, /files: \[\.\.\.files, \.\.\.additions\]/);
+  assert.doesNotMatch(figureFunction, /files\.some\(isImageFile\)[\s\S]*return manifest/);
+
+  const alphaStart = figureEnd;
+  const alphaEnd = serverSource.indexOf("async function addInferredFunctionalDiffFiles", alphaStart);
+  const alphaFunction = serverSource.slice(alphaStart, alphaEnd);
+  assert.match(alphaFunction, /id: "rarefaction-adequacy"/);
+  assert.match(alphaFunction, /output\/o1_qc\/rarefaction_adequacy\.tsv/);
+  assert.match(alphaFunction, /id: "selected-sampling-depth"/);
+  assert.match(alphaFunction, /output\/o1_qc\/selected_sampling_depth\.tsv/);
 });

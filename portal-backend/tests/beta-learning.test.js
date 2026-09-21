@@ -66,3 +66,47 @@ test("beta learning controls and tabs are wired for mouse and keyboard use", () 
   assert.match(portalHtml, /event\.key==='ArrowRight'/);
   assert.match(portalHtml, /\$\$\('\[data-beta-learn-control\]'/);
 });
+
+test("beta report follows the same progressive-disclosure system as alpha", () => {
+  const betaSection = portalHtml.slice(
+    portalHtml.indexOf("function secBeta()"),
+    portalHtml.indexOf("function renderBetaStatsAndRead")
+  );
+
+  assert.match(
+    betaSection,
+    /releasedFigurePanel\("beta","Relationship map","",betaGroupDistanceDetails\(d,betaState\.metric\)\)/
+  );
+  assert.match(betaSection, /betaAdvancedDetailsPanel\(d\)/);
+  assert.doesNotMatch(betaSection, /betaSupplementFigurePanel\(/);
+  assert.doesNotMatch(betaSection, /clinicalDetails\("Group distance details"/);
+  assert.match(portalHtml, /data-beta-advanced-details/);
+  assert.match(portalHtml, /class="clinical-details beta-chart-distances"/);
+  assert.match(portalHtml, /betaSelfExperimentPanel\(d,\{bodyOnly:true\}\)/);
+  assert.match(
+    portalHtml,
+    /\[data-beta-self-details\],\[data-beta-advanced-details\]/
+  );
+});
+
+test("beta advanced details use the same clean container system as alpha", () => {
+  const tableStart = portalHtml.indexOf("function betaInspectionTable(");
+  const tableEnd = portalHtml.indexOf("function functionGroupValue", tableStart);
+  const table = portalHtml.slice(tableStart, tableEnd);
+  const selfStart = portalHtml.indexOf("function betaSelfExperimentPanel(");
+  const selfEnd = portalHtml.indexOf("function betaSelfPlotSvg", selfStart);
+  const self = portalHtml.slice(selfStart, selfEnd);
+
+  assert.doesNotMatch(table, /class="pattern-panel"/);
+  assert.doesNotMatch(table, /Whole-community centroid distances by/);
+  assert.doesNotMatch(self, /Exploratory sensitivity analysis|Samples to include/);
+  assert.match(self, /Distance metric <select data-beta-self-metric>/);
+  assert.match(
+    self,
+    /'\+checks\+'<button type="button" class="btn secondary" data-beta-self-reset>/
+  );
+  assert.match(
+    portalHtml,
+    /data-beta-advanced-details\]\[open\]>\.clinical-details-body\{[^}]*background:#fff/
+  );
+});

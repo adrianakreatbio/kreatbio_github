@@ -17,6 +17,7 @@ import {
 } from "./chat-context.js";
 import { createGcsSignedUrl } from "./gcs-signer.js";
 import { GcsReportAccessStore } from "./gcs-report-access-store.js";
+import { mergeMissingManifestFiles } from "./manifest-utils.js";
 import { parseEventRegistration, sendEventRegistration } from "./event-registration.js";
 import {
   buildOpenAIInputTokenBody,
@@ -1028,22 +1029,37 @@ function figureSourceTableId(base, relativePath) {
 
 async function addInferredFigureFiles(code, manifest) {
   const files = normalizeFiles(manifest);
-  if (files.some(isImageFile)) {
-    return manifest;
-  }
   const figures = await listFigureFiles(code);
   if (!figures.length) {
     return manifest;
   }
+  const existingFigures = files.filter(isImageFile);
+  const mergedFigures = mergeMissingManifestFiles(existingFigures, figures, figureDedupeKey);
+  const additions = mergedFigures.slice(existingFigures.length);
+  if (!additions.length) return manifest;
   return {
     ...manifest,
-    files: [...files, ...figures]
+    files: [...files, ...additions]
   };
 }
 
 async function addInferredAlphaFiles(code, manifest) {
   const files = normalizeFiles(manifest);
   const fallbacks = [
+    {
+      id: "rarefaction-adequacy",
+      name: "Rarefaction adequacy",
+      paths: ["output/o1_qc/rarefaction_adequacy.tsv"],
+      role: "qc",
+      roles: ["qc", "rarefaction", "summary", "table"]
+    },
+    {
+      id: "selected-sampling-depth",
+      name: "Selected sampling depth",
+      paths: ["output/o1_qc/selected_sampling_depth.tsv"],
+      role: "qc",
+      roles: ["qc", "sampling_depth", "table"]
+    },
     {
       id: "alpha-diversity",
       name: "Alpha diversity",

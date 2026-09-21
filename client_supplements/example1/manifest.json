@@ -19,6 +19,8 @@
   "report_pdf": {"fileId":"report-pdf","name":"Example report PDF","path":"output/report.pdf"},
   "files": [
     {"id":"metadata","name":"Sample metadata","path":"input_data/metadata.tsv","role":"metadata","type":"tsv"},
+    {"id":"rarefaction-adequacy","name":"Rarefaction adequacy","path":"output/o1_qc/rarefaction_adequacy.tsv","role":"qc","roles":["qc","rarefaction","summary","table"],"type":"tsv"},
+    {"id":"selected-sampling-depth","name":"Selected sampling depth","path":"output/o1_qc/selected_sampling_depth.tsv","role":"qc","roles":["qc","sampling_depth","table"],"type":"tsv"},
     {"id":"alpha-diversity","name":"Alpha diversity","path":"output/o4_diversity/alpha_diversity.tsv","role":"alpha_diversity","type":"tsv"},
     {"id":"alpha-group-test","name":"Alpha group tests","path":"output/o4_diversity/alpha_group_test.tsv","role":"alpha_stats","type":"tsv"},
     {"id":"faith-pd","name":"Faith PD","path":"output/o4_diversity/faith_pd.tsv","role":"alpha_diversity","type":"tsv"},
@@ -61,6 +63,7 @@
     {"id":"alpha-shannon-figure","name":"Shannon diversity","path":"output/o6_figures/alpha_kruskal_wallis.png","role":"figure","type":"png"},
     {"id":"alpha-faith-figure","name":"Faith PD diversity","path":"output/o6_figures/alpha_faith_pd_boxplot.png","role":"figure","type":"png"},
     {"id":"alpha-simpson-figure","name":"Simpson diversity","path":"output/o6_figures/alpha_simpson_boxplot.png","role":"figure","type":"png"},
+    {"id":"alpha-rarefaction-figure","name":"Alpha rarefaction curve","path":"output/o6_figures/alpha_rarefaction_curve.png","role":"figure","type":"png"},
     {"id":"beta-figure","name":"Bray-Curtis PCoA","path":"output/o6_figures/beta_pcoa.png","role":"figure","type":"png"},
     {"id":"beta-unweighted-figure","name":"Unweighted UniFrac PCoA","path":"output/o6_figures/beta_unweighted_unifrac_pcoa.png","role":"figure","type":"png"},
     {"id":"beta-weighted-figure","name":"Weighted UniFrac PCoA","path":"output/o6_figures/beta_weighted_unifrac_pcoa.png","role":"figure","type":"png"},
