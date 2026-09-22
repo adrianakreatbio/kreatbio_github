@@ -1,0 +1,11 @@
+metric	value
+ec_features	3027.0
+ko_features	9434.0
+pathway_features	552.0
+ec_contribution_rows	0.0
+ko_contribution_rows	0.0
+pathway_contribution_rows	0.0
+nsti_samples	10.0
+nsti_nonnull_samples	10.0
+nsti_mean	0.03931885785827096
+nsti_median	0.034392853548604156

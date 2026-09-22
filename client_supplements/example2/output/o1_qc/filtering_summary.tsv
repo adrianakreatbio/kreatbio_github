@@ -1,0 +1,11 @@
+sample_id	sample_name	group	raw_reads	post_trim_reads	cutadapt_dropped_reads	post_filter_reads	final_asv_table_reads	filter_retained_pct	overall_retained_pct	sampling_depth	adequacy
+SRR23380923	Subject_5_Saliva	saliva	88551	88537	14	67802	41668	76.5804	76.5683	30000	adequate
+SRR23380925	Subject_4_Saliva	saliva	75732	75716	16	58297	36234	76.9943	76.9780	30000	adequate
+SRR23380926	Subject_3_Saliva	saliva	77154	77139	15	59271	37443	76.8366	76.8217	30000	adequate
+SRR23380927	Subject_1_Saliva	saliva	95506	95487	19	72579	45691	76.0093	75.9942	30000	adequate
+SRR23380956	Subject_8_Feces	feces	187809	187786	23	156269	115338	83.2165	83.2063	30000	adequate
+SRR23380958	Subject_5_Feces	feces	335888	335875	13	280578	196991	83.5364	83.5332	30000	adequate
+SRR23380959	Subject_4_Feces	feces	314746	314728	18	261431	189186	83.0657	83.0609	30000	adequate
+SRR23380960	Subject_3_Feces	feces	380674	380636	38	310530	210091	81.5819	81.5737	30000	adequate
+SRR23380961	Subject_1_Feces	feces	76525	76508	17	64336	37547	84.0906	84.0719	30000	adequate
+SRR23381000	Subject_8_Saliva	saliva	117557	117532	25	88722	56216	75.4875	75.4715	30000	adequate

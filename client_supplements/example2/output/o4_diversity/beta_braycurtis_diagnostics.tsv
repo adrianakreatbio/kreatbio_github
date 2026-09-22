@@ -1,0 +1,34 @@
+metric	value
+sample_order	SRR23380923,SRR23380925,SRR23380926,SRR23380927,SRR23380956,SRR23380958,SRR23380959,SRR23380960,SRR23380961,SRR23381000
+metadata_aligned_sample_order	SRR23380923,SRR23380925,SRR23380926,SRR23380927,SRR23380956,SRR23380958,SRR23380959,SRR23380960,SRR23380961,SRR23381000
+metadata_missing_samples	none
+sample_order_matches_metadata	yes
+group_order	saliva,saliva,saliva,saliva,feces,feces,feces,feces,feces,saliva
+offdiag_count	45
+offdiag_nonzero_count	45
+offdiag_min	0.5073822467152248
+offdiag_median	0.981816956235992
+offdiag_max	0.9990770082761592
+offdiag_unique_rounded_6	43
+pcoa_positive_eigenvalue_count	9
+pcoa_eigenvalues	1.378100177,0.4110406629,0.383758564,0.3499713676,0.3145434678,0.2371771323,0.2113810695,0.1488430886,0.1169312494
+pcoa_pc1_fraction	0.388006314271399
+pcoa_pc2_fraction	0.11572915763264174
+permanova_group_column	group
+permanova_groups	2
+permanova_samples	10
+permanova_pseudo_f	4.98813581010222
+permanova_p_value	0.01
+permanova_permutations	999
+permanova_method	vegan::adonis2
+permanova_status	ok
+permanova_note	
+permdisp_group_column	group
+permdisp_groups	2
+permdisp_samples	10
+permdisp_f_value	3.71482676885089
+permdisp_p_value	0.086
+permdisp_permutations	999
+permdisp_method	vegan::betadisper
+permdisp_status	ok
+permdisp_note	

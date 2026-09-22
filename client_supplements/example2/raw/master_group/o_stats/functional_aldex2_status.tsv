@@ -1,0 +1,4 @@
+table	contrast	status	detail
+EC	feces_vs_saliva	ok_pairwise	rows= 2694
+KO	feces_vs_saliva	ok_pairwise	rows= 8375
+PATHWAY	feces_vs_saliva	ok_pairwise	rows= 502

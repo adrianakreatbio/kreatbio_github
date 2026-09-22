@@ -1,0 +1,4 @@
+metric	group_column	groups	samples	test	statistic	p_value	note
+observed_features	group	2	10	kruskal	6.818181818181813	0.009023438818080334	
+shannon	group	2	10	kruskal	3.152727272727269	0.07580017458236198	
+simpson	group	2	10	kruskal	1.3200000000000003	0.2505920506856808	

@@ -1,0 +1,11 @@
+sample_id	sample_name	group	post_filter_reads	final_asv_table_reads	sampling_depth	reads_above_depth	included_at_sampling_depth	adequacy
+SRR23380923	Subject_5_Saliva	saliva	67802	41668	30000	11668	yes	adequate
+SRR23380925	Subject_4_Saliva	saliva	58297	36234	30000	6234	yes	adequate
+SRR23380926	Subject_3_Saliva	saliva	59271	37443	30000	7443	yes	adequate
+SRR23380927	Subject_1_Saliva	saliva	72579	45691	30000	15691	yes	adequate
+SRR23380956	Subject_8_Feces	feces	156269	115338	30000	85338	yes	adequate
+SRR23380958	Subject_5_Feces	feces	280578	196991	30000	166991	yes	adequate
+SRR23380959	Subject_4_Feces	feces	261431	189186	30000	159186	yes	adequate
+SRR23380960	Subject_3_Feces	feces	310530	210091	30000	180091	yes	adequate
+SRR23380961	Subject_1_Feces	feces	64336	37547	30000	7547	yes	adequate
+SRR23381000	Subject_8_Saliva	saliva	88722	56216	30000	26216	yes	adequate

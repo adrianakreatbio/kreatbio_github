@@ -97,11 +97,12 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
 
 /* ================= GATE ================= */
 .gate{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr}
-.gate-visual{position:relative;overflow:hidden;background:linear-gradient(160deg,#06182F 0%,#0A2340 46%,#0C2C4A 100%);color:#EEF3F8;display:flex;flex-direction:column;padding:36px clamp(28px,4vw,64px)}
-.gate-visual .brand .k{color:#fff}
-.gate-visual .brand .b{color:#DCE9F7}
-.gate-mainpage-img{position:absolute;right:6%;bottom:4%;width:min(34%,320px);max-width:none;opacity:.9;filter:drop-shadow(0 32px 52px rgba(0,0,0,.34));animation:login-float 18s ease-in-out infinite;transform-origin:50% 60%}
-.gate-visual::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 44%,rgba(122,214,255,.16),transparent 36%),linear-gradient(98deg,rgba(4,16,33,.94) 0%,rgba(5,20,40,.72) 42%,rgba(6,24,47,.22) 74%,rgba(6,24,47,.05) 100%),linear-gradient(0deg,rgba(4,16,33,.5) 0%,transparent 30%);pointer-events:none}
+.gate-visual{position:relative;overflow:hidden;background:linear-gradient(145deg,#F4F7F4 0%,#E8F0EC 52%,#DCE8E5 100%);color:#17363C;display:flex;flex-direction:column;padding:36px clamp(28px,4vw,64px);border-right:1px solid #CADBD6}
+.gate-visual .brand .k{color:#17363C}
+.gate-visual .brand .b{color:#55706F}
+.gate-mainpage-img{position:absolute;right:5%;bottom:3%;width:min(35%,330px);max-width:none;opacity:.82;filter:drop-shadow(0 28px 46px rgba(33,65,63,.2));animation:login-float 18s ease-in-out infinite;transform-origin:50% 60%}
+.gate-visual::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 40%,rgba(91,154,143,.2),transparent 32%),linear-gradient(rgba(42,105,99,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(42,105,99,.055) 1px,transparent 1px),linear-gradient(105deg,rgba(255,255,255,.78) 0%,rgba(255,255,255,.34) 48%,transparent 76%);background-size:auto,38px 38px,38px 38px,auto;pointer-events:none}
+.gate-visual::after{content:"";position:absolute;left:clamp(28px,4vw,64px);bottom:36px;width:72px;height:4px;border-radius:99px;background:#2D8179;box-shadow:84px 0 0 #9BBDB5;pointer-events:none}
 @keyframes login-float{
   0%{transform:translate3d(0,0,0) scale(1)}
   25%{transform:translate3d(-24px,-16px,0) scale(1.02)}
@@ -110,21 +111,24 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em}
   100%{transform:translate3d(0,0,0) scale(1)}
 }
 .gate-copy{position:relative;z-index:1;margin:auto 0;min-height:80%;width:min(560px,94%);max-width:none;padding:clamp(8px,2vw,24px) 0;background:transparent;display:flex;flex-direction:column;justify-content:center}
-.gate-copy .micro-kicker{display:inline-flex;align-items:center;gap:11px;color:#8FD6E8;font-size:clamp(.7rem,.9vw,.82rem);font-weight:800;letter-spacing:.22em;text-transform:uppercase}
-.gate-copy .micro-kicker::before{content:"";width:26px;height:2px;border-radius:2px;background:#2A93B5}
+.gate-copy .micro-kicker{display:inline-flex;align-items:center;gap:11px;color:#24756F;font-size:clamp(.7rem,.9vw,.82rem);font-weight:800;letter-spacing:.22em;text-transform:uppercase}
+.gate-copy .micro-kicker::before{content:"";width:26px;height:2px;border-radius:2px;background:#2D8179}
 .gate-copy h1{margin-top:0;font-family:var(--display);font-weight:700;font-size:clamp(1.9rem,3.6vw,3.4rem);line-height:1.04;letter-spacing:-.02em;text-wrap:balance}
 .gate-copy .micro-kicker+h1{margin-top:18px}
-.gate-copy h1 em{font-style:italic;color:#DCE9F7}
-.gate-copy p{margin-top:18px;color:#C5D4E3;font-size:1.05rem;max-width:46ch}
+.gate-copy h1 em{font-style:italic;color:#496C69}
+.gate-copy p{margin-top:18px;color:#526B6D;font-size:1.05rem;max-width:46ch}
 .gate-lead{max-width:58ch}
-.gate-copy h1,.gate-copy p,.gate-copy .micro-kicker{text-shadow:0 2px 20px rgba(4,16,33,.6)}
+.gate-copy h1,.gate-copy p,.gate-copy .micro-kicker{text-shadow:none}
 .gate-form{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:36px clamp(24px,4vw,64px);background:radial-gradient(900px 520px at 88% -6%,#E4F3FE 0%,rgba(228,243,254,0) 62%),radial-gradient(760px 480px at -10% 108%,#E7F8F5 0%,rgba(231,248,245,0) 60%),linear-gradient(180deg,#FEFEFF 0%,#F5FAFE 100%)}
 .gate-form-logo{width:min(430px,100%);margin:0 auto 28px;display:flex;justify-content:center}
 .gate-form-logo .brand-logo{width:170px}
 .access-card{width:min(440px,100%);margin:0 auto;background:#fff;border:1px solid #DFE9F3;border-radius:20px;box-shadow:var(--shadow-2);padding:34px 32px;text-align:center}
 .access-card h2{font-size:1.4rem;color:var(--navy);line-height:1.2}
 .access-card .lead{margin-top:8px;color:var(--muted)}
-.cta-demo{margin-top:20px;width:100%;min-height:44px}
+.example-report-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.cta-demo{width:100%;min-height:48px;padding:0 14px;font-size:.86rem;white-space:normal;line-height:1.2}
+.cta-demo-secondary{border-color:#B9CED3;background:#F6FAFB;color:#174C5B;box-shadow:none}
+.cta-demo-secondary:hover{border-color:#247A84;background:#ECF5F5;color:#0D5962}
 .or{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted-2);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase}
 .or::before,.or::after{content:"";height:1px;flex:1;background:var(--line)}
 .field label{display:block;font-weight:600;font-size:.82rem;color:var(--navy);margin-bottom:8px;text-align:center}
@@ -743,9 +747,11 @@ body.presentation-panel-sensitivity .main{padding-top:16px}
 .taxonomy-comparison-block h4{font-size:1rem;color:var(--topic,#0E8F98);line-height:1.25}
 .taxonomy-comparison-block > p{margin-top:4px;color:var(--muted);font-size:.9rem;line-height:1.45}
 .taxonomy-comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.taxonomy-comparison-grid > .taxonomy-chart-tile:only-child{grid-column:1 / -1}
 .chart-observations + .taxonomy-comparison-grid{margin-top:16px}
 .taxonomy-plot-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
 .taxonomy-plot-pair > .released-panel{min-width:0}
+.taxonomy-plot-pair > .released-panel:only-child{grid-column:1 / -1}
 .released-head-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:none}
 .taxonomy-reference-wrap{position:relative;z-index:15;flex:none}
 .taxonomy-reference-button{display:grid;width:38px;height:38px;place-items:center;border:1px solid var(--brand-green);border-radius:50%;background:var(--brand-green);color:#fff;font-size:1rem;font-weight:900;line-height:1;box-shadow:0 8px 20px -16px rgba(0,124,120,.58);transition:transform .15s,border-color .15s,background .15s}
@@ -764,9 +770,11 @@ body.presentation-panel-sensitivity .main{padding-top:16px}
 .taxonomy-species-bars-content{margin-top:28px}
 .taxonomy-sample-bars-note{margin-top:18px;color:var(--muted);font-size:.9rem;line-height:1.45;max-width:none}
 .taxonomy-sample-bars-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.taxonomy-sample-bars-grid > .taxonomy-sample-bars-card:only-child{grid-column:1 / -1}
 .taxonomy-sample-bars-note + .taxonomy-sample-bars-grid{margin-top:10px}
 .taxonomy-sample-bars-card{min-width:0;border:1px solid var(--topic-line,#DCE7F1);border-radius:10px;background:#fff;padding:16px;box-shadow:var(--shadow-1)}
 .taxonomy-sample-bars-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.taxonomy-sample-bars-downloads{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
 .taxonomy-sample-bars-card h4{font-size:1rem;color:var(--navy);line-height:1.2}
 .taxonomy-sample-bars-card p{margin-top:5px;color:var(--muted);font-size:.85rem;line-height:1.42}
 .taxonomy-sample-bars-legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
@@ -800,7 +808,7 @@ body.presentation-panel-sensitivity .main{padding-top:16px}
 .takeaway-card:first-child .takeaway-card-icon .icon{width:51px;height:51px}
 .takeaway-card b{display:block;margin:0;color:#5B6B7C;font-size:.78rem;font-weight:800;line-height:1.25;text-transform:uppercase;letter-spacing:.07em}
 .takeaway-card-value{display:block;width:100%;margin-top:18px;color:var(--navy);font-size:1.08rem;line-height:1.28}
-.takeaway-card:first-child .takeaway-card-value{max-width:32ch;font-size:1.45rem;line-height:1.22}
+.takeaway-card:first-child .takeaway-card-value{max-width:none;font-size:1.45rem;line-height:1.22}
 .takeaway-card[data-metric-tone="good"] .takeaway-card-value{color:#247A4B}
 .takeaway-card[data-metric-tone="poor"] .takeaway-card-value{color:#A92D3D}
 .takeaway-card-rule{width:100%;height:1px;margin:15px 0 0;border:0;background:#D8E1E8}
@@ -1845,6 +1853,8 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
   .guide-avatar{display:none}
 }
 @media (max-width:560px){
+  .example-report-actions{grid-template-columns:1fr}
+  .gate-mainpage-img{display:none}
   .suggestion-hero{padding:20px 18px}
   .suggestion-hero-top{align-items:flex-start;flex-direction:column;gap:9px}
   .suggestion-decision-row{grid-template-columns:34px minmax(0,1fr)}
@@ -2066,10 +2076,14 @@ a.chat-source:hover{border-color:#555;color:#000;background:#E4E4E4}
     <div class="access-card">
       <p class="eyebrow">Access code</p>
 
-      <button class="btn btn-teal cta-demo" id="example-report-btn" type="button">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        View example report
-      </button>
+      <div class="example-report-actions" aria-label="Example reports">
+        <button class="btn btn-teal cta-demo" data-example-code="110000000" type="button">
+          View example ONT report
+        </button>
+        <button class="btn cta-demo cta-demo-secondary" data-example-code="120000001" type="button">
+          View example Illumina report
+        </button>
+      </div>
 
       <div class="or">or enter your code</div>
 
@@ -2333,17 +2347,23 @@ var LOCAL_EXAMPLE_FILES=[
   ["report-pdf","Example report PDF","output/report.pdf","report","pdf"]
 ].map(function(x){return {id:x[0],name:x[1],path:x[2],role:x[3],roles:[x[3]],type:x[4],format:x[4]};});
 var LOCAL_EXAMPLE_MANIFEST={code:LOCAL_EXAMPLE_CODE,client_name:"KreatBio example",title:"Example ONT 16SFL report",description:"Bundled example report for portal demonstration.",analysis_type:"amplicon",assay_id:"ont16sfl",assay:ASSAY_REGISTRY["11"],report_pdf:{fileId:"report-pdf",name:"Example report PDF",path:"output/report.pdf"},files:LOCAL_EXAMPLE_FILES,modules:[]};
+var LOCAL_EXAMPLES={
+  "110000000":{base:"client_supplements/example1/",manifest:LOCAL_EXAMPLE_MANIFEST},
+  "120000001":{base:"client_supplements/example2/",manifestPath:"client_supplements/example2/manifest.json"}
+};
 function exampleReportCode(){
   return LOCAL_EXAMPLE_CODE;
 }
 function assayLabel(id){var a=ASSAYS[id]||{};return [a.kingdom,a.marker,a.region].filter(Boolean).join(" · ")||"Report";}
 
 /* ---------------- app state ---------------- */
-var state={assay:"",mode:"plain",section:"welcome",pipeStep:0,visited:{},token:"",localExample:false,report:null,reportRefreshPromise:null,apiBase:configuredApiBase(),chatApiBase:configuredChatApiBase(),chatToken:"",chatQuota:null,chatAvailable:false,chatAuthError:"",chartIndex:{taxonomy:0,alpha:0,beta:0,functional:0},chartView:{alpha:"chart",beta:"chart",functional:"chart"},alphaView:"report",betaView:"report",chartWidth:storedChartWidth(),chartZoom:100,metricReturnSection:"",taxonomyRankTables:{},taxonomyRankIndex:0,groupBy:"",functionalDiffFilter:"all",functionalDetailsOpen:false,flowFilter:"diversity",flowQuery:"",filesFilter:"all",metricFilter:"all",glossaryFilter:"all",learningTopic:"all",learningIndex:0,chatMessages:[],chatBusy:false,reportHydrating:false};
+var state={assay:"",mode:"plain",section:"welcome",pipeStep:0,visited:{},token:"",localExample:false,localExampleBase:"",report:null,reportRefreshPromise:null,apiBase:configuredApiBase(),chatApiBase:configuredChatApiBase(),chatToken:"",chatQuota:null,chatAvailable:false,chatAuthError:"",chartIndex:{taxonomy:0,alpha:0,beta:0,functional:0},chartView:{alpha:"chart",beta:"chart",functional:"chart"},alphaView:"report",betaView:"report",chartWidth:storedChartWidth(),chartZoom:100,metricReturnSection:"",taxonomyRankTables:{},taxonomyRankIndex:0,groupBy:"",functionalDiffFilter:"all",functionalDetailsOpen:false,flowFilter:"diversity",flowQuery:"",filesFilter:"all",metricFilter:"all",glossaryFilter:"all",learningTopic:"all",learningIndex:0,chatMessages:[],chatBusy:false,reportHydrating:false};
 function presentationRequest(){
   var params=new URLSearchParams(window.location.search),allowedSections=["welcome","overall","pipeline","taxonomy","alpha","beta","functional","suggestions","flow","learning","metrics","glossary"],allowedMetrics=["bray","weighted_unifrac","unweighted_unifrac"],section=params.get("section")||"welcome",metric=params.get("metric")||"";
+  var requestedExample=params.get("example")||"",exampleCode=LOCAL_EXAMPLES[requestedExample]?requestedExample:(requestedExample==="1"?LOCAL_EXAMPLE_CODE:"");
   return {
-    example:params.get("example")==="1",
+    example:!!exampleCode,
+    exampleCode:exampleCode,
     embed:params.get("embed")==="1",
     section:allowedSections.indexOf(section)>=0?section:"welcome",
     view:params.get("view")==="example"?"example":"report",
@@ -2492,7 +2512,7 @@ async function loadFileText(file){
   // Bundled example reports never use the portal API or a GCS session.
   if(state.localExample){
     var localPath=String(file.path||"").replace(/^\/+/,"");
-    var localRes=await fetch(localPath.indexOf("client_supplements/")===0?localPath:"client_supplements/example1/"+localPath);
+    var localRes=await fetch(localPath.indexOf("client_supplements/")===0?localPath:(state.localExampleBase||"client_supplements/example1/")+localPath);
     if(!localRes.ok)throw new Error("Example file unavailable: "+localPath);
     return await localRes.text();
   }
@@ -2852,8 +2872,8 @@ function methodConfigFromRelease(methodsText,params,versions,assay){
     taxonomyInputLabel:isOnt?"Feature table":"ASV feature table",
     taxonomySettings:isOnt?("EMU is the primary ONT composition source; its reportable tables used minimum relative abundance "+(params.emu_report_min_rel_abundance||"0.005")+" and minimum estimated reads "+(params.emu_report_min_reads||"10")+". QIIME 2/SILVA "+silvaVersion+" is retained as a comparison and for feature-linked taxonomy."):("QIIME 2 assigned taxonomy with "+classifierName+" against "+taxonomyDatabase+" "+silvaVersion+"."),
     functionTool:isFungi?"Not applicable":"PICRUSt2"+(picrustVersion?" "+picrustVersion:""),
-    analysisSettings:"Alpha diversity used "+methodAlphaMetricText(text)+". Beta diversity used "+betaMetrics+" with PCoA, PERMANOVA, and PERMDISP where those outputs are present."+(isFungi?" Functional prediction is not provided for ITS1 fungal data.":" PICRUSt2 predicted "+functionOutputs+" outputs from a "+picrustClusterLabel+" clustered input; ALDEx2"+(aldexVersion?" "+aldexVersion:"")+" tested differential taxonomy and functions where released statistics are available."),
-    functionSettings:isFungi?"Functional prediction is not applicable to this ITS1 fungal assay.":"PICRUSt2"+(picrustVersion?" "+picrustVersion:"")+" used "+picrustClusterLabel+" clustered representative sequences with max NSTI "+(params.picrust2_max_nsti||"2.0")+".",
+    analysisSettings:"Alpha diversity used "+methodAlphaMetricText(text)+". Beta diversity used "+betaMetrics+" with PCoA, PERMANOVA, and PERMDISP where those outputs are present.",
+    functionSettings:isFungi?"Functional prediction is not applicable to this ITS1 fungal assay.":"PICRUSt2"+(picrustVersion?" "+picrustVersion:"")+" predicted "+functionOutputs+" outputs from "+picrustClusterLabel+" clustered representative sequences with max NSTI "+(params.picrust2_max_nsti||"2.0")+". ALDEx2"+(aldexVersion?" "+aldexVersion:"")+" tested the released functional predictions for group differences.",
     picrustClusterLabel:picrustClusterLabel,
     sequencingDetails:[params.sequencing_instrument,params.sequencing_flow_cell_chemistry,params.sequencing_library_kit,params.basecaller_model].filter(Boolean).join("; ")||"not included in the released metadata",
     phylogenyTools:["MAFFT"+(mafftVersion?" "+mafftVersion:""),"FastTree"+(fasttreeVersion?" "+fasttreeVersion:"")].join("; "),
@@ -2938,7 +2958,7 @@ function methodStepsFromRelease(m){
       sections:[{id:"alpha",label:"Within Samples"},{id:"beta",label:"Between Samples & Groups"}]},
     {name:"Predicted functions",tag:"Prediction",glyph:"analyse",enabled:!(m && m.functional_prediction===false),
       what:"Predicted functional potential was computed from clustered representative sequences and summarized as EC, KO, and pathway outputs.",
-      settings:"{analysisSettings} {functionSettings}",
+      settings:"{functionSettings}",
       why:"These analyses create follow-up hypotheses; they do not directly measure gene activity.",
       input:["{picrustClusterLabel} clustered representative sequences","Feature abundances"],
       output:["EC, KO, and pathway tables","NSTI support summary"],
@@ -3335,9 +3355,20 @@ async function openReportCode(code){
   await initializeReportChat(state.report&&state.report.code||code);
   return data;
 }
-async function openLocalExample(){
+async function openLocalExample(code){
   // Keep the demonstration report isolated from the authenticated client flow.
+  code=String(code||LOCAL_EXAMPLE_CODE);
+  var example=LOCAL_EXAMPLES[code];
+  if(!example)throw new Error("This example report is not available.");
+  var manifest=example.manifest;
+  if(!manifest){
+    var manifestRes=await fetch(example.manifestPath);
+    if(!manifestRes.ok)throw new Error("The bundled example manifest could not be loaded.");
+    manifest=await manifestRes.json();
+    example.manifest=manifest;
+  }
   state.localExample=true;
+  state.localExampleBase=example.base;
   state.token="";
   state.chatToken="";
   state.chatQuota=null;
@@ -3348,7 +3379,7 @@ async function openLocalExample(){
   state.reportRefreshPromise=null;
   resetSelfExperimentState();
   updateChatAvailability(false);
-  state.report=LOCAL_EXAMPLE_MANIFEST;
+  state.report=manifest;
   state.taxonomyRankTables={};
   state.taxonomyRankIndex=0;
   state.chartIndex={taxonomy:0,alpha:0,beta:0,functional:0};
@@ -3356,9 +3387,9 @@ async function openLocalExample(){
   state.groupBy="";
   state.functionalDiffFilter="all";
   state.functionalDetailsOpen=false;
-  var id=reportAssayId(LOCAL_EXAMPLE_CODE);
+  var id=reportAssayId(code);
   DATASETS[id]=await buildReportDataset(state.report);
-  ASSAYS[id]=reportAssayMeta(DATASETS[id],id,LOCAL_EXAMPLE_CODE);
+  ASSAYS[id]=reportAssayMeta(DATASETS[id],id,code);
   ASSAY_ORDER=[id];
   state.assay=id;
   state.section="welcome";
@@ -5668,8 +5699,7 @@ function betaSelfPermStats(matrix,groupsById,seed){
   var n=matrix.ids.length,labels=matrix.ids.map(function(id){return groupsById[id]||"";}),valid=labels.filter(Boolean),unique=[];valid.forEach(function(x){if(unique.indexOf(x)<0)unique.push(x);});
   if(n<4||unique.length<2)return null;
   var pcoa=betaSelfPcoa(matrix);if(!pcoa)return null;
-  var coords=pcoa.points,counts={};labels.forEach(function(x){if(x)counts[x]=(counts[x]||0)+1;});
-  var dimensions=pcoa.axes;
+  var counts={};labels.forEach(function(x){if(x)counts[x]=(counts[x]||0)+1;});
   function permanova(ls){
     var included=ls.filter(Boolean).length,groups={};ls.forEach(function(label,i){if(label)(groups[label]||(groups[label]=[])).push(i);});
     var total=0,within=0,i,j,key,idx;
@@ -5678,11 +5708,10 @@ function betaSelfPermStats(matrix,groupsById,seed){
     Object.keys(groups).forEach(function(label){idx=groups[label];var sum=0;for(i=0;i<idx.length;i++)for(j=0;j<idx.length;j++)sum+=Math.pow(Number(matrix.values[idx[i]][idx[j]])||0,2);within+=sum/idx.length;});
     var between=total-within,kk=Object.keys(groups).length,F=within>1e-12?(between/(kk-1))/(within/(included-kk)):null;return {F:isFinite(F)?F:null,R2:total?between/total:0};
   }
-  var observed=permanova(labels),baseSeed=Number(seed)||20260820,permanovaRandom=pythonRandom(baseSeed),permdispRandom=pythonRandom(baseSeed),ge=0,dispGe=0,perms=999;
-  function dispersion(ls){var cent={};coords.forEach(function(p,i){var c=cent[ls[i]]||(cent[ls[i]]={n:0,values:new Array(dimensions).fill(0)});c.n++;p.coordinates.forEach(function(value,axis){c.values[axis]+=value;});});Object.keys(cent).forEach(function(x){cent[x].values=cent[x].values.map(function(value){return value/cent[x].n;});});var vals=[],labs=[];coords.forEach(function(p,i){var c=cent[ls[i]],distance=Math.sqrt(p.coordinates.reduce(function(sum,value,axis){return sum+Math.pow(value-c.values[axis],2);},0));vals.push(distance);labs.push(ls[i]);});return betaSelfAnova(vals,labs);}
-  var observedDisp=dispersion(labels),permanovaLabels=labels.slice(),permdispLabels=labels.slice();
-  for(var permutation=0;permutation<perms;permutation++){permanovaRandom.shuffle(permanovaLabels);permdispRandom.shuffle(permdispLabels);var perm=permanova(permanovaLabels);if(perm&&perm.F!=null&&observed.F!=null&&perm.F>=observed.F-1e-12)ge++;if(observedDisp){var pd=dispersion(permdispLabels);if(pd&&pd.F!=null&&observedDisp.F!=null&&pd.F>=observedDisp.F-1e-12)dispGe++;}}
-  return {pcoa:pcoa,permanova:{F:observed.F,R2:observed.R2,p:observed.F==null?null:(ge+1)/(perms+1),permutations:perms},permdisp:observedDisp&&observedDisp.F!=null?{F:observedDisp.F,p:(dispGe+1)/(perms+1),permutations:perms}:null,counts:counts};
+  var observed=permanova(labels),baseSeed=Number(seed)||20260820,permanovaRandom=pythonRandom(baseSeed),ge=0,perms=999;
+  var permanovaLabels=labels.slice();
+  for(var permutation=0;permutation<perms;permutation++){permanovaRandom.shuffle(permanovaLabels);var perm=permanova(permanovaLabels);if(perm&&perm.F!=null&&observed.F!=null&&perm.F>=observed.F-1e-12)ge++;}
+  return {pcoa:pcoa,permanova:{F:observed.F,R2:observed.R2,p:observed.F==null?null:(ge+1)/(perms+1),permutations:perms},counts:counts};
 }
 var betaSelfState={metric:null,selected:{},open:false};
 function resetSelfExperimentState(){
@@ -5709,14 +5738,10 @@ function betaSelfExperimentPanel(d,opts){
   var checks=all.map(function(id){var s=byId[id],label=s?sampleLabel(s):id,group=s?(d.groups||[]).filter(function(g){return g.id===s.group;})[0]:null;return '<label class="self-experiment-sample"><input type="checkbox" data-beta-self-sample="'+esc(id)+'"'+(selected.indexOf(id)>=0?' checked':'')+'><span class="self-experiment-sample-number">'+sampleNumbers[id]+'</span><span>'+esc(label)+'</span><small>'+esc(group?group.label:(s&&s.group||"Unknown group"))+'</small></label>';}).join("");
   var significance=matrixIssue
     ? 'not interpretable · identical sample-to-sample distances'
-    : stats&&stats.permdisp&&stats.permdisp.p<0.05
-    ? 'group separation is affected by unequal spread'
     : (stats&&stats.permanova.p!=null?(stats.permanova.p<0.05?'supported group difference':(stats.permanova.p<0.10?'exploratory signal':'no supported group difference')):'not estimable');
   var countText=stats?Object.keys(stats.counts).map(function(key){var g=(d.groups||[]).filter(function(x){return x.id===key;})[0];return (g?g.label:key)+' n='+stats.counts[key];}).join(' · '):'';
-  var minGroupN=stats?Math.min.apply(null,Object.keys(stats.counts).map(function(key){return stats.counts[key];})):0;
-  var dispersionNote=!matrixIssue&&stats&&!stats.permdisp?(minGroupN<2?'PERMDISP is unavailable because each retained group needs at least two samples.':'PERMDISP could not be estimated because distances to the group centroids have no usable within-group variation for the F-statistic.'):'';
   var matrixNote=matrixIssue?'All sample-to-sample distances are identical, so these statistics cannot support a biological interpretation.':'';
-  var statHtml=stats?'<div class="self-experiment-stats"><b>Exploratory recalculation</b><span>PERMANOVA p<strong>'+(stats.permanova.p==null?'Not estimable':stats.permanova.p.toFixed(3))+'</strong></span><span>PERMANOVA R²<strong>'+(stats.permanova.R2*100).toFixed(1)+'%</strong></span><span>Pseudo-F<strong>'+(stats.permanova.F==null?'Not estimable':stats.permanova.F.toFixed(3))+'</strong></span><span>PERMDISP p / F<strong>'+(stats.permdisp?stats.permdisp.p.toFixed(3)+' / '+stats.permdisp.F.toFixed(3):'Not estimable')+'</strong></span><span>PCoA 1 / PCoA 2<strong>'+(stats.pcoa.pc1*100).toFixed(1)+'% / '+(stats.pcoa.pc2*100).toFixed(1)+'%</strong></span><span>Interpretation<strong>'+esc(significance)+'</strong></span><span>Retained groups<strong>'+esc(countText)+'</strong></span>'+(matrixNote?'<small class="self-experiment-note">'+esc(matrixNote)+'</small>':'')+(dispersionNote?'<small class="self-experiment-note">'+esc(dispersionNote)+'</small>':'')+'</div>':'<p class="table-caption">Select at least two groups with enough samples to recalculate statistics.</p>';
+  var statHtml=stats?'<div class="self-experiment-stats"><b>Exploratory recalculation</b><span>PERMANOVA p<strong>'+(stats.permanova.p==null?'Not estimable':stats.permanova.p.toFixed(3))+'</strong></span><span>PERMANOVA R²<strong>'+(stats.permanova.R2*100).toFixed(1)+'%</strong></span><span>Pseudo-F<strong>'+(stats.permanova.F==null?'Not estimable':stats.permanova.F.toFixed(3))+'</strong></span><span>PCoA 1 / PCoA 2<strong>'+(stats.pcoa.pc1*100).toFixed(1)+'% / '+(stats.pcoa.pc2*100).toFixed(1)+'%</strong></span><span>Interpretation<strong>'+esc(significance)+'</strong></span><span>Retained groups<strong>'+esc(countText)+'</strong></span>'+(matrixNote?'<small class="self-experiment-note">'+esc(matrixNote)+'</small>':'')+'</div>':'<p class="table-caption">Select at least two groups with enough samples to recalculate statistics.</p>';
   var plot=stats?betaSelfPlotSvg(d,metric,stats,byId,sampleNumbers,matrixIssue):'<div class="self-experiment-empty">No recalculable PCoA for this selection.</div>';
   var body='<div class="self-experiment-shell"><div class="self-experiment-intro"><label>Distance metric <select data-beta-self-metric>'+options+'</select></label></div><div class="self-experiment-samples"><div class="self-experiment-samples-head"><small>Select or clear samples to test how the result changes. The statistic cards are calculated outputs and cannot be edited directly.</small></div>'+checks+'<button type="button" class="btn secondary" data-beta-self-reset>Reset to all samples</button></div><div class="self-experiment-main">'+plot+statHtml+'</div></div>';
   if(opts.bodyOnly)return body;
@@ -6753,7 +6778,7 @@ function currentReleasedFigure(kind){
   return figs[idx];
 }
 function figureViewUrl(file){
-  if(state.localExample)return String(file&&file.path||"").indexOf("client_supplements/")===0?String(file.path):"client_supplements/example1/"+String(file&&file.path||"");
+  if(state.localExample)return String(file&&file.path||"").indexOf("client_supplements/")===0?String(file.path):(state.localExampleBase||"client_supplements/example1/")+String(file&&file.path||"");
   if(file&&file.url)return file.url;
   return apiUrl("/api/files/"+encodeURIComponent(file.id)+"/view?token="+encodeURIComponent(state.token));
 }
@@ -7621,7 +7646,7 @@ function taxonomySpeciesBarsCard(entry){
   }).join("");
   var ungrouped=rows.filter(function(row){return !usedGroups[row.sample.group];});
   if(ungrouped.length)groupHtml+=taxonomySpeciesBarsGroup(d,entry.method,"Other samples",ungrouped,taxa,colors);
-  return '<div class="taxonomy-sample-bars-card"><div class="taxonomy-sample-bars-head"><div><h4>'+esc(taxonomyDatabaseRoleLabel(entry.data,entry.method))+'</h4></div><button class="keyviz-download" type="button" data-taxonomy-bars-download="'+esc(entry.method)+'">Download SVG</button></div>'+
+  return '<div class="taxonomy-sample-bars-card"><div class="taxonomy-sample-bars-head"><div><h4>'+esc(taxonomyDatabaseRoleLabel(entry.data,entry.method))+'</h4></div><div class="taxonomy-sample-bars-downloads"><button class="keyviz-download" type="button" data-taxonomy-bars-download="'+esc(entry.method)+'" data-download-format="svg">Download SVG</button><button class="keyviz-download" type="button" data-taxonomy-bars-download="'+esc(entry.method)+'" data-download-format="png">Download PNG</button></div></div>'+
     '<div class="taxonomy-sample-bars-legend">'+legend+'</div>'+groupHtml+'</div>';
 }
 function taxonomySpeciesBarsGroup(d,method,groupLabel,rows,taxa,colors){
@@ -7666,8 +7691,9 @@ function taxonomySpeciesBarEntry(method){
   method=String(method||"").toUpperCase();
   return taxonomySpeciesBarEntries(ds()).filter(function(e){return String(e.method).toUpperCase()===method;})[0]||null;
 }
-function taxonomySpeciesBarsFilename(entry,d){
-  return "species-abundance-bars-"+String(entry&&entry.method||"taxonomy").toLowerCase()+"-report-"+String((d&&d.reportCode)||"current").replace(/[^A-Za-z0-9_-]+/g,"-")+".svg";
+function taxonomySpeciesBarsFilename(entry,d,format){
+  format=format==="png"?"png":"svg";
+  return "species-abundance-bars-"+String(entry&&entry.method||"taxonomy").toLowerCase()+"-report-"+String((d&&d.reportCode)||"current").replace(/[^A-Za-z0-9_-]+/g,"-")+"."+format;
 }
 function taxonomySpeciesBarsSvg(entry){
   if(!entry||!entry.data)return "";
@@ -7711,10 +7737,13 @@ function taxonomySpeciesBarsSvg(entry){
   });
   return svgTemplate(width,Math.max(420,y+40),body);
 }
-function downloadTaxonomySpeciesBars(method){
+function downloadTaxonomySpeciesBars(method,format){
   var entry=taxonomySpeciesBarEntry(method);
   if(!entry)return;
-  downloadTextFile(taxonomySpeciesBarsFilename(entry,entry.data),taxonomySpeciesBarsSvg(entry),"image/svg+xml;charset=utf-8");
+  format=format==="png"?"png":"svg";
+  var markup=taxonomySpeciesBarsSvg(entry);
+  if(format==="png")downloadSvgMarkupAsPng(taxonomySpeciesBarsFilename(entry,entry.data,format),markup);
+  else downloadTextFile(taxonomySpeciesBarsFilename(entry,entry.data,format),markup,"image/svg+xml;charset=utf-8");
 }
 function taxonomyDominantComparisonObservation(entries){
   if(!entries||!entries.length)return "";
@@ -11281,7 +11310,7 @@ function wireTaxonomyBarsDownload(){
   $$("[data-taxonomy-bars-download]",$("#content")).forEach(function(b){
     if(b.dataset.taxonomyBarsWired)return;
     b.dataset.taxonomyBarsWired="1";
-    b.addEventListener("click",function(){downloadTaxonomySpeciesBars(b.dataset.taxonomyBarsDownload);});
+    b.addEventListener("click",function(){downloadTaxonomySpeciesBars(b.dataset.taxonomyBarsDownload,b.dataset.downloadFormat);});
   });
 }
 function wireTaxonomySampleBarsHover(){
@@ -11817,13 +11846,13 @@ $("#code-form").addEventListener("submit",async function(e){
   await openGateReport(v);
 });
 
-$("#example-report-btn").addEventListener("click",async function(){
-  var v=exampleReportCode();
+$$('[data-example-code]').forEach(function(button){button.addEventListener("click",async function(){
+  var v=button.dataset.exampleCode;
   $("#code").value=v;
   var st=$("#gate-status");
-  st.textContent="Opening bundled example report.";st.className="gate-status";
-  try{await openLocalExample();enterApp(true);}catch(err){st.textContent=err.message;st.className="gate-status err";}
-});
+  st.textContent="Opening bundled "+(v.slice(0,2)==="11"?"ONT":"Illumina")+" example report.";st.className="gate-status";
+  try{await openLocalExample(v);enterApp(true);}catch(err){st.textContent=err.message;st.className="gate-status err";}
+});});
 $("#assay-select").addEventListener("change",function(){setAssay(this.value);});
 $("#exit-btn").addEventListener("click",function(){$("#app").classList.remove("on");$("#gate").style.display="grid";setChatOpen(false);});
 $("#chat-toggle").addEventListener("click",function(){setChatOpen(!$("#report-chat").classList.contains("open"));});
@@ -11895,7 +11924,7 @@ updateMenuToggleState();
 if(PRESENTATION_REQUEST.example){
   var autoStatus=$("#gate-status");
   if(autoStatus){autoStatus.textContent="Opening bundled example report.";autoStatus.className="gate-status";}
-  openLocalExample().then(function(){enterApp(true);}).catch(function(err){
+  openLocalExample(PRESENTATION_REQUEST.exampleCode).then(function(){enterApp(true);}).catch(function(err){
     if(autoStatus){autoStatus.textContent=err.message;autoStatus.className="gate-status err";}
   });
 }

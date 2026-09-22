@@ -1,0 +1,4 @@
+table	contrast	status	detail
+FAMILY	feces_vs_saliva	ok_pairwise	rows= 58
+GENUS	feces_vs_saliva	ok_pairwise	rows= 118
+SPECIES	feces_vs_saliva	ok_pairwise	rows= 167

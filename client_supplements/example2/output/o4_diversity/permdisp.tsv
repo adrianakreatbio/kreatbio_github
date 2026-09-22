@@ -1,0 +1,2 @@
+group_column	groups	samples	f_value	p_value	permutations	method	status	note
+group	2	10	3.71482676885089	0.086	999	vegan::betadisper	ok	

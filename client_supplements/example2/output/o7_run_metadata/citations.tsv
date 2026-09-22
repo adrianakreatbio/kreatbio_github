@@ -1,0 +1,14 @@
+tool	citation
+FastQC	Andrews. FastQC: a quality control tool for high throughput sequence data.
+cutadapt	Martin 2011. Cutadapt removes adapter sequences from high-throughput sequencing reads.
+fastp	Chen et al. 2018. fastp: an ultra-fast all-in-one FASTQ preprocessor.
+vsearch	Rognes et al. 2016. VSEARCH: a versatile open source tool for metagenomics.
+QIIME 2	Bolyen et al. 2019. Reproducible, interactive, scalable microbiome data science using QIIME 2.
+DADA2	Callahan et al. 2016. DADA2: high-resolution sample inference from Illumina amplicon data.
+SILVA	Quast et al. 2013; Yilmaz et al. 2014. SILVA ribosomal RNA gene database project and taxonomic framework.
+MAFFT	Katoh and Standley 2013. MAFFT multiple sequence alignment software.
+FastTree	Price et al. 2010. FastTree for approximately maximum-likelihood trees.
+UniFrac	Lozupone and Knight 2005; Lozupone et al. UniFrac phylogenetic beta diversity.
+PICRUSt2	Douglas et al. 2020. PICRUSt2 for prediction of metagenome functions.
+ALDEx2	Fernandes et al. 2014. ALDEx2 for compositional differential abundance analysis.
+MultiQC	Ewels et al. 2016. MultiQC: summarize analysis results for multiple tools and samples.

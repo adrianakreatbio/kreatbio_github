@@ -1,0 +1,11 @@
+sample_id	observed_features_phylogenetic	sample_name	group	subject
+SRR23380923	234	Subject_5_Saliva	saliva	5
+SRR23380925	315	Subject_4_Saliva	saliva	4
+SRR23380926	242	Subject_3_Saliva	saliva	3
+SRR23380927	379	Subject_1_Saliva	saliva	1
+SRR23380956	387	Subject_8_Feces	feces	8
+SRR23380958	239	Subject_5_Feces	feces	5
+SRR23380959	286	Subject_4_Feces	feces	4
+SRR23380960	224	Subject_3_Feces	feces	3
+SRR23380961	210	Subject_1_Feces	feces	1
+SRR23381000	360	Subject_8_Saliva	saliva	8

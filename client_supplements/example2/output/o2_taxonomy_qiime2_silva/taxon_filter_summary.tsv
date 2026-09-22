@@ -1,0 +1,14 @@
+metric	value
+status	not_run_no_controls
+control_samples	none
+analysis_samples	SRR23380923,SRR23380925,SRR23380926,SRR23380927,SRR23380956,SRR23380958,SRR23380959,SRR23380960,SRR23380961,SRR23381000
+raw_features	1865
+removed_offtarget_features	2
+removed_kingdom_only_or_unassigned_features	4
+removed_blank_enriched_features	0
+removed_low_abundance_prevalence_features	1485
+kept_features	374
+min_prevalence_rel_abundance	0.001
+min_prevalence_samples	2
+min_single_sample_rel_abundance	0.005
+blank_enrichment_ratio	5.0
