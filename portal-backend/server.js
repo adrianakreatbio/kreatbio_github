@@ -357,11 +357,13 @@ app.post("/api/external/string/network", requireSession, async (req, res, next) 
 app.post("/api/chat/session", requirePortalChatOrigin, (req, res, next) => {
   try {
     const code = normalizeCode(req.body?.code);
-    const header = req.get("authorization") || "";
-    const reportToken = header.toLowerCase().startsWith("bearer ") ? header.slice(7) : "";
-    const reportSession = verifyToken(reportToken, "report");
-    if (reportSession.code !== code) throw httpError(403, "Report session does not match this chat request.");
-    chatQuotaStore.ensure(code);
+    if (!chatQuotaStore.status(code)) {
+      const header = req.get("authorization") || "";
+      const reportToken = header.toLowerCase().startsWith("bearer ") ? header.slice(7) : "";
+      const reportSession = verifyToken(reportToken, "report");
+      if (reportSession.code !== code) throw httpError(403, "Report session does not match this chat request.");
+      chatQuotaStore.ensure(code);
+    }
     const quota = chatQuotaStore.authenticate(code);
     const token = signToken({ code, scope: "chat" });
     res.json({ token, ...publicChatQuota(quota) });
