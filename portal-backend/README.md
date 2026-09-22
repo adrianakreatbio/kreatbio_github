@@ -19,13 +19,23 @@ bash deploy.sh
 
 The script runs checks, commits only portal-related files, deploys changed backend code to Cloud Run and Hostinger, pushes GitHub Pages, and verifies all three public endpoints.
 
-Activate a newly released report:
+Complete reports are activated automatically on their first valid portal opening. Automatic activation requires:
+
+```text
+input_data/metadata.tsv
+output/report.pdf
+manifest.json or output/client_manifest.tsv
+```
+
+The first opening creates the normal 30-opening, 60-day access record. An authenticated report session also creates the default chat allowance when it is first needed. Existing disabled, expired, or exhausted records are never reset automatically.
+
+To provision access before a client opens the report, run:
 
 ```bash
 bash activate-report.sh 120000000
 ```
 
-This enables the default 30 portal openings for 60 days and a 500,000-token lifetime chat allowance. Optional custom values are accepted in this order:
+This pre-creates the default 30 portal openings for 60 days and a 500,000-token lifetime chat allowance. Optional custom values are accepted in this order:
 
 ```bash
 bash activate-report.sh REPORT_CODE OPENINGS DAYS CHAT_TOKENS

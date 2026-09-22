@@ -42,6 +42,20 @@ test("provisions a lifetime allowance without storing the report code", () => {
   }
 });
 
+test("ensure provisions a missing allowance and preserves existing usage", () => {
+  const context = fixture();
+  try {
+    const created = context.store.ensure(CODE);
+    const reservation = context.store.reserve(created.reportKey, 100, 100);
+    context.store.settle(reservation.reservationId, 150);
+    const existing = context.store.ensure(CODE);
+    assert.equal(existing.tokensUsed, 150);
+    assert.equal(existing.tokenLimit, 500_000);
+  } finally {
+    context.cleanup();
+  }
+});
+
 test("reserves atomically and settles using the provider's actual total", () => {
   const context = fixture();
   try {

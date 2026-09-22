@@ -25,6 +25,38 @@ export class GcsReportAccessStore {
     return access;
   }
 
+  async ensure(code) {
+    try {
+      return await this.status(code);
+    } catch (err) {
+      if (!isMissingAccessError(err)) throw err;
+    }
+    const timestamp = new Date(this.now()).toISOString();
+    const record = {
+      version: 1,
+      code_last4: String(code).slice(-4),
+      enabled: true,
+      max_openings: this.defaultMaxOpenings,
+      openings_used: 0,
+      activated_at: timestamp,
+      expires_at: new Date(this.now() + this.defaultAccessDays * 24 * 60 * 60 * 1000).toISOString(),
+      last_opened_at: null,
+      updated_at: timestamp
+    };
+    const file = this.bucket.file(`${this.prefix}/${String(code)}.json`);
+    try {
+      await file.save(`${JSON.stringify(record, null, 2)}\n`, {
+        contentType: "application/json",
+        resumable: false,
+        preconditionOpts: { ifGenerationMatch: 0 }
+      });
+      return publicAccess(record, this.now());
+    } catch (err) {
+      if (isPreconditionFailure(err)) return this.status(code);
+      throw accessStorageError(err);
+    }
+  }
+
   async consume(code) {
     for (let attempt = 0; attempt < MAX_UPDATE_ATTEMPTS; attempt += 1) {
       const { record, generation, file } = await this.read(code);
@@ -129,6 +161,10 @@ function requiredDate(value, label) {
 
 function isPreconditionFailure(err) {
   return err?.code === 412 || err?.statusCode === 412;
+}
+
+function isMissingAccessError(err) {
+  return err?.statusCode === 403 && err?.message === "This report is not enabled for portal access.";
 }
 
 function accessStorageError(err) {

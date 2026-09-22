@@ -73,6 +73,10 @@ export class ReportAccessStore {
     return this.statusByKey(key);
   }
 
+  ensure(code) {
+    return this.status(code) || this.add(code);
+  }
+
   authorize(code, { requireOpening = false } = {}) {
     const access = this.status(code);
     if (!access || !access.enabled) throw accessError(403, "This report is not enabled for portal access.");

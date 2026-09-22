@@ -97,6 +97,10 @@ export class ChatQuotaStore {
     return this.statusByKey(key);
   }
 
+  ensure(code) {
+    return this.status(code) || this.add(code);
+  }
+
   authenticate(code) {
     this.releaseExpiredReservations();
     const quota = this.statusByKey(this.reportKey(code));

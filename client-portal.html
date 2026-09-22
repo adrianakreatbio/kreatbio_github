@@ -2460,7 +2460,7 @@ async function initializeReportChat(code){
   try{
     var data=await chatApiJson("/api/chat/session",{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
+      headers:Object.assign({"Content-Type":"application/json"},state.token?{Authorization:"Bearer "+state.token}:{}),
       timeoutMs:12000,
       body:JSON.stringify({code:code})
     });

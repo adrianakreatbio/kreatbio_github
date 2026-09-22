@@ -40,6 +40,20 @@ test("provisions a hashed 30-opening, 60-day access window", () => {
   }
 });
 
+test("ensure provisions missing access once and preserves an existing window", () => {
+  const context = fixture();
+  try {
+    const created = context.store.ensure(CODE);
+    context.store.consume(CODE);
+    const existing = context.store.ensure(CODE);
+    assert.equal(created.openingsUsed, 0);
+    assert.equal(existing.openingsUsed, 1);
+    assert.equal(existing.activatedAt, created.activatedAt);
+  } finally {
+    context.cleanup();
+  }
+});
+
 test("counts successful openings atomically and blocks opening 31", () => {
   const context = fixture();
   try {

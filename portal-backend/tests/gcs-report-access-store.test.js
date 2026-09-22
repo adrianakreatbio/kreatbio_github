@@ -42,6 +42,41 @@ function fakeStorage(record) {
   };
 }
 
+function emptyFakeStorage() {
+  const state = { generation: 0, record: null };
+  return {
+    state,
+    storage: {
+      bucket() {
+        return {
+          file(name, options = {}) {
+            return {
+              name,
+              async getMetadata() {
+                if (!state.record) { const err = new Error("not found"); err.code = 404; throw err; }
+                return [{ generation: String(state.generation) }];
+              },
+              async download() {
+                if (!state.record || (options.generation && String(options.generation) !== String(state.generation))) {
+                  const err = new Error("not found"); err.code = 404; throw err;
+                }
+                return [Buffer.from(JSON.stringify(state.record))];
+              },
+              async save(value, saveOptions) {
+                if (Number(saveOptions.preconditionOpts.ifGenerationMatch) !== 0 || state.record) {
+                  const err = new Error("precondition failed"); err.code = 412; throw err;
+                }
+                state.record = JSON.parse(value);
+                state.generation = 1;
+              }
+            };
+          }
+        };
+      }
+    }
+  };
+}
+
 function accessRecord(overrides = {}) {
   return {
     code_last4: "0000",
@@ -62,6 +97,17 @@ test("GCS ledger authorizes and atomically records concurrent openings", async (
   assert.deepEqual(results.map((result) => result.openingsUsed).sort((a, b) => a - b), [1, 2, 3]);
   assert.equal((await store.status(CODE)).openingsRemaining, 27);
   assert.equal(fake.state.record.openings_used, 3);
+});
+
+test("GCS ledger ensure creates a missing default access window", async () => {
+  const fake = emptyFakeStorage();
+  const store = new GcsReportAccessStore({ storage: fake.storage, bucket: "bucket", now: () => NOW });
+  const created = await store.ensure(CODE);
+  const existing = await store.ensure(CODE);
+  assert.equal(created.maxOpenings, 30);
+  assert.equal(created.openingsRemaining, 30);
+  assert.equal(existing.activatedAt, created.activatedAt);
+  assert.equal(fake.state.record.enabled, true);
 });
 
 test("GCS ledger blocks exhausted and expired reports", async () => {

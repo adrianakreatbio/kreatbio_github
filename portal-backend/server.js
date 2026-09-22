@@ -176,10 +176,12 @@ app.post("/api/events/register", requirePortalOrigin, limitEventRegistrations, a
 app.post("/api/session", requirePortalOrigin, limitSessionAttempts, async (req, res, next) => {
   try {
     const code = normalizeCode(req.body?.code);
-    const pendingAccess = await reportAccessStore.authorize(code, { requireOpening: true });
+    await validateAutoAccessPackage(code);
     const manifest = await readManifest(code);
     validateManifestCode(code, manifest);
     validateManifestAssay(code, manifest);
+    await reportAccessStore.ensure(code);
+    const pendingAccess = await reportAccessStore.authorize(code, { requireOpening: true });
     const report = await sanitizeManifest(code, manifest, pendingAccess);
     const access = await reportAccessStore.consume(code);
     const token = signToken({ code, scope: "report" });
@@ -355,6 +357,11 @@ app.post("/api/external/string/network", requireSession, async (req, res, next) 
 app.post("/api/chat/session", requirePortalChatOrigin, (req, res, next) => {
   try {
     const code = normalizeCode(req.body?.code);
+    const header = req.get("authorization") || "";
+    const reportToken = header.toLowerCase().startsWith("bearer ") ? header.slice(7) : "";
+    const reportSession = verifyToken(reportToken, "report");
+    if (reportSession.code !== code) throw httpError(403, "Report session does not match this chat request.");
+    chatQuotaStore.ensure(code);
     const quota = chatQuotaStore.authenticate(code);
     const token = signToken({ code, scope: "chat" });
     res.json({ token, ...publicChatQuota(quota) });
@@ -666,6 +673,17 @@ async function readManifest(code) {
   const withAlpha = await addInferredAlphaFiles(code, withFigures);
   const withFunctionalDiff = await addInferredFunctionalDiffFiles(code, withAlpha);
   return addInferredTaxonomyDiffFiles(code, withFunctionalDiff);
+}
+
+async function validateAutoAccessPackage(code) {
+  const requiredPaths = ["input_data/metadata.tsv", "output/report.pdf"];
+  const results = await Promise.all(requiredPaths.map((relativePath) => objectExists(code, relativePath)));
+  const missing = requiredPaths.filter((relativePath, index) => !results[index]);
+  const hasManifest = await objectExists(code, "manifest.json") || await objectExists(code, "output/client_manifest.tsv");
+  if (!hasManifest) missing.push("manifest.json or output/client_manifest.tsv");
+  if (missing.length) {
+    throw httpError(403, `This report folder is not ready for portal access. Missing: ${missing.join(", ")}.`);
+  }
 }
 
 async function inferAmpliconManifest(code) {
