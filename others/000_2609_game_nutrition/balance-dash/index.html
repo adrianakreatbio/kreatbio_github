@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#171b2b">
+  <meta name="description" content="Balance Dash is a quick game about building balanced meals and staying active.">
+  <title>Balance Dash</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="game.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#game">Skip to game</a>
+
+  <header class="site-header">
+    <div class="brand-mark" aria-hidden="true">⚡</div>
+    <div>
+      <strong>Balance Dash</strong>
+      <span>Food + movement mini game</span>
+    </div>
+  </header>
+
+  <main id="game" class="page-shell">
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">One day · three meals · one active you</p>
+      <h1 id="page-title">Build your <span>balanced day</span></h1>
+      <p>Choose foods carefully, make balanced meals, and move enough to finish in the green zone.</p>
+    </section>
+
+    <section class="game-card" aria-label="Balance Dash game">
+      <div class="hud" aria-label="Game statistics">
+        <div title="Food energy" aria-label="Food energy"><span aria-hidden="true">🍜</span><strong id="food-energy">0</strong><small>kcal</small></div>
+        <div title="Net energy" aria-label="Net energy"><span aria-hidden="true">⚖️</span><strong id="net-energy">0</strong><small>net kcal</small></div>
+        <div title="Balanced meals" aria-label="Balanced meals"><span aria-hidden="true">🥗</span><strong id="balanced-meals">0/3</strong><small>meals</small></div>
+        <div title="Exercise goal" aria-label="Exercise goal"><span aria-hidden="true">🏃</span><strong id="exercise-status">○</strong><small>goal</small></div>
+        <div title="Time remaining" aria-label="Time remaining"><span aria-hidden="true">⏱️</span><strong id="time-left">1:15</strong><small>left</small></div>
+      </div>
+
+      <div class="energy-panel">
+        <div class="energy-labels" aria-hidden="true">
+          <span>Too little</span><span>GOAL</span><span>Too high</span>
+        </div>
+        <div class="energy-meter" role="meter" aria-label="Current net energy" aria-valuemin="0" aria-valuemax="2400" aria-valuenow="0">
+          <div class="target-zone"></div>
+          <div id="energy-marker" class="energy-marker"><span>0</span></div>
+        </div>
+        <p>Target: <strong>1,600–1,800 kcal</strong></p>
+      </div>
+
+      <div id="board" class="board breakfast" aria-label="Three-lane running route">
+        <div id="meal-banner" class="meal-banner" role="status" aria-live="polite">Breakfast</div>
+        <button id="pause-button" class="pause-button" type="button" aria-label="Pause game" disabled>Ⅱ Pause</button>
+        <div class="sky-details" aria-hidden="true"><span class="sun-moon"></span><span class="star one">✦</span><span class="star two">✧</span><span class="star three">·</span></div>
+        <div class="road" aria-hidden="true"><i></i><i></i></div>
+        <div id="items" class="items" aria-hidden="true"></div>
+        <div id="runner" class="runner lane-1" aria-hidden="true">
+          <span class="runner-head">●</span><span class="runner-body">◆</span><i class="arm"></i><i class="leg left-leg"></i><i class="leg right-leg"></i>
+        </div>
+        <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+
+        <div id="overlay" class="overlay">
+          <div class="overlay-panel">
+            <button id="overlay-icon" class="overlay-icon" type="button" aria-label="Game symbol" disabled>🥗</button>
+            <p id="overlay-kicker" class="overlay-kicker">Ready for the day?</p>
+            <h2 id="overlay-title">Balance Dash</h2>
+            <p id="overlay-copy">Move between three lanes to choose food. Hold RUN to move faster and use more energy.</p>
+            <div id="result-grid" class="result-grid" hidden></div>
+            <p id="activity-note" class="activity-note" hidden>Game activity only; does not include normal daily energy use.</p>
+            <div id="meal-foods" class="meal-foods" hidden></div>
+            <button id="overlay-button" class="primary-button" type="button">Start the day</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls" aria-label="Game controls">
+        <button id="left-button" class="lane-button" type="button" aria-label="Move left">←</button>
+        <button id="run-button" class="run-button" type="button" aria-label="Hold to run">
+          <span id="move-status">WALKING</span>
+          <small>Hold to run</small>
+        </button>
+        <button id="right-button" class="lane-button" type="button" aria-label="Move right">→</button>
+      </div>
+      <p class="control-hint">Swipe or use ← → to change lanes · hold Space to run</p>
+    </section>
+
+    <aside class="learn-card" aria-label="How scoring works">
+      <div><span aria-hidden="true">🍚</span><strong>Build meals</strong><p>Combine carbohydrate and protein, and collect fruit or vegetables at least once during the day.</p></div>
+      <div><span aria-hidden="true">🏃</span><strong>Keep moving</strong><p>Run for 10 seconds or collect an exercise item to complete your goal.</p></div>
+      <div><span aria-hidden="true">💧</span><strong>Choose water</strong><p>Collect plain water to earn a Hydration Star.</p></div>
+    </aside>
+
+    <p class="disclaimer">Energy values and the daily target are simplified for gameplay, not personal health advice. Actual energy varies with portion size, recipe, preparation, body, and activity.</p>
+  </main>
+</body>
+</html>

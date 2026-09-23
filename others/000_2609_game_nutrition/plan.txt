@@ -1,0 +1,288 @@
+CODEX BUILD PLAN: BALANCE DASH
+
+OBJECTIVE
+
+Build a simple, cute, mobile-friendly nutrition game for KreatBio. The game should teach that a healthy lifestyle requires both a balanced diet and regular physical activity.
+
+Keep the project low-budget and easy to understand. Use plain HTML, CSS, and JavaScript only. Do not use a framework, backend, database, login, saved scores, sound, or external libraries.
+
+
+FILES
+
+Create this folder and files:
+
+balance-dash/
+  index.html
+  styles.css
+  game.js
+
+
+GAME SUMMARY
+
+The player controls a character moving along a three-lane route through one day: breakfast, lunch, and dinner.
+
+Food and exercise items appear ahead. The player changes lanes to collect or avoid them. Collected food adds energy (kcal). Walking, running, and exercise items use energy.
+
+The goal is not simply to collect the fewest calories. The player wins by finishing the day with:
+
+1. A sensible final energy balance.
+2. At least two balanced meals.
+3. At least one completed exercise goal.
+
+Estimated play time: 60 to 90 seconds.
+
+
+GAME PROGRESSION
+
+Use one continuous level divided into three simple time periods:
+
+1. Breakfast: about 20 seconds. Show sunrise colours and a rooster silhouette or crow cue.
+2. Lunch: about 20 seconds. Show a bright blue sky and sun.
+3. Dinner: about 20 seconds. Show a dark sky, stars, and moon.
+
+Show the current meal name clearly at the top of the screen.
+
+
+CONTROLS
+
+Mobile:
+
+- Swipe left or right to change lanes.
+- Press and hold a large RUN button to run.
+- Release the RUN button to walk.
+- Include visible left and right buttons as a simple fallback.
+
+Desktop:
+
+- Use the left and right arrow keys to change lanes.
+- Hold the Space key to run.
+- Release Space to walk.
+
+Do not add jumping, sliding, obstacles, enemies, or complicated physics.
+
+
+MAIN GAMEPLAY
+
+- Use three fixed lanes.
+- The character stays near the bottom of the screen.
+- Food and exercise items move downward toward the character.
+- Moving into an item's lane collects it.
+- Each food wave should contain two food choices and one empty lane, so the player can avoid eating.
+- Show a short collection label, such as "+160 kcal" or "Exercise -100 kcal."
+- Display the current food energy, movement energy, net energy, balanced-meal count, and exercise status.
+
+
+WALKING AND RUNNING
+
+- Walking uses 2 kcal per second.
+- Running uses 5 kcal per second.
+- Running should make the character and road move slightly faster.
+- Show a small WALKING or RUNNING status label.
+- These values are simplified gameplay values, not a personal health prescription.
+
+
+EXERCISE ITEMS
+
+Use three simple exercise icons:
+
+- Running shoes
+- Bicycle
+- Skipping rope
+
+Collecting one exercise item represents completing a short exercise session and deducts 100 kcal.
+
+Limit exercise-item credit to two items per game so players cannot win by repeatedly collecting exercise icons.
+
+The exercise goal is complete when either:
+
+- The player collects at least one exercise item, or
+- The player runs for at least 10 seconds in total.
+
+
+FOOD LIST AND GAMEPLAY VALUES
+
+Use familiar serving descriptions. Do not display values per 100 g.
+
+Food                              Serving                 Group       kcal
+White rice                        1/4 plate               Carbohydrate 200
+Brown rice                        1/4 plate               Carbohydrate 180
+Noodles                           1/4 plate               Carbohydrate 200
+Chapati                           1 piece                 Carbohydrate 120
+Wholemeal bread                   2 slices                Carbohydrate 160
+Grilled chicken drumstick         1 piece                 Protein      160
+Fried chicken drumstick           1 piece                 Protein      240
+Grilled fish                      1 palm-sized piece      Protein      160
+Fried fish                        1 palm-sized piece      Protein      240
+Boiled egg                        1 egg                   Protein       75
+Fried egg                         1 egg                   Protein      120
+Tofu                              2 small pieces          Protein       90
+Steamed vegetables                1/4 plate               Vegetable     30
+Stir-fried vegetables             1/4 plate               Vegetable     75
+Kangkung                          1/4 plate               Vegetable     70
+Banana                            1 medium fruit          Fruit        100
+Papaya                            1 large slice           Fruit         60
+Plain water                       1 glass                 Drink          0
+Sweetened drink                   1 glass                 Drink        120
+Oily sambal                       1 tablespoon            Extra         60
+
+These are approximate educational gameplay values. Add a note that actual energy varies with portion size, recipe, and preparation.
+
+
+FOOD GENERATION
+
+Use about six food waves per meal:
+
+1. Carbohydrate choice
+2. Protein choice
+3. Vegetable choice
+4. Mixed choice
+5. Fruit or drink choice
+6. Mixed or repeat choice
+
+Always leave one lane empty. The player may collect repeated items, including several chicken pieces. Every collected item adds its kcal value separately.
+
+Make sure every meal offers at least one carbohydrate, one protein, and one vegetable opportunity.
+
+
+MEAL ASSESSMENT
+
+Track collected food separately for breakfast, lunch, and dinner.
+
+A meal is balanced when it contains:
+
+- At least one carbohydrate item
+- At least one protein item
+- At least one vegetable item
+
+Fruit is optional and gives a small bonus message. It is not required for a meal to count as balanced.
+
+Plain water gives a Hydration Star. Sweetened drinks are allowed but receive the message: "Enjoy less often - water is the everyday choice."
+
+At the end of each meal, briefly show either:
+
+- "Balanced meal!"
+- "Missing: carbohydrate"
+- "Missing: protein"
+- "Missing: vegetables"
+
+Do not stop the game for longer than two seconds.
+
+
+ENERGY CALCULATION
+
+Food energy = total kcal from all collected food and drinks.
+
+Movement energy = walking kcal + running kcal + exercise-item kcal.
+
+Final net energy = food energy - movement energy.
+
+Use 1,700 kcal as the centre target for this short fictional game day. Count 1,600 to 1,800 kcal as the balanced target range.
+
+Label this clearly as a simplified game target, not a recommendation for every person.
+
+Show one easy-to-read meter with three zones:
+
+- Under-fuelled: below 1,600 kcal
+- Balanced: 1,600 to 1,800 kcal
+- Extra energy: above 1,800 kcal
+
+Do not show the character becoming fat or thin. Use changes in energy, facial expression, or the meter instead.
+
+
+WIN CONDITIONS
+
+The player wins only when all three conditions are met:
+
+1. Final net energy is between 1,600 and 1,800 kcal.
+2. At least two of the three meals are balanced.
+3. The exercise goal is complete.
+
+Win message:
+
+"Balanced Day! You combined balanced meals, enough movement, and a sensible energy balance."
+
+If the player does not meet all three conditions, show "Try Again" and one clear improvement tip based on the missing goal:
+
+- Low energy: "You used more energy than you collected. Add a balanced meal."
+- High energy: "You collected more energy than you used. Try fewer extras or more movement."
+- Fewer than two balanced meals: "Build at least two meals with carbohydrate, protein, and vegetables."
+- No exercise goal: "Run for 10 seconds or collect an exercise item."
+
+Do not use shame-based language, body-size judgments, or claims that exercise cancels unhealthy food.
+
+
+FINAL RESULTS SCREEN
+
+Show:
+
+- Food energy collected
+- Movement energy used
+- Final net energy
+- Balanced meals: 0/3, 1/3, 2/3, or 3/3
+- Exercise goal: complete or incomplete
+- Hydration Star: earned or not earned
+- Win or Try Again message
+- One improvement tip
+- Replay button
+
+
+VISUAL SCOPE
+
+Keep the art simple:
+
+- One cute runner character with basic walk and run animation.
+- One three-lane road or path.
+- Three background colour states for breakfast, lunch, and dinner.
+- Simple emoji, CSS shapes, or small local SVG icons for food and exercise.
+- Rounded cards, bright colours, and gentle glow effects matching KreatBio's Culture Arcade style.
+- A white KreatBio-style header and dark scientific background.
+- Foods may have small kawaii faces, but the design should still suit teens and adults.
+
+Avoid complex sprite sheets, 3D graphics, camera effects, or detailed environment art.
+
+
+MOBILE AND ACCESSIBILITY REQUIREMENTS
+
+- Design mobile-first for screens from 360 px wide.
+- Make controls large enough for thumbs.
+- Do not rely on hover.
+- Prevent the page from scrolling while the player swipes in the game area.
+- Support touch, mouse, and keyboard.
+- Use visible focus states and readable contrast.
+- Add screen-reader status messages for collected items, meal results, and final results.
+- Pause automatically if the browser tab loses focus.
+- Add pause and restart buttons.
+- Respect prefers-reduced-motion by removing decorative movement while keeping the game playable.
+- Support narrow phones, tablets, desktops, and short landscape screens.
+
+
+EDUCATIONAL NOTE
+
+Include a short information panel below the game:
+
+"A balanced lifestyle includes varied meals, sensible portions, water, and regular activity. Energy needs differ between people. This game uses simplified values for education only and does not provide personal nutrition or medical advice. No personal or health data is collected."
+
+
+TESTING CHECKLIST
+
+- The player can change lanes by swipe, buttons, and keyboard.
+- Holding RUN increases movement use and releasing returns to walking.
+- Every collected food item adds the correct kcal value.
+- Repeated food items are counted separately.
+- Every food wave has an empty lane.
+- Every meal can be completed with carbohydrate, protein, and vegetables.
+- Fruit remains optional.
+- Exercise can be completed by an item or 10 seconds of running.
+- Exercise credit is capped correctly.
+- Movement cannot replace the balanced-meal requirement.
+- The win result requires all three conditions.
+- Results and improvement tips are correct.
+- Replay, pause, restart, and automatic pause work.
+- The game works on touch, mouse, and keyboard.
+- The layout works at 360 px width and in short landscape viewports.
+- Reduced-motion mode remains fully playable.
+
+
+FINAL SCOPE RULE
+
+Prioritize a complete and understandable game over extra features. Do not add shops, character upgrades, levels, enemies, leaderboards, accounts, achievements, complex audio, or additional game modes.
