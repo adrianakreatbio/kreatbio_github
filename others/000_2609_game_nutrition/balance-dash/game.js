@@ -9,7 +9,7 @@
   const MAX_EXERCISE_KCAL = 260;
   const TARGET_MIN = 1600;
   const TARGET_MAX = 1800;
-  const WAVE_TIMES = [0.05, 4.2, 8.35, 12.5, 16.65, 20.8];
+  const WAVE_TIMES = [1.8, 4.2, 8.35, 12.5, 16.65, 20.8];
   const EXERCISE_TIME = 10.4;
   const LANES = [25, 50, 75];
 
@@ -17,7 +17,7 @@
     whiteRice: ["White rice", "1/4 plate", "carbohydrate", 200, "🍚"],
     friedKueyTeow: ["Fried kuey teow", "1 plate", "carbohydrate", 720, "🍜"],
     friedRice: ["Fried rice", "1 plate", "carbohydrate", 750, "🍛"],
-    nasiLemak: ["Nasi lemak rendang", "1 plate", ["carbohydrate", "protein"], 880, "🍛"],
+    nasiLemak: ["Nasi lemak", "rendang", ["carbohydrate", "protein"], 880, "🍛"],
     rotiCanai: ["Roti canai", "with dhal", "carbohydrate", 380, "🫓"],
     sandwich: ["Wholemeal egg sandwich", "1 sandwich", ["carbohydrate", "protein"], 280, "🥪"],
     grilledChicken: ["Grilled chicken", "1 drumstick", "protein", 160, "🍗"],
@@ -40,8 +40,8 @@
       name: "Breakfast",
       className: "breakfast",
       waves: [
-        ["friedRice", "rotiCanai"], ["boiledEgg", "friedEgg"], ["steamedVeg", "stirVeg"],
-        ["banana", "nasiLemak"], ["water", "icedMilo"], ["sandwich", "grilledChicken"]
+        ["nasiLemak", "friedRice", "rotiCanai"], ["boiledEgg", "friedEgg"], ["steamedVeg", "stirVeg"],
+        ["banana", "cake"], ["water", "icedMilo"], ["sandwich", "grilledChicken"]
       ]
     },
     {
@@ -203,6 +203,11 @@
   function spawnFoodWave(stageIndex, waveIndex) {
     const choiceKeys = STAGES[stageIndex].waves[waveIndex];
     const lanes = shuffled([0, 1, 2]);
+    if (stageIndex === 0 && waveIndex === 0) {
+      spawnEntity(foodObject(choiceKeys[0]), lanes[0], "food", 145);
+      choiceKeys.slice(1).forEach((key, index) => spawnEntity(foodObject(key), lanes[index + 1], "food", 5));
+      return;
+    }
     choiceKeys.forEach((key, index) => spawnEntity(foodObject(key), lanes[index], "food"));
   }
 
@@ -216,13 +221,13 @@
     return { name, serving, group, kcal, icon };
   }
 
-  function spawnEntity(item, lane, kind) {
+  function spawnEntity(item, lane, kind, startY = -70) {
     const node = document.createElement("div");
     node.className = `game-item ${kind}`;
     node.style.left = `${LANES[lane]}%`;
     node.innerHTML = `<span class="icon">${item.icon}</span><strong>${item.name}</strong><small>${kind === "exercise" ? `−${item.kcal} kcal` : `${item.serving} · ${item.kcal} kcal`}</small>`;
     itemsLayer.append(node);
-    state.entities.push({ item, lane, kind, y: -70, resolved: false, node });
+    state.entities.push({ item, lane, kind, y: startY, resolved: false, node });
   }
 
   function updateEntities(dt) {
