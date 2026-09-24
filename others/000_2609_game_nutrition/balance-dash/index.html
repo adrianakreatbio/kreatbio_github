@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="styles.css">
   <script src="game.js" defer></script>
 </head>
-<body>
+<body data-game-state="idle">
   <a class="skip-link" href="#game">Skip to game</a>
 
   <header class="site-header">
@@ -60,14 +60,42 @@
 
         <div id="overlay" class="overlay">
           <div class="overlay-panel">
-            <button id="overlay-icon" class="overlay-icon" type="button" aria-label="Game symbol" disabled>🥗</button>
-            <p id="overlay-kicker" class="overlay-kicker">Ready for the day?</p>
-            <h2 id="overlay-title">Balance Dash</h2>
-            <p id="overlay-copy">Move between three lanes to choose food. Hold RUN to move faster and use more energy.</p>
+            <div id="onboarding" class="onboarding">
+              <div class="onboarding-slide" data-slide="0">
+                <div class="onboarding-emoji" aria-hidden="true">🥗</div>
+                <p class="overlay-kicker">Ready for the day?</p>
+                <h2>How to win</h2>
+                <ul class="goal-list">
+                  <li><span>🎯</span><strong>Reach 1,600–1,800 net kcal</strong></li>
+                  <li><span>🍚</span><strong>Build 2 balanced meals</strong></li>
+                  <li><span>🍌</span><strong>Choose fruit or veg once</strong></li>
+                  <li><span>🏃</span><strong>Complete the exercise goal</strong></li>
+                </ul>
+                <p class="slide-note">Swipe or use ← → to change lanes. Hold RUN to run.</p>
+              </div>
+              <div class="onboarding-slide" data-slide="1" hidden>
+                <p class="overlay-kicker">Helpful choices</p>
+                <h2>Build a balanced day</h2>
+                <div class="tip-list">
+                  <div><span aria-hidden="true">🍚</span><p><strong>Build meals</strong>Combine carbohydrate and protein. Choose fruit or veg once.</p></div>
+                  <div><span aria-hidden="true">🏃</span><p><strong>Keep moving</strong>Run for 10 seconds or collect an exercise item.</p></div>
+                  <div><span aria-hidden="true">💧</span><p><strong>Choose water</strong>Collect water to earn a Hydration Star.</p></div>
+                </div>
+                <button id="start-button" class="primary-button" type="button">Start the day</button>
+              </div>
+              <div class="slide-nav" aria-label="Instruction slides">
+                <button id="slide-back" type="button" aria-label="Previous instruction" disabled>←</button>
+                <div class="slide-dots" aria-hidden="true"><span class="active"></span><span></span></div>
+                <button id="slide-next" type="button" aria-label="Next instruction">→</button>
+              </div>
+            </div>
+            <button id="overlay-icon" class="overlay-icon" type="button" aria-label="Game action" hidden>🥗</button>
+            <p id="overlay-kicker" class="overlay-kicker" hidden></p>
+            <h2 id="overlay-title" hidden></h2>
+            <p id="overlay-copy" hidden></p>
             <div id="result-grid" class="result-grid" hidden></div>
             <p id="activity-note" class="activity-note" hidden>Game activity only; does not include normal daily energy use.</p>
             <div id="meal-foods" class="meal-foods" hidden></div>
-            <button id="overlay-button" class="primary-button" type="button">Start the day</button>
           </div>
         </div>
       </div>

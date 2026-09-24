@@ -76,7 +76,12 @@
   const overlayKicker = $("#overlay-kicker");
   const overlayTitle = $("#overlay-title");
   const overlayCopy = $("#overlay-copy");
-  const overlayButton = $("#overlay-button");
+  const onboarding = $("#onboarding");
+  const onboardingSlides = [...document.querySelectorAll(".onboarding-slide")];
+  const slideDots = [...document.querySelectorAll(".slide-dots span")];
+  const slideBack = $("#slide-back");
+  const slideNext = $("#slide-next");
+  const startButton = $("#start-button");
   const resultGrid = $("#result-grid");
   const activityNote = $("#activity-note");
   const mealFoods = $("#meal-foods");
@@ -92,6 +97,8 @@
   let lastFrame = 0;
   let touchStart = null;
   let feedbackTimer = null;
+  let mealBannerTimer = null;
+  let onboardingSlide = 0;
 
   function freshState() {
     return {
@@ -121,13 +128,18 @@
     itemsLayer.replaceChildren();
     state = freshState();
     state.mode = "playing";
+    document.body.dataset.gameState = "playing";
     lastFrame = performance.now();
     overlay.classList.remove("success", "fail");
     $(".overlay-panel").scrollTop = 0;
     overlay.hidden = true;
+    onboarding.hidden = true;
+    overlayIcon.hidden = true;
     overlayIcon.disabled = true;
     overlayIcon.setAttribute("aria-label", "Game symbol");
-    overlayButton.hidden = false;
+    overlayKicker.hidden = true;
+    overlayTitle.hidden = true;
+    overlayCopy.hidden = true;
     resultGrid.hidden = true;
     activityNote.hidden = true;
     mealFoods.hidden = true;
@@ -181,9 +193,11 @@
     board.classList.add(STAGES[index].className);
     const mealBanner = $("#meal-banner");
     mealBanner.textContent = STAGES[index].name;
+    window.clearTimeout(mealBannerTimer);
     mealBanner.classList.remove("stage-pop");
     void mealBanner.offsetWidth;
     mealBanner.classList.add("stage-pop");
+    mealBannerTimer = window.setTimeout(() => mealBanner.classList.remove("stage-pop"), 1700);
   }
 
   function spawnFoodWave(stageIndex, waveIndex) {
@@ -276,6 +290,7 @@
 
   function finishGame() {
     state.mode = "finished";
+    document.body.dataset.gameState = "finished";
     pauseButton.disabled = true;
     setRunning(false);
     assessMeal(2);
@@ -293,14 +308,19 @@
 
     overlay.classList.toggle("success", won);
     overlay.classList.toggle("fail", !won);
+    onboarding.hidden = true;
+    overlayIcon.hidden = false;
     overlayIcon.textContent = "↻";
     overlayIcon.disabled = false;
     overlayIcon.setAttribute("aria-label", "Replay game");
     overlayKicker.textContent = won ? "Balanced Day!" : "Try Again";
+    overlayKicker.hidden = false;
     overlayTitle.textContent = won ? "SUCCESS" : "FAIL";
+    overlayTitle.hidden = false;
     overlayCopy.textContent = won
       ? "Keep it up! You eat enough, balanced and active."
       : tip;
+    overlayCopy.hidden = false;
     const netBalanced = net >= TARGET_MIN && net <= TARGET_MAX;
     resultGrid.innerHTML = [
       { label: "Food energy", value: `${food} kcal`, status: "neutral" },
@@ -321,7 +341,6 @@
       return `<section><h4>${stage.name}</h4>${list}</section>`;
     }).join("")}`;
     mealFoods.hidden = false;
-    overlayButton.hidden = true;
     $(".overlay-panel").scrollTop = 0;
     overlay.hidden = false;
     overlayIcon.focus({ preventScroll: true });
@@ -394,24 +413,29 @@
   function pauseGame() {
     if (!state || state.mode !== "playing") return;
     state.mode = "paused";
+    document.body.dataset.gameState = "paused";
     pauseButton.disabled = true;
     setRunning(false);
-    overlayIcon.textContent = "⏸️";
-    overlayIcon.disabled = true;
-    overlayIcon.setAttribute("aria-label", "Game paused");
-    overlayKicker.textContent = "Game paused";
-    overlayTitle.textContent = "Take your time";
-    overlayCopy.textContent = "Continue when you are ready. Your progress is safe in this tab.";
+    overlay.classList.remove("success", "fail");
+    onboarding.hidden = true;
+    overlayIcon.hidden = false;
+    overlayIcon.textContent = "▶";
+    overlayIcon.disabled = false;
+    overlayIcon.setAttribute("aria-label", "Resume game");
+    overlayKicker.hidden = true;
+    overlayTitle.textContent = "Game paused";
+    overlayTitle.hidden = false;
+    overlayCopy.hidden = true;
     resultGrid.hidden = true;
     activityNote.hidden = true;
     mealFoods.hidden = true;
-    overlayButton.textContent = "Continue";
-    overlayButton.hidden = false;
     overlay.hidden = false;
+    overlayIcon.focus({ preventScroll: true });
   }
 
   function resumeGame() {
     state.mode = "playing";
+    document.body.dataset.gameState = "playing";
     pauseButton.disabled = false;
     overlay.hidden = true;
     lastFrame = performance.now();
@@ -478,15 +502,52 @@
   window.addEventListener("blur", pauseGame);
   document.addEventListener("visibilitychange", () => { if (document.hidden) pauseGame(); });
 
-  overlayButton.addEventListener("click", () => {
-    if (state.mode === "paused") resumeGame();
-    else startGame();
-  });
   overlayIcon.addEventListener("click", () => {
-    if (state.mode === "finished") startGame();
+    if (state.mode === "paused") resumeGame();
+    else if (state.mode === "finished") showOnboarding();
   });
 
-  state = freshState();
-  moveLane(0, true);
-  updateHud();
+  function setOnboardingSlide(index) {
+    onboardingSlide = Math.max(0, Math.min(onboardingSlides.length - 1, index));
+    onboardingSlides.forEach((slide, slideIndex) => { slide.hidden = slideIndex !== onboardingSlide; });
+    slideDots.forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === onboardingSlide));
+    slideBack.disabled = onboardingSlide === 0;
+    slideNext.disabled = onboardingSlide === onboardingSlides.length - 1;
+    (onboardingSlide === 0 ? slideNext : startButton).focus({ preventScroll: true });
+  }
+
+  function showOnboarding() {
+    stopLoop();
+    window.clearTimeout(mealBannerTimer);
+    itemsLayer.replaceChildren();
+    state = freshState();
+    document.body.dataset.gameState = "idle";
+    board.classList.remove("playing", "running", "lunch", "dinner");
+    board.classList.add("breakfast");
+    $("#meal-banner").classList.remove("stage-pop");
+    pauseButton.disabled = true;
+    moveLane(0, true);
+    setRunning(false);
+    updateHud();
+    overlay.classList.remove("success", "fail");
+    $(".overlay-panel").scrollTop = 0;
+    onboarding.hidden = false;
+    overlayIcon.hidden = true;
+    overlayIcon.disabled = true;
+    overlayKicker.hidden = true;
+    overlayTitle.hidden = true;
+    overlayCopy.hidden = true;
+    resultGrid.hidden = true;
+    activityNote.hidden = true;
+    mealFoods.hidden = true;
+    mealFoods.replaceChildren();
+    overlay.hidden = false;
+    setOnboardingSlide(0);
+  }
+
+  slideBack.addEventListener("click", () => setOnboardingSlide(onboardingSlide - 1));
+  slideNext.addEventListener("click", () => setOnboardingSlide(onboardingSlide + 1));
+  startButton.addEventListener("click", startGame);
+
+  showOnboarding();
 })();
