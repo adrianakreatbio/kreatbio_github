@@ -3,8 +3,8 @@
 
   const GAME_SECONDS = 75;
   const STAGE_SECONDS = 25;
-  const WALK_KCAL = 1;
-  const RUN_KCAL = 3;
+  const WALK_KCAL = 0;
+  const RUN_KCAL = 2;
   const MAX_EXERCISE_CREDIT = 2;
   const MAX_EXERCISE_KCAL = 260;
   const TARGET_MIN = 1600;
@@ -325,7 +325,7 @@
     const netBalanced = net >= TARGET_MIN && net <= TARGET_MAX;
     resultGrid.innerHTML = [
       { label: "Food energy", value: `${food} kcal`, status: "neutral" },
-      { label: "Additional activity calories", value: `${movement} kcal`, status: "neutral" },
+      { label: "Burned activity calories", value: `${movement} kcal`, status: "neutral" },
       { label: "Final net energy", value: `${net} kcal`, status: netBalanced ? "good" : calorieWarning ? "warn" : "bad" },
       { label: "Balanced meals", value: `${state.balancedMeals}/3`, status: state.balancedMeals >= 2 ? "good" : "bad" },
       { label: "Fruit / veg goal", value: produceComplete ? "Complete ✓" : "Incomplete", status: produceComplete ? "good" : "bad" },
