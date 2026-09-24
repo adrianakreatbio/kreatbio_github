@@ -193,6 +193,7 @@
     board.classList.add(STAGES[index].className);
     const mealBanner = $("#meal-banner");
     mealBanner.textContent = STAGES[index].name;
+    $("#meal-label").textContent = STAGES[index].name;
     window.clearTimeout(mealBannerTimer);
     mealBanner.classList.remove("stage-pop");
     void mealBanner.offsetWidth;
