@@ -14,11 +14,11 @@
   const LANES = [25, 50, 75];
 
   const FOOD = {
-    whiteRice: ["White rice", "1/4 plate", "carbohydrate", 200, "🍚"],
+    whiteRice: ["White rice", "1/4 plate", "carbohydrate", 150, "🍚"],
     friedKueyTeow: ["Fried kuey teow", "1 plate", "carbohydrate", 720, "🍜"],
     friedRice: ["Fried rice", "1 plate", "carbohydrate", 750, "🍛"],
-    nasiLemak: ["Nasi lemak", "rendang", ["carbohydrate", "protein"], 880, "🍛"],
-    rotiCanai: ["Roti canai", "with dhal", "carbohydrate", 380, "🫓"],
+    nasiLemak: ["Nasi lemak chicken rendang", "1 plate", ["carbohydrate", "protein"], 880, "🍛"],
+    rotiCanai: ["Roti canai with dhal", "1 serving", "carbohydrate", 380, "🫓"],
     sandwich: ["Wholemeal egg sandwich", "1 sandwich", ["carbohydrate", "protein"], 280, "🥪"],
     grilledChicken: ["Grilled chicken", "1 drumstick", "protein", 160, "🍗"],
     friedChicken: ["Fried chicken", "1 drumstick", "protein", 240, "🍗"],
