@@ -234,7 +234,7 @@
   function updateEntities(dt) {
     const height = board.clientHeight;
     const targetY = height * 0.79;
-    const speed = height * (state.running ? 0.23 : 0.17);
+    const speed = height * (state.running ? 0.17 : 0.13);
     for (const entity of state.entities) {
       entity.y += speed * dt;
       entity.node.style.transform = `translate(-50%, ${entity.y}px)`;
