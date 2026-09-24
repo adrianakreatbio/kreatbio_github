@@ -18,7 +18,7 @@
     friedKueyTeow: ["Fried kuey teow", "1 plate", "carbohydrate", 720, "🍜"],
     friedRice: ["Fried rice", "1 plate", "carbohydrate", 750, "🍛"],
     nasiLemak: ["Nasi lemak rendang", "1 plate", ["carbohydrate", "protein"], 880, "🍛"],
-    rotiCanai: ["Roti canai dhal", "1 serving", "carbohydrate", 380, "🫓"],
+    rotiCanai: ["Roti canai", "with dhal", "carbohydrate", 380, "🫓"],
     sandwich: ["Wholemeal egg sandwich", "1 sandwich", ["carbohydrate", "protein"], 280, "🥪"],
     grilledChicken: ["Grilled chicken", "1 drumstick", "protein", 160, "🍗"],
     friedChicken: ["Fried chicken", "1 drumstick", "protein", 240, "🍗"],
@@ -130,7 +130,7 @@
     state.mode = "playing";
     document.body.dataset.gameState = "playing";
     lastFrame = performance.now();
-    overlay.classList.remove("success", "fail");
+    overlay.classList.remove("success", "warning", "fail");
     $(".overlay-panel").scrollTop = 0;
     overlay.hidden = true;
     onboarding.hidden = true;
@@ -303,29 +303,30 @@
     const net = Math.round(food - movement);
     const exerciseComplete = exerciseGoalComplete();
     const produceComplete = produceGoalComplete();
+    const calorieWarning = net >= 1500 && net < TARGET_MIN;
     const won = net >= TARGET_MIN && net <= TARGET_MAX && state.balancedMeals >= 2 && produceComplete && exerciseComplete;
     const tip = improvementTip(net, exerciseComplete, produceComplete);
 
-    overlay.classList.toggle("success", won);
-    overlay.classList.toggle("fail", !won);
+    overlay.classList.remove("success", "warning", "fail");
+    overlay.classList.add(won ? "success" : calorieWarning ? "warning" : "fail");
     onboarding.hidden = true;
     overlayIcon.hidden = false;
     overlayIcon.textContent = "↻";
     overlayIcon.disabled = false;
     overlayIcon.setAttribute("aria-label", "Replay game");
-    overlayKicker.textContent = won ? "Balanced Day!" : "Try Again";
+    overlayKicker.textContent = won ? "Balanced Day!" : calorieWarning ? "Almost there" : "Try Again";
     overlayKicker.hidden = false;
-    overlayTitle.textContent = won ? "SUCCESS" : "FAIL";
+    overlayTitle.textContent = won ? "SUCCESS" : calorieWarning ? "WARNING" : "FAIL";
     overlayTitle.hidden = false;
     overlayCopy.textContent = won
       ? "Keep it up! You eat enough, balanced and active."
-      : tip;
+      : calorieWarning ? "Calorie deficit! Are you on diet?" : tip;
     overlayCopy.hidden = false;
     const netBalanced = net >= TARGET_MIN && net <= TARGET_MAX;
     resultGrid.innerHTML = [
       { label: "Food energy", value: `${food} kcal`, status: "neutral" },
       { label: "Additional activity calories", value: `${movement} kcal`, status: "neutral" },
-      { label: "Final net energy", value: `${net} kcal`, status: netBalanced ? "good" : "bad" },
+      { label: "Final net energy", value: `${net} kcal`, status: netBalanced ? "good" : calorieWarning ? "warn" : "bad" },
       { label: "Balanced meals", value: `${state.balancedMeals}/3`, status: state.balancedMeals >= 2 ? "good" : "bad" },
       { label: "Fruit / veg goal", value: produceComplete ? "Complete ✓" : "Incomplete", status: produceComplete ? "good" : "bad" },
       { label: "Exercise goal", value: exerciseComplete ? "Complete ✓" : "Incomplete", status: exerciseComplete ? "good" : "bad" },
@@ -416,7 +417,7 @@
     document.body.dataset.gameState = "paused";
     pauseButton.disabled = true;
     setRunning(false);
-    overlay.classList.remove("success", "fail");
+    overlay.classList.remove("success", "warning", "fail");
     onboarding.hidden = true;
     overlayIcon.hidden = false;
     overlayIcon.textContent = "▶";
@@ -529,7 +530,7 @@
     moveLane(0, true);
     setRunning(false);
     updateHud();
-    overlay.classList.remove("success", "fail");
+    overlay.classList.remove("success", "warning", "fail");
     $(".overlay-panel").scrollTop = 0;
     onboarding.hidden = false;
     overlayIcon.hidden = true;
